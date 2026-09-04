@@ -360,7 +360,7 @@
   <main class="canvas">
     <div class="ctx-banner">
       <span>▸</span>
-      <span>Worked example: <b>FocusGarden</b> — a Flutter focus-timer app, published by Aisha Rao (Pune), free with ads + a subscription. Every field on these screens is editable — type your own app's details and the counters and previews react. One continuous walkthrough, <b>50 screens</b>: account &rarr; payments &rarr; store listing &rarr; <b>monetization setup</b> &rarr; build &amp; test &rarr; release &rarr; revenue &amp; billing &rarr; marketing &amp; growth.</span>
+      <span>Worked example: <b>FocusGarden</b> — a Flutter focus-timer app, published by Aisha Rao (Pune), free with ads + a subscription. Every field on these screens is editable — type your own app's details and the counters and previews react. One continuous walkthrough, <b>55 screens</b>: account &rarr; payments &rarr; store listing &rarr; <b>monetization setup</b> &rarr; build &amp; test &rarr; release &rarr; revenue &amp; billing &rarr; marketing &amp; growth (Google Ads <b>and beyond</b> — paid social, influencers, referral, retention).</span>
     </div>
 
     <div class="screen">
@@ -1792,7 +1792,142 @@
       what: "The setup for a Google Ads App campaign (UAC) — budget, target CPI, goal, and the creative assets it draws from automatically.",
       do: "Start with a modest daily budget and a realistic target CPI, let it run past the initial learning period before judging performance, and lean on your store listing assets rather than building separate ad creative.",
       gotcha: "Setting the target CPI too aggressively low from day one usually means the campaign simply can't spend the budget — Google won't chase installs it can't deliver at that price, so spend quietly stalls.",
-      lp: "Launches and tunes the campaign, raising or lowering target CPI based on the CAC-versus-LTV numbers from the growth dashboard (next screen) rather than budget alone."
+      lp: "Launches and tunes the campaign, raising or lowering target CPI based on the CAC-versus-LTV numbers from the growth dashboard further ahead, rather than budget alone."
+    },
+    {
+      part: "Part 7 · Marketing &amp; growth",
+      nav: "Paid social — Meta & TikTok",
+      kick: "Meta Ads Manager / TikTok Ads Manager",
+      title: "Running ads beyond Google's own ecosystem",
+      lead: "Google Ads reaches people already searching or browsing on Google. Meta and TikTok reach people who were not looking for you at all — a different job, a different creative.",
+      crumb: "Growth &rsaquo; <b>Paid social</b>",
+      body: function () {
+        return (
+          tblWrap(
+            '<table class="pc"><thead><tr><th>&nbsp;</th><th>Google App campaigns</th><th>Meta / TikTok ads</th></tr></thead><tbody>' +
+            trow("Intent", "High — search &amp; browse signals", "Low — interrupts, doesn't wait to be searched for") +
+            trow("Creative", "Pulled automatically from your store listing", "Purpose-built short vertical video, first 3 seconds must hook") +
+            trow("India CPI benchmark", "₹5–8", "₹8–15 — less buying intent, costs more per install") +
+            trow("Attribution", "Built in — Google sees the Play Store install", "Needs a third-party SDK (AppsFlyer, Adjust) to see installs at all") +
+            '</tbody></table>'
+          ) +
+          card("New campaign",
+            radioSet("Platform", [["meta", "Meta (Instagram + Facebook)", "", true], ["tiktok", "TikTok", ""]]) +
+            radioSet("Objective", [["installs", "App installs", "", true], ["events", "App events (e.g. trial start)", "Needs enough conversion volume to optimise well."]]) +
+            fld("Daily budget", txt("₹1,500")) +
+            fld("Creative", txt("9:16 vertical video, 6–15 seconds, captioned for sound-off viewing"))
+          ) +
+          callout("warn", "Attribution is harder here than on Google Ads", "Meta and TikTok cannot see your Play Store install data directly. Without an attribution SDK reporting postbacks, you genuinely will not know which platform is driving revenue — set this up before spending, not after.") +
+          callout("info", "Privacy changes have raised the floor", "iOS App Tracking Transparency and Google's Privacy Sandbox have both reduced how precisely these platforms can target and measure. Broad targeting plus strong creative now beats narrow audience targeting more often than it used to.")
+        );
+      },
+      what: "Paid acquisition on platforms outside Google's own ecosystem — different intent, different creative format, and a real attribution gap to solve first.",
+      do: "Start with a small budget, a short vertical video that hooks in the first few seconds, and an attribution SDK wired up before the campaign, not after.",
+      gotcha: "Teams that skip attribution setup often keep a channel running for months because it 'feels' like it's working, with no real data proving it drove a single install.",
+      lp: "Wires the attribution SDK once, and reports Meta/TikTok spend against the same CAC-versus-LTV view as Google Ads, in the growth dashboard further ahead."
+    },
+    {
+      part: "Part 7 · Marketing &amp; growth",
+      nav: "Influencer & creator marketing",
+      kick: "Outside Play Console entirely",
+      title: "Influencer and creator marketing",
+      lead: "For an app like FocusGarden, one honest video from a study-with-me creator often converts better than a cold ad ever will.",
+      crumb: "Growth &rsaquo; <b>Influencers</b>",
+      body: function () {
+        return (
+          tblWrap(
+            '<table class="pc"><thead><tr><th>Tier</th><th>Followers</th><th>Typical ask</th></tr></thead><tbody>' +
+            trow("Nano", "1K–10K", "Free Pro access — no cash, near-zero cost, best ROI") +
+            trow("Micro", "10K–100K", "₹5,000–25,000 flat, or an affiliate % of referred revenue") +
+            trow("Mid-tier", "100K–1M", "Negotiated flat fee, usually with an affiliate component too") +
+            '</tbody></table>'
+          ) +
+          kv([["Tracking", "A unique promo code per creator (e.g. STUDY20) as a RevenueCat offer code — redemptions show up in the dashboard"]]) +
+          callout("info", "Start with product, not payment", "Gifting free Pro access to a nano or micro creator for an honest mention usually costs nothing and outperforms a paid post from the same tier.") +
+          callout("warn", "India's disclosure rules apply", "Sponsored content must be disclosed — #ad or #sponsored — under ASCI's influencer advertising guidelines. Undisclosed paid promotion is a real risk for the creator and, in some cases, for you.")
+        );
+      },
+      what: "Working with creators — from free-product nano deals to paid mid-tier partnerships — and tracking what each one actually drives.",
+      do: "Start at the nano/micro tier with product gifting and a unique promo code, and only move to paid flat fees once you can see a tier converting.",
+      gotcha: "Paying a flat fee upfront with no tracking code means you'll never know if that creator drove ten installs or ten thousand — always issue a unique code, even for gifted access.",
+      lp: "Manages the creator outreach, issues and tracks promo codes automatically, and reports each creator's redemptions and revenue in the growth dashboard."
+    },
+    {
+      part: "Part 7 · Marketing &amp; growth",
+      nav: "Referral & virality",
+      kick: "In-app growth loop",
+      title: "Turn users into a growth channel",
+      lead: "A good referral program is the cheapest acquisition channel there is — you only pay the reward to users who stuck around long enough to refer someone.",
+      crumb: "Growth &rsaquo; <b>Referral</b>",
+      body: function () {
+        return (
+          card("Referral mechanic",
+            kv([
+              ["Referrer gets", "1 free month of FocusGarden Pro"],
+              ["New user gets", "A 14-day trial instead of the standard 7"],
+              ["Trigger", "Share prompt after a small win — e.g. a 7-day streak"],
+              ["Tracking", "A unique referral code per user, via RevenueCat + a dynamic link"]
+            ])
+          ) +
+          callout("info", "The number that matters: K-factor", "K equals invites sent per user, times the conversion rate of those invites. Above 1, the loop grows on its own. Most consumer apps land well under that — treat referral as a strong supplement, not your whole growth plan.") +
+          callout("warn", "Model the reward against LTV first", "Don't let the referral reward eat into a positive contribution margin. Check the cost of the free month against a referred user's typical lifetime value before locking in the incentive size.")
+        );
+      },
+      what: "The in-app mechanic that turns existing users into an acquisition channel, and the metric (K-factor) that tells you how much it's really contributing.",
+      do: "Trigger the share prompt after a genuine moment of value, keep the reward modest but real, and track it with a unique code per user.",
+      gotcha: "Prompting for a referral before the user has experienced any value — right after install, say — gets ignored almost universally; timing the ask matters more than the size of the reward.",
+      lp: "Generates and tracks referral codes automatically, and calculates the real K-factor and net cost per referred user, feeding both into the growth dashboard."
+    },
+    {
+      part: "Part 7 · Marketing &amp; growth",
+      nav: "Push notifications & retention",
+      kick: "Firebase Cloud Messaging / RevenueCat",
+      title: "Bring lapsed users back, deliberately",
+      lead: "Acquisition gets someone to install once. Retention campaigns are what get them back on day 7, day 30, and after a subscription lapses.",
+      crumb: "Growth &rsaquo; <b>Retention</b>",
+      body: function () {
+        return (
+          tblWrap(
+            '<table class="pc"><thead><tr><th>Trigger</th><th>Message</th><th>Cap</th></tr></thead><tbody>' +
+            trow("No session 3 days after install", "A gentle nudge — “Your garden is wilting”", "Once") +
+            trow("Trial ends in 24 hours, no conversion event", "Soft upsell reminder, push + in-app banner", "Once") +
+            trow("Subscription just cancelled", "Win-back offer — e.g. 50% off the next month", "Once per 30 days") +
+            '</tbody></table>'
+          ) +
+          callout("warn", "Ask for permission at the right moment", "A cold notification-permission prompt on first launch gets rejected far more often than one shown after the user has already gotten value — for example, right after their first completed focus session.") +
+          callout("info", "Treat notification frequency as a budget", "Over-notifying is one of the fastest routes to an uninstall. Cap every campaign type, the same way you'd cap an ad budget.")
+        );
+      },
+      what: "The deliberate messages that bring a user back — after a quiet few days, before a trial lapses, or after a cancellation — rather than leaving retention to chance.",
+      do: "Set up the three triggers above with a hard cap on each, and move the permission prompt to after the user's first real moment of value.",
+      gotcha: "A win-back offer with no cap can fire every time a lapsed user opens the app again, training them to wait for a discount instead of resubscribing at full price.",
+      lp: "Runs these campaigns on a schedule, respects the caps automatically, and reports which trigger actually recovers revenue versus which just gets ignored."
+    },
+    {
+      part: "Part 7 · Marketing &amp; growth",
+      nav: "Getting featured by Google",
+      kick: "Play Console · Editorial features",
+      title: "Getting featured by Google Play's editors",
+      lead: "Google's own editorial placements — collections, “New and updated”, category features — are unpaid, unpredictable, and worth pursuing anyway; they can dwarf any paid campaign.",
+      crumb: "Growth &rsaquo; <b>Featuring</b>",
+      body: function () {
+        return (
+          '<div class="checklist">' +
+          ci("done", "Polished, on-brand icon and screenshots") +
+          ci("done", "Rating holding above 4.3") +
+          ci("done", "Recent, regular update cadence") +
+          ci("done", "Current on the newest Android &amp; Play features") +
+          ci("done", "Clean policy record — no recent violations") +
+          ci("now", "A genuinely distinct idea, not a clone") +
+          '</div>' +
+          callout("info", "There's no apply button", "Most markets have no direct submission for editorial features. Google's own team and algorithms surface apps that are already doing the fundamentals well — this is a byproduct of quality, not a separate campaign.") +
+          callout("ok", "It compounds with everything else", "A well-executed ASO, retention and rating strategy — everything covered earlier in this Part — is exactly what makes an app featurable in the first place.")
+        );
+      },
+      what: "What Google's editors actually look for when choosing apps for collections and featured placements, since there's no direct way to apply.",
+      do: "Keep the fundamentals — ratings, polish, update cadence — genuinely strong, and treat any feature that results as a byproduct, not a strategy to chase directly.",
+      gotcha: "Chasing a feature by inflating ratings or gaming reviews backfires — it's also exactly the kind of pattern Play's policy enforcement looks for.",
+      lp: "Tracks the app's standing against known featuring signals (rating, update recency, policy record) and flags when FocusGarden is a strong candidate to highlight to Google's developer relations channels."
     },
     {
       part: "Part 7 · Marketing &amp; growth",
@@ -1872,7 +2007,12 @@
     "Play can run a genuine A/B test on your icon, screenshots, or description. FocusGarden tested a warmer icon palette against the original: four point one percent install rate for the original, four point eight percent for the warmer version, statistically significant after about nine days. Apply the winner, then move to testing the next element — icon and the first screenshot move install rate the most.",
     "You can show a different store listing to different audiences without building a separate app — an India-specific listing with rupee pricing and a Hindi option, or a listing that matches a specific ad campaign word for word. Just keep the actual functionality claim identical everywhere; customise emphasis and language, never what the app actually does.",
     "A Google Ads App campaign lets you set a daily budget and a target cost per install, and Google finds installs across Search, YouTube, Play and its display network automatically, pulling creative straight from your store listing. For India, five to eight rupees is a realistic target C P I for a well-converting app like FocusGarden. Give it fifty or more conversions before judging it — the first week or two is usually rougher while it learns.",
-    "And here is the dashboard that ties it all together: nine thousand one hundred organic installs against three thousand three hundred and sixty paid ones, a blended cost to acquire a customer of eighty two rupees, against a lifetime value of four hundred and ten — a payback period of about ten weeks. This is where LaunchPad stops being pure infrastructure and becomes a growth partner. Aisha started with a finished app and no idea what came next. Twenty screens later, FocusGarden is live, monetised, and its growth is measured, not guessed at."
+"Google Ads reaches people already searching or browsing on Google. Meta and TikTok reach people who were not looking for you at all, so the job is different: stop the scroll in the first three seconds with a short vertical video, not a search-intent keyword. Expect a rougher cost per install here, roughly eight to fifteen rupees in India, because there is less buying intent. And here is the catch: Meta and TikTok cannot see your Play Store install data directly. Without an attribution tool like AppsFlyer or Adjust reporting back to them, you genuinely will not know which platform is actually driving revenue.",
+    "For an app like FocusGarden, one honest video from a study-with-me creator often converts better than a cold ad. Start with product, not payment: gifting free Pro access to a nano or micro creator in exchange for an honest mention usually costs nothing and outperforms a paid post. Give each creator a unique promo code, so you can see exactly how many redemptions came from them in the RevenueCat dashboard. And in India, sponsored content legally needs to be disclosed — hashtag ad, or hashtag sponsored — under A S C I's guidelines. Undisclosed promotion is a real risk for both sides.",
+    "A referral program is the cheapest growth channel there is, because you only pay the reward to users who stuck around long enough to actually refer someone. Give the referrer a free month, give the new user a longer trial, and trigger the share prompt after a small win, like a seven day streak. There is a number worth knowing: the K factor — invites sent per user, times how many of those convert. Above one, the loop grows itself. Most consumer apps land well under that, so treat referral as a strong supplement, not your whole growth plan.",
+    "Acquisition gets someone to install once. Retention campaigns are what bring them back. A gentle nudge on day three if they have not opened the app since installing. A reminder twenty four hours before their trial ends if they have not converted. A win-back offer if they have already cancelled, capped at once a month so it does not feel like spam. And ask for notification permission at the right moment — after they have already gotten value from the app, not on the very first launch. A cold permission prompt on day one gets rejected far more often.",
+    "Google's own editorial features — collections, new and updated, category highlights — are unpaid, unpredictable, and worth it anyway, because they can dwarf any paid campaign. There is no apply button for most of this. What editors actually look for is a polished icon and screenshots, a rating holding above four point three, an update cadence that shows the app is maintained, and adoption of the newest Android and Play features. The reassuring part: this is not a separate playbook. Doing A S O, retention, and ratings well — which we have already covered — is exactly what makes an app featurable in the first place.",
+        "And here is the dashboard that ties it all together: nine thousand one hundred organic installs against three thousand three hundred and sixty paid ones, a blended cost to acquire a customer of eighty two rupees, against a lifetime value of four hundred and ten — a payback period of about ten weeks. This is where LaunchPad stops being pure infrastructure and becomes a growth partner. Aisha started with a finished app and no idea what came next. Twenty screens later, FocusGarden is live, monetised, and its growth is measured, not guessed at."
 
   ];
 
@@ -1928,6 +2068,11 @@
     "store listing experiment ab test icon screenshot significance",
     "custom store listing country audience campaign localisation",
     "google ads app campaign uac target cpi budget asset group",
+    "meta instagram tiktok ads manager paid social attribution appsflyer adjust cpi",
+    "influencer creator marketing nano micro promo code affiliate asci disclosure sponsored",
+    "referral virality k factor invite share reward growth loop",
+    "push notification retention campaign win back firebase cloud messaging lapsed",
+    "featured google play editors collections editorial rating update cadence",
     "growth dashboard organic paid cac ltv payback retention"
 
   ];
@@ -2244,7 +2389,7 @@
 
   var RULES =
     "You are Priya, a warm, patient mentor helping an indie developer in India publish, launch and grow their first Android app through the Google Play Console. " +
-    "You know this entire walkthrough end to end — all 50 screens: the developer account, the payments profile, the app and store listing, monetization setup (creating the subscription products in Play Console, connecting RevenueCat, wiring the entitlement and paywall, AdMob ad units, and license testing — including the critical rule that every tester must be able to reach the paid features or the app can get delisted), building and signing the app, testing tracks and the closed-testing requirement, the production release, revenue and billing dashboards (Play Statistics and Financial reports, RevenueCat, AdMob, and a unified LaunchPad reconciliation), and marketing and growth (ASO, store listing experiments, custom listings, Google Ads App campaigns, and a CAC-versus-LTV growth dashboard) — not just the one screen the developer happens to be on. " +
+    "You know this entire walkthrough end to end — all 55 screens: the developer account, the payments profile, the app and store listing, monetization setup (creating the subscription products in Play Console, connecting RevenueCat, wiring the entitlement and paywall, AdMob ad units, and license testing — including the critical rule that every tester must be able to reach the paid features or the app can get delisted), building and signing the app, testing tracks and the closed-testing requirement, the production release, revenue and billing dashboards (Play Statistics and Financial reports, RevenueCat, AdMob, and a unified LaunchPad reconciliation), and marketing and growth — both on Google (ASO, store listing experiments, custom listings, Google Ads App campaigns) and beyond it (Meta/TikTok paid social, influencer and creator marketing, referral and virality, push notification retention campaigns, and getting featured by Google Play's editors), plus a CAC-versus-LTV growth dashboard — not just the one screen the developer happens to be on. " +
     "The developer may ask about ANY of it, in any order: the account types, the $25 fee, identity verification, the payments profile, bank accounts, India tax and GST, the US W-8BEN form, payout timing, how Google's cut works, LaunchPad's 15 percent, creating the app, content rating, target audience, the data safety form, the privacy policy, the store listing, app signing keys, testing tracks, the 12-tester / 14-day closed test, staged rollout, Statistics, Financial reports, RevenueCat, AdMob, ASO, store listing experiments, Google Ads campaigns, CAC and LTV, or anything related. " +
     "Answer whatever they actually asked using the knowledge base below, even if it belongs to a different screen than the one they are currently on — and if it does, say which screen covers it by name so they can find it. " +
     "Answer in two to five short spoken sentences, plain language, no markdown, no bullet lists. " +
