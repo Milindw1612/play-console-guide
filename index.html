@@ -360,7 +360,7 @@
   <main class="canvas">
     <div class="ctx-banner">
       <span>▸</span>
-      <span>Worked example: <b>FocusGarden</b> — a Flutter focus-timer app, published by Aisha Rao (Pune), free with ads + a subscription. Every field on these screens is editable — type your own app's details and the counters and previews react. One continuous walkthrough, <b>Parts 1&ndash;7</b>: account &rarr; payments &rarr; store listing &rarr; build &amp; test &rarr; release &rarr; revenue &amp; billing &rarr; marketing &amp; growth.</span>
+      <span>Worked example: <b>FocusGarden</b> — a Flutter focus-timer app, published by Aisha Rao (Pune), free with ads + a subscription. Every field on these screens is editable — type your own app's details and the counters and previews react. One continuous walkthrough, <b>50 screens</b>: account &rarr; payments &rarr; store listing &rarr; <b>monetization setup</b> &rarr; build &amp; test &rarr; release &rarr; revenue &amp; billing &rarr; marketing &amp; growth.</span>
     </div>
 
     <div class="screen">
@@ -1127,13 +1127,176 @@
             callout("ok", "Parts 1–3 complete", "Account live, payments profile active, store listing done. The ‘Send for review’ button unlocks once identity verification clears.") +
           '</div>' +
           '</div>' +
-          callout("info", "Next: build, test and go live", "Upload the app bundle &amp; Play App Signing · closed testing with 12 testers for 14 days · production release &amp; staged rollout — starting on the next screen.")
+          callout("info", "Next: turn on monetization", "Create the subscription products, connect RevenueCat, set up AdMob, and safely test a real purchase — before you build and test the app itself, starting on the next screen.")
         );
       },
-      what: "A rendered preview of the store listing plus the completed checklist. The bridge into Part 4 (testing & release).",
+      what: "A rendered preview of the store listing plus the completed checklist. The bridge into monetization setup.",
       do: "Review the preview as a user would — is the first screenshot compelling, is the short description clear? Then proceed to testing.",
       gotcha: "The listing looking ‘done’ in the Console isn't the same as being live. Identity verification (Part 1) still has to clear, and then the 12-tester / 14-day closed test stands between you and production.",
       lp: "Runs an automated pre-submission audit across all of Parts 1–3, then manages the closed test and the review submission in Part 4."
+    },
+
+    /* ============ MONETIZATION SETUP ============ */
+    {
+      part: "Monetization setup",
+      nav: "Create subscription products",
+      kick: "Console · Monetize › Products › Subscriptions",
+      title: "Create your subscription in Play Console",
+      lead: "Every earlier screen in this walkthrough has talked about a ₹399 / ₹2,999 subscription as if it already exists. This is where you actually create it.",
+      crumb: "Monetization &rsaquo; <b>Products</b>",
+      body: function () {
+        return (
+          card("New subscription — focusgarden_pro",
+            fld("Product ID", txt("focusgarden_pro"), "Permanent once created. Lowercase, no spaces — this is what your app code and RevenueCat reference forever.") +
+            kv([
+              ["Base plan — Monthly", "₹399.00 · auto-renewing"],
+              ["Base plan — Annual", "₹2,999.00 · auto-renewing"],
+              ["Free trial offer", "7 days, one per user"],
+              ["Grace period", "3 days — a failed card is retried before access is cut"],
+              ["Account hold", "30 days — access paused, not cancelled, while Google keeps retrying payment"]
+            ]) +
+            btnbar('<button class="btn primary" disabled>Activate subscription</button>')
+          ) +
+          callout("info", "Country pricing", "Play auto-converts ₹399 to a suggested price in every other currency using current exchange rates. Spot-check a few key markets by hand — auto-conversion sometimes lands on an odd-looking number.") +
+          callout("warn", "Needs Part 2 done first", "This whole section stays greyed out until your payments profile (Part 2) is active. If you can't reach it, that's almost always why.")
+        );
+      },
+      what: "Where the subscription itself is created — the base plans, prices, free trial, and grace/hold periods every other screen in this walkthrough has been assuming already exist.",
+      do: "Name the subscription, add a monthly and an annual base plan at your chosen prices, attach a 7-day free trial offer, and activate it.",
+      gotcha: "A subscription's Product ID is permanent — you can add and retire base plans under it freely, but you can never rename the ID itself. Get it right the first time; RevenueCat and your app code will reference it forever.",
+      lp: "Creates the subscription, both base plans and the trial offer from your onboarding pricing decision, and keeps per-country pricing in sync if you ever change the base price."
+    },
+    {
+      part: "Monetization setup",
+      nav: "Connect RevenueCat",
+      kick: "RevenueCat · Project setup",
+      title: "Connect RevenueCat to Play Console",
+      lead: "RevenueCat needs a Google service account to read subscription status server-side — this is what makes entitlements reliable across reinstalls and new devices.",
+      crumb: "Monetization &rsaquo; <b>RevenueCat</b>",
+      body: function () {
+        return (
+          card("Link Play Console to RevenueCat",
+            '<ol style="margin:0;padding-left:18px;font-size:12.5px;color:#5f6368;line-height:1.9">' +
+            '<li>Google Cloud Console &rarr; create a service account with the <b>Pub/Sub Admin</b> and <b>Play Android Developer API</b> roles</li>' +
+            '<li>Generate and download its JSON key</li>' +
+            '<li>Play Console &rarr; Users and permissions &rarr; invite that service account&rsquo;s email, grant it <b>Financial data, orders and cancellation</b> access</li>' +
+            '<li>RevenueCat &rarr; Project settings &rarr; Play Store &rarr; upload the JSON key</li>' +
+            '<li>Enter your package name (<code>com.focusgarden.app</code>) and the subscription ID from the previous screen</li>' +
+            '</ol>'
+          ) +
+          callout("err", "Treat the JSON key like a password", "Whoever holds it can read your financial data. Store it in a secrets manager or your CI's encrypted secrets — never commit it to a repo, never paste it into chat.") +
+          callout("info", "Why RevenueCat needs this at all", "Google Play Billing alone only tells your app about a purchase while the app is actually running. This server-side link is what lets RevenueCat confirm a subscription is still active even if the user reinstalls, switches phones, or the app was closed through a renewal.")
+        );
+      },
+      what: "The one-time server-to-server link between Google Play and RevenueCat, made through a Google Cloud service account.",
+      do: "Create the service account in Google Cloud, grant it access in Play Console, and upload its key to RevenueCat.",
+      gotcha: "Forgetting to grant the service account 'Financial data' permission in Play Console is the single most common reason RevenueCat shows subscriptions as unverified — the key uploads fine, but RevenueCat can't actually confirm purchases.",
+      lp: "Provisions and rotates the service account key automatically, and re-grants Play Console permissions if Google ever revokes them during a security review."
+    },
+    {
+      part: "Monetization setup",
+      nav: "Entitlements & paywall",
+      kick: "RevenueCat · Entitlements & Offerings",
+      title: "Wire the entitlement to your paywall",
+      lead: "One entitlement, one offering, and the paywall the user actually sees — this is what turns a Play Console product into a working upgrade flow.",
+      crumb: "Monetization &rsaquo; <b>Entitlements</b>",
+      body: function () {
+        return (
+          card("RevenueCat configuration",
+            kv([
+              ["Entitlement", "premium — unlimited gardens, all soundscapes, no ads"],
+              ["Offering — “default”", "Monthly and Annual packages, both under focusgarden_pro"],
+              ["Attached products", "focusgarden_pro:monthly → premium · focusgarden_pro:annual → premium"],
+              ["Paywall", "Built in RevenueCat's paywall builder — no app-store review needed to change it"]
+            ])
+          ) +
+          radioSet("Paywall trigger", [
+            ["onboard", "Show once, right after onboarding", "Highest visibility; some users bounce before trying the free app."],
+            ["gate", "Show only when a Pro feature is tapped", "Lower pressure — usually converts better for a utility app like FocusGarden.", true],
+            ["both", "Both — a soft prompt after onboarding, a hard gate on Pro features", ""]
+          ]) +
+          callout("info", "You can change the paywall without a store update", "Because RevenueCat's paywall is fetched remotely, you can test new copy, layout, or which plan is emphasized and have it live in minutes — no app-store review, unlike everything in Part 3.")
+        );
+      },
+      what: "The mapping from a Play Console product to a single 'premium' entitlement your app checks, plus the actual paywall shown to the user.",
+      do: "Create the 'premium' entitlement, attach both base plans to it inside one offering, and choose where the paywall appears.",
+      gotcha: "Add a second product later — say a lifetime unlock — and forget to attach it to the same entitlement, and a customer who pays you will still see the paywall. It looks like a billing bug; it's really a configuration miss.",
+      lp: "Manages the entitlement mapping centrally, and runs paywall-copy experiments here that feed straight into the Part 7 growth dashboard."
+    },
+    {
+      part: "Monetization setup",
+      nav: "AdMob ad units",
+      kick: "AdMob · App & ad units",
+      title: "Create your AdMob app and ad units",
+      lead: "Ads are FocusGarden's second revenue line — this is where they're actually configured, before the dashboard in Part 6 has anything to show.",
+      crumb: "Monetization &rsaquo; <b>AdMob</b>",
+      body: function () {
+        return (
+          tblWrap(
+            '<table class="pc"><thead><tr><th>Ad unit</th><th>Format</th><th>Placement</th></tr></thead><tbody>' +
+            trow("focusgarden_banner", "Banner", "Persistent bar on the home screen — free users only") +
+            trow("focusgarden_interstitial", "Interstitial", "Between focus sessions, capped at 1 per 10 minutes") +
+            trow("focusgarden_rewarded", "Rewarded", "Optional — “watch an ad, add 5 minutes to your session”") +
+            '</tbody></table>'
+          ) +
+          callout("warn", "Test with test ad unit IDs first", "Never tap your own live ads to check they work — Google can read that as invalid traffic and suspend the whole AdMob account, which cuts off revenue on every app under it, not just this one. Use Google's test ad unit IDs during development and switch to the real ones only for the production build.") +
+          callout("info", "Frequency capping matters for both sides", "Too few ads leaves money on the table; too many — especially right before the paywall — suppresses subscription conversion. See Part 6's AdMob dashboard for the trade-off in FocusGarden's real numbers.")
+        );
+      },
+      what: "Registering the AdMob app and creating the actual ad units — banner, interstitial, and an optional rewarded unit — that Part 6's AdMob dashboard later reports on.",
+      do: "Create one ad unit per placement, wire the SDK to request them at the right moments, and test exclusively with test ad unit IDs until the app is ready to submit.",
+      gotcha: "An AdMob account can be suspended for policy violations — accidental self-clicks, ads placed too close to buttons, ads shown to under-13 users without Families-compliant settings — and a suspension is account-wide, not per app.",
+      lp: "Creates and names the ad units consistently, enables mediation across networks to lift fill rate, and enforces frequency-capping rules automatically so ads don't cannibalise subscription conversion."
+    },
+    {
+      part: "Monetization setup",
+      nav: "License testing",
+      kick: "Console · Setup › License testing",
+      title: "Test a real purchase, safely",
+      lead: "Before anyone pays FocusGarden real money, you need to buy your own subscription without it costing you anything.",
+      crumb: "Monetization &rsaquo; <b>License testing</b>",
+      body: function () {
+        return (
+          card("License testers",
+            fld("License testers (Gmail addresses)", txtArea("aisha.focusgarden@gmail.com, tester1@gmail.com")) +
+            kv([
+              ["Response", "RESPOND_NORMALLY — behaves exactly like a real purchase"],
+              ["Charge", "None — shown as a test purchase in the Play purchase sheet"],
+              ["RevenueCat", "Sandbox mode reflects test purchases separately from real revenue"]
+            ])
+          ) +
+          callout("err", "The gotcha that gets apps delisted", "Every tester — license testers here, and the closed testers from Part 5 — must actually be able to reach the paid features, either through a test purchase or a manually granted entitlement. If a tester hits a paywall they cannot get past, Google's reviewers can read that as the app not being fully functional — and it has gotten real apps delisted. Grant testers full access, always.")
+        );
+      },
+      what: "The mechanism for buying your own subscription for real, through the real purchase flow, without paying — plus the single sharpest warning in this whole walkthrough.",
+      do: "Add every tester's Gmail — yourself, your team, and everyone from the Part 5 closed test — as a license tester, and manually verify each one can reach the paid features.",
+      gotcha: "This is the single most common cause of an otherwise-clean app getting delisted after launch: testers report they 'can't get past the paywall' and Google agrees it looks broken. Fix access before you ever request production.",
+      lp: "Cross-checks the Part 5 closed-testing tester list against the license-tester and entitlement list automatically, and flags anyone who cannot reach the paid features."
+    },
+    {
+      part: "Monetization setup",
+      nav: "Monetization ready",
+      kick: "reference · checkpoint",
+      title: "Monetization is live — now build the app",
+      lead: "Everything money-related is configured. What's left is compiling FocusGarden and shipping it.",
+      crumb: "Monetization &rsaquo; <b>Checkpoint</b>",
+      body: function () {
+        return (
+          '<div class="checklist">' +
+          ci("done", "Subscription products created & active", "focusgarden_pro") +
+          ci("done", "RevenueCat connected", "service account verified") +
+          ci("done", "Entitlement wired to the paywall", "premium") +
+          ci("done", "AdMob ad units created", "banner · interstitial · rewarded") +
+          ci("done", "License testers added", "can complete a real purchase") +
+          ci("done", "Every tester has full access", "no one is stuck at the paywall") +
+          '</div>' +
+          callout("ok", "Ready", "FocusGarden can now take a real subscription, show ads, and no tester will hit a dead end. Time to build the app itself.")
+        );
+      },
+      what: "The checkpoint confirming every piece of monetization is genuinely wired up before you spend time building and testing the app around it.",
+      do: "Walk the checklist literally — open each item and confirm it, don't assume it.",
+      gotcha: "Teams that skip this checkpoint often discover a missing entitlement mapping or an unreachable paywall during the Part 5 closed test, days into the 14-day clock — costing real time, not just an afternoon.",
+      lp: "Runs this exact checklist automatically after every change to monetization config, the same way it does for the Part 5 production-access gate."
     },
 
     /* ============ (continued from separate Part 4-7 build) ============ */
@@ -1684,7 +1847,13 @@
     "The images, and the sizes are exact. An icon at five hundred and twelve by five hundred and twelve pixels. A feature graphic at one thousand and twenty four by five hundred. It is required, even though you will rarely see it. And at least two phone screenshots. One wrong dimension blocks the whole release. Spend your real effort on the screenshots. Most people decide to install from the first two or three images without reading a word, so lead with the benefit, add a caption to each, and use device frames. These screenshots are your advertisement.",
     "Category and contact details. Pick the honest category, Productivity, for FocusGarden. Choosing an easier category to rank in backfires, because the wrong people install, they churn fast, and Play's ranking notices. Add real support contact details. That email is public, and Google watches whether you actually answer it. Leave external marketing on, so Google can promote your app around the web.",
     "And here is your listing, as a shopper will see it. Look at it with fresh eyes. Is the first screenshot compelling? Is the short description clear in one read? On the right, every checklist item is green. The Send for review button unlocks the moment your identity verification clears. That is parts one to three done: account, payments, and a complete store listing. Next comes uploading your app bundle, the twelve tester closed test, and the production release. That is the next build. Well done.",
-"Welcome back. FocusGarden's account, payments and store listing are done — now we build, test, and get it live. First: upload your build to Internal testing. It is an Android App Bundle, not an A P K, and it needs a version code higher than anything you have uploaded before. Internal testing skips policy review completely, so it is live for your own team within minutes. Use it to smoke-test every single build before anyone outside your team sees it.",
+    "Every earlier screen has talked about a three hundred and ninety nine rupee subscription as if it already exists. This is where you actually create it. In Play Console, under Monetize, you set up a subscription — call it focusgarden pro — with a monthly base plan at three ninety nine, an annual one at two thousand nine hundred and ninety nine, and a seven day free trial. The product I D is permanent, so get the name right the first time. And this whole section stays greyed out until your payments profile from Part two is active — if you can't reach it, that's almost always why.",
+    "RevenueCat needs its own bridge into Google Play — a service account, created in Google Cloud, with access to your financial data and orders. You generate its key, upload it to RevenueCat, and invite that same service account inside Play Console's users and permissions. This is what lets RevenueCat confirm a subscription is still active even after the user closes the app, switches phones, or reinstalls. Treat that key like a password — anyone who has it can read your revenue data.",
+    "Now the wiring that actually matters to the user: one entitlement, called premium, attached to both the monthly and annual base plan. Group them into an offering, and that is what your paywall shows. The nice part is the paywall itself lives in RevenueCat, not in your app's code, so you can change its copy, layout, or which plan is emphasised any time, without waiting for a store review.",
+    "AdMob is FocusGarden's other revenue line, and it needs three ad units: a banner for free users, an interstitial between focus sessions capped at once every ten minutes, and an optional rewarded ad that adds five minutes to a session. One real warning: never tap your own live ads to test them — Google can read that as invalid traffic and suspend the whole AdMob account, not just this app. Use test ad unit I Ds until you are ready to ship.",
+    "Before a single real user pays, you need to buy your own subscription for real, without it costing anything. Add yourself and your team as license testers, and Play shows the purchase as a genuine test, no charge. Now, the sharpest warning in this entire walkthrough: every tester — license testers here, and your closed testers from part five — has to actually be able to reach the paid features. If a tester hits a paywall they can't get past, Google's reviewers can read that as a broken app, and it has gotten real apps delisted. Grant full access, always, no exceptions.",
+    "Subscription products active, RevenueCat connected, the entitlement wired to a paywall, AdMob's three ad units created, license testers added, and every single tester able to reach the paid features. That is monetisation genuinely done, not just planned. From here, it is about building the app itself.",
+    "Welcome back. FocusGarden's account, payments and store listing are done — now we build, test, and get it live. First: upload your build to Internal testing. It is an Android App Bundle, not an A P K, and it needs a version code higher than anything you have uploaded before. Internal testing skips policy review completely, so it is live for your own team within minutes. Use it to smoke-test every single build before anyone outside your team sees it.",
     "Play App Signing uses two separate keys, and understanding the difference matters. Google holds the app signing key — the one that actually signs what a user downloads — and it never leaves Google, so it is effectively unlosable. You hold the upload key, the one that signs what you send to the Console. Lose that, and you can request a reset with proof of identity; it takes a few days but it is recoverable. Never opt out of Play App Signing — the old alternative means losing your one key locks you out of updating the app forever.",
     "There are four testing tracks, and each has a job. Internal testing: up to a hundred people, no review, minutes to install — that is you and your team. Closed testing: unlimited testers by email or group, no review to release, and this is where the mandatory twelve testers for fourteen days happens for individual accounts. Open testing is a public beta, and Production is everyone. For FocusGarden: Internal now, Closed next, and Open is optional — most solo developers skip straight from Closed to Production.",
     "Google installs your app on eight real physical devices and hands you a free report: crashes, screenshots on every device, an accessibility check, and performance timing. This build found two crashes and one accessibility warning. It will not block your release by itself, but treat every crash here as a launch blocker anyway — real users will hit the same one Google's devices did.",
@@ -1734,7 +1903,13 @@
     "icon feature graphic screenshots 512 1024x500 dimensions graphics assets",
     "category tags contact email website external marketing store settings",
     "preview checklist send for review listing preview next steps",
-"upload build aab bundle internal testing version code release notes",
+    "subscription products base plan monthly annual free trial grace period account hold create monetize",
+    "revenuecat connect service account google cloud json key play android developer api pub sub financial data",
+    "entitlement offering paywall premium package attach trigger onboarding gate remote config",
+    "admob ad units banner interstitial rewarded frequency cap test ad unit id invalid traffic suspend",
+    "license testing test purchase sandbox tester full access delisted paywall stuck",
+    "monetization checklist ready checkpoint build app",
+    "upload build aab bundle internal testing version code release notes",
     "play app signing signing key upload key lost key recovery opt out",
     "testing tracks internal closed open production audience review",
     "pre-launch report device farm crash anr accessibility performance screenshots",
@@ -2069,7 +2244,7 @@
 
   var RULES =
     "You are Priya, a warm, patient mentor helping an indie developer in India publish, launch and grow their first Android app through the Google Play Console. " +
-    "You know this entire walkthrough end to end — all 44 screens across seven parts: the developer account, the payments profile, the app and store listing, building and signing the app, testing tracks and the closed-testing requirement, the production release, revenue and billing dashboards (Play Statistics and Financial reports, RevenueCat, AdMob, and a unified LaunchPad reconciliation), and marketing and growth (ASO, store listing experiments, custom listings, Google Ads App campaigns, and a CAC-versus-LTV growth dashboard) — not just the one screen the developer happens to be on. " +
+    "You know this entire walkthrough end to end — all 50 screens: the developer account, the payments profile, the app and store listing, monetization setup (creating the subscription products in Play Console, connecting RevenueCat, wiring the entitlement and paywall, AdMob ad units, and license testing — including the critical rule that every tester must be able to reach the paid features or the app can get delisted), building and signing the app, testing tracks and the closed-testing requirement, the production release, revenue and billing dashboards (Play Statistics and Financial reports, RevenueCat, AdMob, and a unified LaunchPad reconciliation), and marketing and growth (ASO, store listing experiments, custom listings, Google Ads App campaigns, and a CAC-versus-LTV growth dashboard) — not just the one screen the developer happens to be on. " +
     "The developer may ask about ANY of it, in any order: the account types, the $25 fee, identity verification, the payments profile, bank accounts, India tax and GST, the US W-8BEN form, payout timing, how Google's cut works, LaunchPad's 15 percent, creating the app, content rating, target audience, the data safety form, the privacy policy, the store listing, app signing keys, testing tracks, the 12-tester / 14-day closed test, staged rollout, Statistics, Financial reports, RevenueCat, AdMob, ASO, store listing experiments, Google Ads campaigns, CAC and LTV, or anything related. " +
     "Answer whatever they actually asked using the knowledge base below, even if it belongs to a different screen than the one they are currently on — and if it does, say which screen covers it by name so they can find it. " +
     "Answer in two to five short spoken sentences, plain language, no markdown, no bullet lists. " +
@@ -2100,7 +2275,7 @@
 
   var STOPWORDS = ("the a an is are do does did what when how why where to of in on for and or i me my you your " +
     "it this that can could should would will about with be being been if need needed needs want wants like " +
-    "please tell explain okay ok so just also there here").split(" ").reduce(function (m, w) { m[w] = 1; return m; }, {});
+    "please tell explain okay ok so just also there here app get got your").split(" ").reduce(function (m, w) { m[w] = 1; return m; }, {});
   function tokenize(q) {
     return String(q).toLowerCase().replace(/[^a-z0-9%$₹ ]+/g, " ").split(/\s+/)
       .filter(function (w) { return w && w.length > 1 && !STOPWORDS[w]; });
