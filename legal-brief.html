@@ -1,0 +1,353 @@
+<title>LaunchPad Legal Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --paper: #f7f6f2;
+    --surface: #ffffff;
+    --surface-sunk: #efede4;
+    --ink: #1c1f26;
+    --ink-soft: #565c6b;
+    --ink-faint: #8a8f9c;
+    --rule: #ddd8cc;
+    --rule-strong: #c7c0ac;
+    --navy: #1f3a5f;
+    --navy-deep: #142943;
+    --navy-wash: #e8edf3;
+    --flag: #9a5b12;
+    --flag-wash: #f7ecdb;
+    --ok: #2f6b4f;
+    --ok-wash: #e7f0ea;
+    --risk: #8c2f2f;
+    --risk-wash: #f7e8e6;
+    --font-display: "Source Serif 4", Georgia, serif;
+    --font-body: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --paper: #14161a;
+      --surface: #1b1e24;
+      --surface-sunk: #21252c;
+      --ink: #e9e8e2;
+      --ink-soft: #a9adb8;
+      --ink-faint: #767b88;
+      --rule: #303540;
+      --rule-strong: #454c5a;
+      --navy: #7fa3d1;
+      --navy-deep: #a9c3e6;
+      --navy-wash: #1c2836;
+      --flag: #e0a862;
+      --flag-wash: #2e2416;
+      --ok: #6fbb96;
+      --ok-wash: #16261e;
+      --risk: #e08a8a;
+      --risk-wash: #2c1a1a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #14161a;
+    --surface: #1b1e24;
+    --surface-sunk: #21252c;
+    --ink: #e9e8e2;
+    --ink-soft: #a9adb8;
+    --ink-faint: #767b88;
+    --rule: #303540;
+    --rule-strong: #454c5a;
+    --navy: #7fa3d1;
+    --navy-deep: #a9c3e6;
+    --navy-wash: #1c2836;
+    --flag: #e0a862;
+    --flag-wash: #2e2416;
+    --ok: #6fbb96;
+    --ok-wash: #16261e;
+    --risk: #e08a8a;
+    --risk-wash: #2c1a1a;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    font-size: 16.5px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 760px; margin: 0 auto; padding: clamp(1.4rem, 4vw, 3.4rem) clamp(1.1rem, 4vw, 1.6rem) 5rem; }
+  .doc { display: flex; flex-direction: column; gap: clamp(2.2rem, 5vw, 3rem); }
+
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; color: var(--ink); }
+  h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.15; letter-spacing: -0.01em; }
+  h2 { font-size: clamp(1.25rem, 3vw, 1.5rem); line-height: 1.25; }
+  h3 { font-size: 1.05rem; font-weight: 600; }
+  p { margin: 0; }
+  strong { font-weight: 600; color: var(--ink); }
+  a { color: var(--navy-deep); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  .kicker {
+    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--navy); display: flex; align-items: center; gap: 0.55rem;
+  }
+  .kicker::before { content: ""; width: 1.4rem; height: 1px; background: var(--navy); opacity: 0.6; }
+
+  .lede { font-size: 1.08rem; color: var(--ink-soft); max-width: 60ch; }
+
+  .banner {
+    display: flex; gap: 0.8rem; align-items: flex-start;
+    background: var(--flag-wash); border: 1px solid var(--flag);
+    border-radius: 10px; padding: 1rem 1.2rem;
+  }
+  .banner .icon { font-family: var(--font-mono); font-weight: 700; color: var(--flag); flex-shrink: 0; }
+  .banner p { font-size: 0.95rem; color: var(--ink); }
+  .banner strong { color: var(--flag); }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > p { font-size: 0.98rem; color: var(--ink-soft); }
+  .section-head { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .finding {
+    display: flex; flex-direction: column; gap: 0.9rem;
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 12px; padding: 1.4rem 1.5rem;
+  }
+  .finding-head { display: flex; align-items: baseline; gap: 0.8rem; }
+  .finding-num {
+    font-family: var(--font-mono); font-size: 0.95rem; font-weight: 600; color: var(--navy);
+    background: var(--navy-wash); border-radius: 6px; padding: 0.15rem 0.55rem; flex-shrink: 0;
+  }
+  .finding h3 { flex: 1; }
+  .verdict {
+    display: inline-flex; align-items: center; gap: 0.4rem; align-self: flex-start;
+    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 0.3rem 0.65rem; border-radius: 999px; font-weight: 600;
+  }
+  .verdict.ok { background: var(--ok-wash); color: var(--ok); }
+  .verdict.flag { background: var(--flag-wash); color: var(--flag); }
+  .verdict.risk { background: var(--risk-wash); color: var(--risk); }
+  .finding p { font-size: 0.96rem; color: var(--ink-soft); }
+  .finding .why { font-size: 0.93rem; }
+
+  .kv { border: 1px solid var(--rule); border-radius: 9px; overflow: hidden; }
+  .kv .r { display: grid; grid-template-columns: minmax(140px, 38%) 1fr; gap: 0.9rem; padding: 0.65rem 0.9rem; font-size: 0.92rem; border-top: 1px solid var(--rule); background: var(--surface); }
+  .kv .r:first-child { border-top: none; }
+  .kv .r:nth-child(even) { background: var(--surface-sunk); }
+  .kv .k { color: var(--ink-faint); font-family: var(--font-mono); font-size: 0.8rem; }
+  .kv .v { color: var(--ink); }
+
+  .practical {
+    background: var(--surface-sunk); border-left: 3px solid var(--navy);
+    border-radius: 0 8px 8px 0; padding: 0.9rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft);
+  }
+  .practical b { color: var(--navy-deep); }
+
+  .checklist { display: flex; flex-direction: column; gap: 0; counter-reset: q; }
+  .q-item {
+    display: grid; grid-template-columns: auto 1fr; gap: 0.9rem;
+    padding: 0.95rem 0; border-top: 1px solid var(--rule);
+  }
+  .q-item:first-child { border-top: none; }
+  .q-item::before {
+    counter-increment: q; content: counter(q);
+    font-family: var(--font-mono); font-weight: 600; font-size: 0.85rem;
+    color: var(--navy); background: var(--navy-wash);
+    width: 1.7rem; height: 1.7rem; border-radius: 6px;
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+  .q-item p { font-size: 0.95rem; color: var(--ink); }
+  .q-item .tag { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faint); display: block; margin-bottom: 0.2rem; }
+
+  .structure-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  @media (max-width: 600px) { .structure-grid { grid-template-columns: 1fr; } }
+  .structure-card { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  .structure-card .lab { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); }
+  .structure-card p { font-size: 0.92rem; color: var(--ink-soft); }
+
+  .refs { display: flex; flex-direction: column; gap: 0.5rem; }
+  .refs .ref { display: flex; gap: 0.6rem; font-size: 0.85rem; color: var(--ink-soft); }
+  .refs .ref .n { font-family: var(--font-mono); color: var(--ink-faint); flex-shrink: 0; }
+
+  .foot {
+    margin-top: 0.5rem; padding-top: 1.3rem; border-top: 1px solid var(--rule);
+    font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-faint); line-height: 1.7;
+  }
+
+  .scroll-x { overflow-x: auto; }
+  ::selection { background: var(--navy); color: #fff; }
+  :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; border-radius: 3px; }
+</style>
+
+<div class="page">
+  <main class="doc">
+
+    <header style="display:flex; flex-direction:column; gap:1.1rem;">
+      <span class="kicker">Phase 0 · Research briefing</span>
+      <h1>The LaunchPad Billing &amp; Legal Brief</h1>
+      <p class="lede">A structured answer to the one question the whole revenue-share model depends on: <strong>how does LaunchPad legally collect 15% of a developer's net app revenue in India?</strong> Built to make a CA and a fintech lawyer's first meeting fast, not to replace it.</p>
+      <div class="banner">
+        <span class="icon">!</span>
+        <p><strong>This is research, not legal advice.</strong> Every finding below is drawn from current public regulatory sources (linked at the end) and reasoned through for LaunchPad's specific model. None of it has been reviewed by a licensed CA or lawyer. Treat every "likely" and "should" as exactly that — confirm before building anything on it.</p>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-head">
+        <span class="kicker">The model, restated</span>
+        <h2>What LaunchPad actually does with money</h2>
+      </div>
+      <p>This is the mechanism every finding below is tested against — get this picture right before reading on.</p>
+      <div class="kv">
+        <div class="r"><span class="k">Subscriber pays</span><span class="v">Google, directly, through Google Play Billing — for the developer's app subscription</span></div>
+        <div class="r"><span class="k">Google pays</span><span class="v">The developer, directly, into the developer's own bank account (their Play payments profile) — net of Google's own 15–30% cut</span></div>
+        <div class="r"><span class="k">LaunchPad's role in that transfer</span><span class="v">None. LaunchPad never receives, holds, or routes any part of the subscriber's payment or the developer's payout.</span></div>
+        <div class="r"><span class="k">LaunchPad's own fee</span><span class="v">Billed separately, directly to the developer, for LaunchPad's own service (publishing, monetization setup, growth) — 15% of the developer's net revenue, calculated from the Play Console Financial Reports export</span></div>
+        <div class="r"><span class="k">Collection method</span><span class="v">A UPI AutoPay (e-mandate) the developer authorises directly to LaunchPad, debited monthly for LaunchPad's own invoice</span></div>
+      </div>
+      <p>In other words: LaunchPad is being paid by its own customer for its own service. It is never the pipe that money from a third party (the subscriber) flows through on its way to another third party (the developer). That distinction is the entire basis of Finding 1.</p>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="kicker">Finding 1 — the one that matters most</span>
+        <h2>Is this Payment Aggregation?</h2>
+      </div>
+      <div class="finding">
+        <div class="finding-head">
+          <span class="finding-num">01</span>
+          <h3>Likely no — but this is the finding to have a lawyer stress-test hardest</h3>
+        </div>
+        <span class="verdict ok">Likely not a Payment Aggregator</span>
+        <p class="why">RBI's own framing of the Payment Aggregator (PA) regulation turns on one decisive question: <strong>does the entity receive a customer's payment, hold it, and then settle it onward to a third-party merchant after deducting a cut?</strong> That's the fact pattern that requires RBI authorisation — an e-commerce marketplace collecting a buyer's money and paying it out to a seller, minus commission, is the textbook case.</p>
+        <p class="why">LaunchPad's mandate does something structurally different: the developer authorises LaunchPad to debit <em>the developer's own money, for LaunchPad's own invoice</em>. LaunchPad is the payee, not a pass-through. No subscriber's money and no third party's payout ever touches LaunchPad's account. That looks much closer to a SaaS vendor auto-billing its own client than to an e-commerce payment aggregator.</p>
+        <div class="practical"><b>Why this is worth getting exactly right:</b> RBI's Master Direction on Payment Aggregators (consolidated 15 September 2025) sets a minimum net worth of <strong>₹15 crore at authorisation, rising to ₹25 crore within three years</strong> — a capital bar that would be fatal to a bootstrapped platform. Getting classified as a PA by accident, or drifting into PA-like behaviour later (e.g. ever routing a subscriber's or a developer's money through a LaunchPad-controlled account), is the single biggest structural risk in this business.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="kicker">Finding 2</span>
+        <h2>UPI AutoPay has a ceiling — and it matters for your best customers</h2>
+      </div>
+      <div class="finding">
+        <div class="finding-head">
+          <span class="finding-num">02</span>
+          <h3>Automatic debits cap out around ₹15,000/month per mandate</h3>
+        </div>
+        <span class="verdict flag">Confirm — operational constraint</span>
+        <p class="why">NPCI's standard UPI AutoPay limit for a recurring mandate is <strong>₹15,000</strong> without requiring the payer to re-authenticate each time. An enhanced ₹1,00,000 limit exists, but it's restricted to specific merchant category codes — insurance premiums, credit card bill payments, mutual funds, and similar — not a general SaaS/platform-commission category LaunchPad would plausibly qualify for.</p>
+        <p class="why">Fifteen percent of a developer's net revenue crosses ₹15,000 once that developer's monthly net revenue passes roughly <strong>₹1,00,000</strong> — a genuinely good outcome for FocusGarden, and exactly the developer LaunchPad most wants to keep happy. Above that line, the AutoPay debit may prompt the developer for their UPI PIN every month instead of debiting silently.</p>
+        <div class="practical"><b>Options to put in front of counsel and a payments consultant:</b> (a) accept the friction above the threshold — a PIN prompt once a month is a minor cost for a successful developer; (b) move higher-revenue accounts to a NACH e-mandate (bank-debit based, higher limits, more setup lead time and paperwork); (c) invoice and collect via bank transfer for a small number of top accounts instead of an automated mandate.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="kicker">Finding 3</span>
+        <h2>GST applies to LaunchPad's fee — straightforwardly</h2>
+      </div>
+      <div class="finding">
+        <div class="finding-head">
+          <span class="finding-num">03</span>
+          <h3>18% GST on the platform/management service fee</h3>
+        </div>
+        <span class="verdict ok">Clear</span>
+        <p class="why">LaunchPad's 15% is unambiguously a fee for a service (publishing, monetization and growth management), taxed as an IT/platform service at the standard <strong>18% GST</strong> rate. GST registration becomes mandatory once aggregate turnover crosses <strong>₹20 lakh</strong> (lower thresholds apply in a few special-category states) — likely early in LaunchPad's life given the fee is charged on every developer's revenue.</p>
+        <div class="practical"><b>Practical effect:</b> LaunchPad's invoice to a developer should show its 15% fee <em>plus</em> 18% GST on top, not netted out of the 15%. A GST-registered developer (most Pvt Ltd / LLP developers) can claim input tax credit on that GST, which softens the real cost of the fee for them.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="kicker">Finding 4</span>
+        <h2>TDS under Section 194-O — probably doesn't apply, but ask anyway</h2>
+      </div>
+      <div class="finding">
+        <div class="finding-head">
+          <span class="finding-num">04</span>
+          <h3>194-O taxes the e-commerce operator paying the seller — LaunchPad doesn't pay the developer</h3>
+        </div>
+        <span class="verdict flag">Likely inapplicable — confirm</span>
+        <p class="why">Section 194-O requires an "e-commerce operator" to deduct <strong>0.1% TDS</strong> (current rate since October 2024) on the gross amount, at the point it credits or pays an "e-commerce participant" for a sale facilitated through its platform. The obligation sits with whoever <em>pays the seller</em>.</p>
+        <p class="why">In LaunchPad's model, money flows the other way: Google pays the developer, and the developer pays LaunchPad. LaunchPad is not crediting or paying the developer for a sale — so on a plain reading, 194-O's deduction duty falls on nobody in this chain, or arguably nowhere at all, since Google (the actual payer) isn't structured as an "e-commerce operator" paying a "participant" in the 194-O sense for this specific fee.</p>
+        <div class="practical"><b>Why ask anyway:</b> "facilitator of a sale via a digital platform" is defined broadly, and if LaunchPad's role is ever characterised as central to the sale itself (not just the developer's back-office), a tax officer could take a more expansive view. A five-minute confirmation from a CA closes this off cleanly.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="kicker">Finding 5</span>
+        <h2>Data protection — DPDP obligations start on day one</h2>
+      </div>
+      <div class="finding">
+        <div class="finding-head">
+          <span class="finding-num">05</span>
+          <h3>LaunchPad is a Data Fiduciary the moment it collects a developer's PAN or bank details</h3>
+        </div>
+        <span class="verdict ok">Clear — build it in from the start</span>
+        <p class="why">India's Digital Personal Data Protection Act, 2023 and the DPDP Rules, 2025 apply to any entity processing an Indian resident's personal data, with <strong>no small-business exemption</strong>. Onboarding a developer's PAN, bank account, phone number and revenue data makes LaunchPad a Data Fiduciary from its very first customer.</p>
+        <div class="kv">
+          <div class="r"><span class="k">Core obligations</span><span class="v">Clear consent capture, purpose limitation (don't use developer financial data for anything beyond billing/reconciliation), data accuracy, storage limitation</span></div>
+          <div class="r"><span class="k">Breach notification</span><span class="v">Data Protection Board within 72 hours of becoming aware; affected developers within 72 hours after that</span></div>
+          <div class="r"><span class="k">Penalties</span><span class="v">Up to ₹250 crore for inadequate security safeguards; up to ₹200 crore for failing to notify a breach</span></div>
+        </div>
+        <div class="practical"><b>Practical effect:</b> a proper consent flow, a real privacy policy naming exactly what's collected (PAN, bank details, revenue figures) and why, encryption of financial data at rest, and a breach-response runbook are launch requirements, not later polish.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="kicker">Putting it together</span>
+        <h2>Recommended structure, pending counsel's sign-off</h2>
+      </div>
+      <div class="structure-grid">
+        <div class="structure-card"><span class="lab">Entity</span><p>A Private Limited company — cleanest for raising money later, for issuing GST-compliant invoices, and for the contracts below.</p></div>
+        <div class="structure-card"><span class="lab">Developer Terms of Service</span><p>Defines LaunchPad's role as a service provider, not a payment intermediary — this framing matters for Finding 1.</p></div>
+        <div class="structure-card"><span class="lab">Revenue-Share Agreement</span><p>The 15% fee, how it's calculated from Financial Reports, the mandate authorisation, dispute/reconciliation process.</p></div>
+        <div class="structure-card"><span class="lab">Privacy Policy + DPDP consent</span><p>Specific to the financial data actually collected — PAN, bank account, revenue — not a generic template.</p></div>
+        <div class="structure-card"><span class="lab">Mandate cancellation policy</span><p>Plain-language explanation of how a developer pauses or cancels the AutoPay mandate at any time.</p></div>
+        <div class="structure-card"><span class="lab">GST registration</span><p>Apply proactively rather than waiting to cross the ₹20L threshold, once fee revenue is real.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="kicker">The meeting itself</span>
+        <h2>Questions to bring to the CA and the fintech lawyer</h2>
+      </div>
+      <div class="checklist">
+        <div class="q-item"><p><span class="tag">Payment Aggregation</span>Does a UPI AutoPay mandate the developer authorises directly to LaunchPad, for LaunchPad's own fee, avoid Payment Aggregator classification under the September 2025 Master Direction — even at scale, across thousands of developers?</p></div>
+        <div class="q-item"><p><span class="tag">Payment Aggregation</span>Is there any threshold (number of developers, total fee volume) at which this could tip into requiring RBI authorisation regardless of the structure?</p></div>
+        <div class="q-item"><p><span class="tag">Mandate design</span>For developers whose monthly fee will exceed the ~₹15,000 UPI AutoPay ceiling, is a NACH e-mandate the right alternative, and what's the real setup lead time and cost?</p></div>
+        <div class="q-item"><p><span class="tag">GST</span>Should LaunchPad register for GST immediately (voluntary registration) rather than waiting to cross ₹20 lakh turnover, given every developer relationship generates a taxable invoice from day one?</p></div>
+        <div class="q-item"><p><span class="tag">TDS</span>Confirm Section 194-O does not create a deduction obligation on LaunchPad's side of this specific fee flow — and check whether any other TDS provision (194-J for professional/technical fees, from the developer's side) could apply instead.</p></div>
+        <div class="q-item"><p><span class="tag">Contracts</span>Review the Developer Terms of Service and Revenue-Share Agreement specifically for language that could inadvertently describe LaunchPad as handling or intermediating developer funds.</p></div>
+        <div class="q-item"><p><span class="tag">Data protection</span>Confirm the DPDP consent flow and breach-notification runbook are sufficient before any developer's PAN or bank details are collected.</p></div>
+        <div class="q-item"><p><span class="tag">Cross-border</span>If LaunchPad ever serves a developer who is not an Indian tax resident, or collects a fee in a currency other than INR, what changes under FEMA?</p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="kicker">Sources</span>
+        <h2>What this brief is built on</h2>
+      </div>
+      <div class="refs">
+        <div class="ref"><span class="n">01</span><span>RBI Master Direction on Regulation of Payment Aggregators, consolidated 15 September 2025 — <a href="https://www.khaitanco.com/sites/default/files/2025-10/ERGO%20-%20PA%20Master%20Directions%20-%203%20Oct%202025_0.pdf" target="_blank" rel="noopener">Khaitan &amp; Co summary (PDF)</a>, <a href="https://authbridge.com/blog/rbi-payment-aggregator-master-direction-2025/" target="_blank" rel="noopener">AuthBridge overview</a></span></div>
+        <div class="ref"><span class="n">02</span><span>Payment Aggregator net-worth and authorisation requirements — <a href="https://www.incorpx.io/blog/rbi-payment-aggregator-license-2026" target="_blank" rel="noopener">IncorpX guide</a>, <a href="https://kdpaccountants.com/blogs/rbi-payment-aggregator-license-india-2025-guide" target="_blank" rel="noopener">KDP Accountants guide</a></span></div>
+        <div class="ref"><span class="n">03</span><span>The funds-handling test distinguishing an aggregator from a gateway/own-fee collection — <a href="https://trilegal.com/knowledge_repository/rbis-guidelines-on-regulation-of-payment-aggregators-and-payment-gateways/" target="_blank" rel="noopener">Trilegal</a>, <a href="https://www.azbpartners.com/bank/payment-aggregators-and-gateways-indias-regulatory-framework/" target="_blank" rel="noopener">AZB &amp; Partners</a></span></div>
+        <div class="ref"><span class="n">04</span><span>UPI AutoPay mandate limits (₹15,000 standard / ₹1,00,000 enhanced-MCC) — <a href="https://paytm.com/blog/bill-payments/upi-autopay/upi-autopay-maximum-limit-complete-guide-2025/" target="_blank" rel="noopener">Paytm</a>, <a href="https://www.npci.org.in/what-we-do/AutoPay/product-overview" target="_blank" rel="noopener">NPCI product overview</a></span></div>
+        <div class="ref"><span class="n">05</span><span>Section 194-O TDS rate and mechanics (0.1% from Oct 2024) — <a href="https://blog.tdsman.com/2025/09/section-194o-tds-on-payments-by-e-commerce-operators-to-participants/" target="_blank" rel="noopener">TDSMAN</a>, <a href="https://www.bajajfinserv.in/section-194o" target="_blank" rel="noopener">Bajaj Finserv</a></span></div>
+        <div class="ref"><span class="n">06</span><span>GST on platform/SaaS service fees (18%) — <a href="https://www.india-briefing.com/news/india-gst-services-2025-rate-list-39625.html/" target="_blank" rel="noopener">India Briefing</a>, <a href="https://in.knavcpa.com/insights/gst-on-software-saas-and-digital-services-implications-and-compliance/" target="_blank" rel="noopener">KNAV</a></span></div>
+        <div class="ref"><span class="n">07</span><span>DPDP Act 2023 &amp; DPDP Rules 2025 obligations and penalties — <a href="https://www.scrut.io/post/dpdp-rules" target="_blank" rel="noopener">Scrut.io practical guide</a>, <a href="https://www.seclore.com/fundamentals/dpdp-rules-2025-compliance-guide/" target="_blank" rel="noopener">Seclore compliance guide</a></span></div>
+      </div>
+    </section>
+
+    <p class="foot">
+      Prepared as Phase 0 of the LaunchPad plan — see the companion strategy document and the Play Console walkthrough for the rest of the model. Regulatory detail moves fast in this space (three of the sources above are from the RBI's September–October 2025 Payment Aggregator overhaul alone) — re-verify anything load-bearing before the CA/lawyer meeting if this brief is more than a few weeks old.
+    </p>
+
+  </main>
+</div>
