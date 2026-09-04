@@ -1,0 +1,2335 @@
+<title>Publishing FocusGarden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f1f3f4;
+    --surface: #ffffff;
+    --surface-2: #f8f9fa;
+    --ink: #202124;
+    --ink-2: #5f6368;
+    --ink-3: #80868b;
+    --line: #dadce0;
+    --line-2: #e8eaed;
+    --green: #01875f;
+    --green-ink: #0b6b4f;
+    --blue: #1a73e8;
+    --blue-wash: #e8f0fe;
+    --amber: #e37400;
+    --amber-wash: #fef7e0;
+    --red: #d93025;
+    --red-wash: #fce8e6;
+    --lp: #3b5bdb;
+    --lp-wash: #edf0ff;
+    --font: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Roboto Mono", ui-monospace, monospace;
+    --shadow: 0 1px 2px rgba(60,64,67,.1), 0 1px 3px rgba(60,64,67,.16);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; gap: 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    padding: 0 16px; height: 56px;
+  }
+  .topbar .logo {
+    display: flex; align-items: center; gap: 9px;
+    font-size: 17px; font-weight: 500; color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .topbar .logo .tri {
+    width: 0; height: 0;
+    border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+    border-left: 14px solid var(--green);
+    border-radius: 2px;
+  }
+  .sim-badge {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--amber); background: var(--amber-wash);
+    border: 1px solid #f4d799; border-radius: 999px;
+    padding: 3px 9px; white-space: nowrap;
+  }
+  .topbar .crumb {
+    color: var(--ink-3); font-size: 13px; margin-left: 4px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .topbar .crumb b { color: var(--ink-2); font-weight: 500; }
+  .topbar .spacer { flex: 1; }
+  .topbar .appchip {
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 5px 10px; font-size: 13px; color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .topbar .appchip .ico {
+    width: 20px; height: 20px; border-radius: 5px;
+    background: linear-gradient(135deg, #34c98a, #1a73e8);
+  }
+  .topbar .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #7b1fa2; color: #fff;
+    display: grid; place-items: center; font-size: 13px; font-weight: 500;
+  }
+
+  /* ---------- shell ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 256px minmax(0, 1fr) 340px;
+    max-width: 1500px; margin: 0 auto;
+    align-items: start;
+  }
+  @media (max-width: 1180px) {
+    .shell { grid-template-columns: 232px minmax(0,1fr); }
+    .guide { grid-column: 1 / -1; position: static !important; max-height: none !important; border-left: 0 !important; border-top: 1px solid var(--line); }
+  }
+  @media (max-width: 800px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidenav { grid-column: 1 / -1; position: static !important; height: auto !important; border-right: 0 !important; border-bottom: 1px solid var(--line); }
+  }
+
+  /* ---------- side nav ---------- */
+  .sidenav {
+    position: sticky; top: 56px;
+    height: calc(100vh - 56px); overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    padding: 10px 0 40px;
+  }
+  .sidenav .part {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+    padding: 16px 20px 6px;
+  }
+  .sidenav button.nav {
+    display: flex; gap: 10px; align-items: baseline;
+    width: 100%; text-align: left;
+    background: none; border: 0; cursor: pointer;
+    font-family: var(--font); font-size: 13px; color: var(--ink-2);
+    padding: 8px 20px 8px 18px;
+    border-left: 3px solid transparent;
+    line-height: 1.35;
+  }
+  .sidenav button.nav:hover { background: var(--surface-2); }
+  .sidenav button.nav.active {
+    color: var(--green-ink); background: #e6f4ee;
+    border-left-color: var(--green); font-weight: 500;
+  }
+  .sidenav button.nav.done { color: var(--ink-3); }
+  .sidenav button.nav .n { font-family: var(--mono); font-size: 11px; color: var(--ink-3); flex-shrink: 0; width: 26px; }
+  .sidenav button.nav.active .n { color: var(--green); }
+  .sidenav .ghost { padding: 10px 20px; color: var(--ink-3); font-size: 12px; font-style: italic; }
+
+  /* ---------- canvas ---------- */
+  .canvas { padding: 22px clamp(14px, 3vw, 34px) 60px; min-width: 0; }
+
+  .ctx-banner {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--lp-wash); border: 1px solid #c9d4f7;
+    border-radius: 10px; padding: 10px 13px; margin-bottom: 20px;
+    font-size: 12.5px; color: #2b3a67;
+  }
+  .ctx-banner b { color: var(--lp); }
+
+  .screen { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
+  .screen-head { padding: 20px 24px 14px; border-bottom: 1px solid var(--line-2); }
+  .screen-head .kick { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  .screen-head h1 { font-size: 20px; font-weight: 500; margin: 4px 0 0; letter-spacing: -.01em; }
+  .screen-head p.lead { margin: 7px 0 0; color: var(--ink-2); font-size: 13px; max-width: 62ch; }
+  .screen-body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 18px; }
+
+  /* form primitives */
+  .fld { display: flex; flex-direction: column; gap: 5px; max-width: 520px; }
+  .fld > label { font-size: 12px; font-weight: 500; color: var(--ink-2); }
+  .fld input[type=text], .fld input[type=email], .fld input[type=tel], .fld textarea, .fld select {
+    font-family: var(--font); font-size: 14px; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 9px 11px; background: var(--surface); width: 100%;
+  }
+  .fld textarea { resize: vertical; min-height: 74px; line-height: 1.55; }
+  .fld input:focus, .fld textarea:focus, .fld select:focus { outline: 2px solid var(--blue); outline-offset: -1px; border-color: transparent; }
+  .fld .hint { font-size: 11.5px; color: var(--ink-3); display: flex; justify-content: space-between; gap: 12px; }
+  .fld .hint .count { font-family: var(--mono); }
+  .fld .hint .count.over { color: var(--red); font-weight: 500; }
+  .fld.req > label::after { content: " *"; color: var(--red); }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 520px; }
+  @media (max-width: 620px) { .row2 { grid-template-columns: 1fr; } }
+  .row2 .fld { max-width: none; }
+
+  .radio-set { display: flex; flex-direction: column; gap: 8px; }
+  .radio-set.inline { flex-direction: row; gap: 18px; flex-wrap: wrap; }
+  .radio-set label { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--ink); cursor: pointer; }
+  .radio-set label input { margin-top: 2px; accent-color: var(--green); }
+  .radio-set label .sub { display: block; color: var(--ink-3); font-size: 12px; }
+
+  .btnbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+  .btn { font-family: var(--font); font-size: 13px; font-weight: 500; border-radius: 6px; padding: 9px 18px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--blue); }
+  .btn.primary { background: var(--green); border-color: var(--green); color: #fff; }
+  .btn.primary:hover { background: #026f4e; }
+  .btn.ghost { color: var(--ink-2); }
+  .btn:disabled { opacity: .5; cursor: default; }
+
+  .callout { border-radius: 9px; padding: 12px 14px; font-size: 12.5px; display: flex; flex-direction: column; gap: 4px; }
+  .callout .t { font-weight: 600; font-size: 11.5px; letter-spacing: .04em; text-transform: uppercase; }
+  .callout.info { background: var(--blue-wash); color: #174ea6; }
+  .callout.info .t { color: var(--blue); }
+  .callout.warn { background: var(--amber-wash); color: #93590c; }
+  .callout.warn .t { color: var(--amber); }
+  .callout.err { background: var(--red-wash); color: #a50e0e; }
+  .callout.err .t { color: var(--red); }
+  .callout.ok { background: #e6f4ea; color: #137333; }
+  .callout.ok .t { color: #137333; }
+
+  .kv { border: 1px solid var(--line-2); border-radius: 9px; overflow: hidden; max-width: 560px; }
+  .kv .r { display: grid; grid-template-columns: 190px 1fr; gap: 12px; padding: 10px 14px; font-size: 13px; border-top: 1px solid var(--line-2); }
+  .kv .r:first-child { border-top: 0; }
+  .kv .r .k { color: var(--ink-2); }
+  .kv .r .v { color: var(--ink); font-weight: 500; }
+  .kv .r .v.mono { font-family: var(--mono); font-weight: 400; }
+
+  table.pc { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.pc th, table.pc td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+  table.pc th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); font-weight: 500; }
+  table.pc td.yes { color: var(--green-ink); font-weight: 500; }
+  table.pc td.no { color: var(--red); }
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--line-2); border-radius: 9px; }
+
+  .checklist { display: flex; flex-direction: column; gap: 2px; max-width: 560px; }
+  .checklist .ci { display: flex; gap: 11px; align-items: center; padding: 10px 12px; border-radius: 8px; font-size: 13px; }
+  .checklist .ci:hover { background: var(--surface-2); }
+  .checklist .ci .box { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); flex-shrink: 0; display: grid; place-items: center; font-size: 11px; }
+  .checklist .ci.done .box { background: var(--green); border-color: var(--green); color: #fff; }
+  .checklist .ci.now { background: #e6f4ee; }
+  .checklist .ci.now .box { border-color: var(--green); }
+  .checklist .ci .meta { margin-left: auto; font-size: 11px; color: var(--ink-3); font-family: var(--mono); }
+
+  .qset { display: flex; flex-direction: column; gap: 2px; max-width: 620px; }
+  .q { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 11px 4px; border-bottom: 1px solid var(--line-2); font-size: 13px; }
+  .q .opts { display: flex; gap: 14px; }
+  .q .opts label { display: flex; gap: 5px; align-items: center; font-size: 12.5px; color: var(--ink-2); }
+  .q .opts label input { accent-color: var(--green); }
+  .rating-out { display: none; }
+  .rating-out.show { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+  .rating-pill { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; background: var(--surface-2); }
+  .rating-pill b { color: var(--green-ink); }
+
+  details.ds { border: 1px solid var(--line-2); border-radius: 8px; margin-bottom: 6px; overflow: hidden; }
+  details.ds > summary { list-style: none; cursor: pointer; padding: 11px 13px; font-size: 13px; display: flex; justify-content: space-between; gap: 10px; align-items: center; background: var(--surface); }
+  details.ds > summary::-webkit-details-marker { display: none; }
+  details.ds > summary .tag { font-size: 11px; font-family: var(--mono); color: var(--ink-3); }
+  details.ds[open] > summary { border-bottom: 1px solid var(--line-2); background: var(--surface-2); }
+  details.ds .inner { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; font-size: 12.5px; }
+  .chip-row { display: flex; gap: 7px; flex-wrap: wrap; }
+  .chip { font-size: 11.5px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; color: var(--ink-2); background: var(--surface-2); }
+  .chip.on { background: #e6f4ee; border-color: #9ad3bf; color: var(--green-ink); }
+
+  /* money flow */
+  .flow { display: flex; flex-direction: column; gap: 0; max-width: 620px; }
+  .flow .n { border: 1px solid var(--line); border-radius: 9px; padding: 11px 14px; background: var(--surface); font-size: 12.5px; position: relative; }
+  .flow .n .lab { font-weight: 500; }
+  .flow .n .det { color: var(--ink-2); }
+  .flow .n.fee { background: var(--amber-wash); border-color: #f0d18a; }
+  .flow .n.you { background: #e6f4ea; border-color: #a8d5b5; }
+  .flow .n.lp { background: var(--lp-wash); border-color: #c9d4f7; }
+  .flow .arrow { align-self: center; color: var(--ink-3); font-size: 15px; line-height: 1.6; }
+
+  .preview {
+    max-width: 380px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--surface);
+  }
+  .preview .pv-hero { height: 150px; background: linear-gradient(135deg,#34c98a,#1a73e8); }
+  .preview .pv-body { padding: 14px; display: flex; flex-direction: column; gap: 9px; }
+  .preview .pv-top { display: flex; gap: 12px; }
+  .preview .pv-ico { width: 56px; height: 56px; border-radius: 13px; background: linear-gradient(135deg,#34c98a,#1a73e8); flex-shrink: 0; margin-top: -34px; border: 3px solid #fff; }
+  .preview h3 { margin: 0; font-size: 16px; font-weight: 500; }
+  .preview .pv-dev { color: var(--green-ink); font-size: 12px; }
+  .preview .pv-stats { display: flex; gap: 16px; font-size: 11px; color: var(--ink-2); border-top: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); padding: 8px 0; }
+  .preview .pv-stats b { display: block; color: var(--ink); font-size: 13px; }
+  .preview .pv-install { background: var(--green); color: #fff; text-align: center; border-radius: 7px; padding: 8px; font-size: 13px; font-weight: 500; }
+  .preview .pv-shots { display: flex; gap: 7px; overflow: hidden; }
+  .preview .pv-shots i { width: 74px; height: 132px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line-2); flex-shrink: 0; }
+  .preview .pv-desc { font-size: 12px; color: var(--ink-2); }
+
+  /* pager */
+  .pager { display: flex; align-items: center; gap: 14px; margin-top: 20px; }
+  .pager .prog { flex: 1; height: 5px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .pager .prog i { display: block; height: 100%; background: var(--green); transition: width .3s ease; }
+  .pager .count { font-family: var(--mono); font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+  .pager .btn { min-width: 92px; text-align: center; }
+
+  /* guide column */
+  .guide {
+    position: sticky; top: 56px;
+    max-height: calc(100vh - 56px); overflow-y: auto;
+    background: var(--surface-2);
+    border-left: 1px solid var(--line);
+    padding: 18px 18px 40px;
+  }
+  .guide h4 {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-3); margin: 14px 0 4px;
+  }
+  .guide p { margin: 0; font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
+  .guide .lp-block { background: var(--lp-wash); border: 1px solid #d4dcfb; border-radius: 9px; padding: 11px 13px; margin-top: 8px; }
+  .guide .lp-block h4 { margin-top: 0; color: var(--lp); }
+  .guide .lp-block p { color: #33406b; }
+
+  .guide-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .g-ava { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#8e5cff,#1a73e8); color: #fff; display: grid; place-items: center; font-weight: 700; flex-shrink: 0; }
+  .g-name { font-weight: 600; font-size: 14px; color: var(--ink); }
+  .g-role { font-size: 11px; color: var(--ink-3); }
+  .g-status { margin-left: auto; font-size: 10px; font-family: var(--mono); color: #137333; }
+
+  .narrate { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 11px; margin-bottom: 12px; }
+  .narrate-controls { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; margin-bottom: 9px; }
+  .nbtn { font: inherit; font-size: 12px; border: 1px solid var(--line); background: var(--surface-2); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+  .nbtn:hover { border-color: var(--green); color: var(--green-ink); }
+  .nbtn:disabled { opacity: .45; cursor: default; }
+  .nsel { font-size: 10px; color: var(--ink-3); display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: .04em; }
+  .nsel select { font: inherit; font-size: 11px; border: 1px solid var(--line); border-radius: 5px; padding: 3px 4px; max-width: 128px; }
+  .ntog { font-size: 11px; color: var(--ink-2); display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .caption { font-size: 13px; line-height: 1.7; color: var(--ink); max-height: 190px; overflow-y: auto; }
+  .caption .cap-s { border-radius: 3px; }
+  .caption .cap-s.active { background: #fff2bf; box-shadow: 0 0 0 3px #fff2bf; }
+
+  .chat { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 11px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 9px; }
+  .chat-head { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); }
+  .chat-head span { font-weight: 400; text-transform: none; letter-spacing: 0; color: #137333; font-family: var(--mono); font-size: 10px; margin-left: 6px; }
+  .chat-log { display: flex; flex-direction: column; gap: 7px; max-height: 240px; overflow-y: auto; }
+  .bubble { font-size: 12.5px; line-height: 1.5; padding: 8px 11px; border-radius: 11px; max-width: 93%; white-space: pre-wrap; }
+  .bubble.a { background: var(--surface-2); border: 1px solid var(--line-2); align-self: flex-start; border-bottom-left-radius: 3px; }
+  .bubble.q { background: var(--blue); color: #fff; align-self: flex-end; border-bottom-right-radius: 3px; }
+  .bubble.a.streaming::after { content: '▍'; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .ask-row { display: flex; gap: 6px; align-items: center; }
+  .ask-row input { flex: 1; font: inherit; font-size: 13px; border: 1px solid var(--line); border-radius: 7px; padding: 8px 10px; min-width: 0; }
+  .ask-row input:focus { outline: 2px solid var(--blue); outline-offset: -1px; }
+  .mic { font-size: 14px; border: 1px solid var(--line); background: var(--surface-2); border-radius: 7px; padding: 6px 9px; cursor: pointer; }
+  .mic.rec { background: var(--red-wash); border-color: var(--red); animation: pulseRec 1s infinite; }
+  @keyframes pulseRec { 50% { box-shadow: 0 0 0 4px rgba(217,48,37,.15); } }
+  .asksend { font: inherit; font-size: 12.5px; font-weight: 500; color: #fff; background: var(--green); border: 1px solid var(--green); border-radius: 7px; padding: 8px 13px; cursor: pointer; }
+  .asksend:disabled { opacity: .5; }
+  .jumplink { margin-top: 7px; font: inherit; font-size: 11.5px; font-weight: 500; color: var(--blue); background: var(--surface); border: 1px dashed var(--blue); border-radius: 7px; padding: 5px 9px; cursor: pointer; }
+  .jumplink:hover { background: var(--blue-wash); }
+
+  .notes { border: 1px solid var(--line-2); border-radius: 9px; background: var(--surface); padding: 0 12px; }
+  .notes > summary { cursor: pointer; padding: 10px 0; font-size: 12px; font-weight: 600; color: var(--ink-2); list-style: none; }
+  .notes > summary::-webkit-details-marker { display: none; }
+  .notes > summary::before { content: '▸ '; color: var(--ink-3); }
+  .notes[open] > summary::before { content: '▾ '; }
+  .notes[open] { padding-bottom: 12px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bubble.a.streaming::after { animation: none; }
+    .mic.rec { animation: none; }
+  }
+
+  a { color: var(--blue); }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 3px; }
+  .disclab { max-width: 1500px; margin: 0 auto; padding: 14px 24px 40px; font-size: 11px; color: var(--ink-3); font-family: var(--mono); line-height: 1.7; }
+</style>
+
+<div class="topbar">
+  <span class="logo"><span class="tri"></span> Play Console</span>
+  <span class="sim-badge">Simulation</span>
+  <span class="crumb" id="crumb">Developer account &rsaquo; <b>Get started</b></span>
+  <span class="spacer"></span>
+  <span class="appchip"><span class="ico"></span> FocusGarden</span>
+  <span class="avatar">A</span>
+</div>
+
+<div class="shell">
+  <nav class="sidenav" id="sidenav"></nav>
+
+  <main class="canvas">
+    <div class="ctx-banner">
+      <span>▸</span>
+      <span>Worked example: <b>FocusGarden</b> — a Flutter focus-timer app, published by Aisha Rao (Pune), free with ads + a subscription. Every field on these screens is editable — type your own app's details and the counters and previews react. One continuous walkthrough, <b>Parts 1&ndash;7</b>: account &rarr; payments &rarr; store listing &rarr; build &amp; test &rarr; release &rarr; revenue &amp; billing &rarr; marketing &amp; growth.</span>
+    </div>
+
+    <div class="screen">
+      <div class="screen-head">
+        <div class="kick" id="s-kick"></div>
+        <h1 id="s-title"></h1>
+        <p class="lead" id="s-lead"></p>
+      </div>
+      <div class="screen-body" id="s-body"></div>
+    </div>
+
+    <div class="pager">
+      <button class="btn ghost" id="prev">&larr; Back</button>
+      <span class="prog"><i id="prog"></i></span>
+      <span class="count" id="pcount"></span>
+      <button class="btn primary" id="next">Next &rarr;</button>
+    </div>
+  </main>
+
+  <aside class="guide">
+    <div class="guide-head">
+      <span class="g-ava">P</span>
+      <div><div class="g-name">Priya</div><div class="g-role">your launch guide</div></div>
+      <span class="g-status" id="gStatus"></span>
+    </div>
+
+    <div class="narrate" id="narrate">
+      <div class="narrate-controls">
+        <button class="nbtn" id="nPlay" type="button">&#9654; Play</button>
+        <button class="nbtn" id="nStop" type="button" disabled>&#9632;</button>
+        <label class="nsel">Pace
+          <select id="nRate">
+            <option value="0.68">Slower</option>
+            <option value="0.8" selected>Slow</option>
+            <option value="0.95">Normal</option>
+          </select>
+        </label>
+        <label class="nsel">Voice <select id="nVoice"></select></label>
+        <label class="ntog"><input type="checkbox" id="nAuto" checked> Auto-play each screen</label>
+      </div>
+      <div class="caption" id="caption"></div>
+    </div>
+
+    <div class="chat">
+      <div class="chat-head">Ask Priya<span id="askHint"></span></div>
+      <div class="chat-log" id="chatLog">
+        <div class="bubble a">Ask me anything about this screen &mdash; what a field means, what happens if you get it wrong, how it works in India. Type below, or tap the mic to talk.</div>
+      </div>
+      <form class="ask-row" id="askForm">
+        <button type="button" class="mic" id="micBtn" title="Ask by voice" hidden>&#127908;</button>
+        <input type="text" id="askInput" placeholder="Type your question&hellip;" autocomplete="off">
+        <button type="submit" class="asksend" id="askSend">Send</button>
+      </form>
+    </div>
+
+    <details class="notes">
+      <summary>Screen notes</summary>
+      <h4>What this screen is</h4>
+      <p id="c-what"></p>
+      <h4>What you actually do</h4>
+      <p id="c-do"></p>
+      <h4>Real-world gotcha</h4>
+      <p id="c-gotcha"></p>
+      <div class="lp-block">
+        <h4>What LaunchPad automates</h4>
+        <p id="c-lp"></p>
+      </div>
+    </details>
+  </aside>
+</div>
+
+<div class="disclab">
+  Training simulation — not affiliated with, endorsed by, or connected to Google. No real account is created and nothing you type is sent anywhere. Field labels, limits, fees and policies reflect the real Google Play Console as of early 2026; verify current requirements in the actual Console before you publish. "LaunchPad" and "FocusGarden" are illustrative.
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var S = [
+    /* ============ PART 1 — DEVELOPER ACCOUNT ============ */
+    {
+      part: "Part 1 · Developer account",
+      nav: "Get started",
+      kick: "play.google.com/console · sign up",
+      title: "Get started with a Play Console developer account",
+      lead: "One Google Account owns the console. Everything you publish, every payout, every policy strike lives under it — so start it right.",
+      crumb: "Developer account &rsaquo; <b>Get started</b>",
+      body: function () {
+        return (
+          card("Sign in to continue",
+            fld("Google Account", txt("aisha.focusgarden@gmail.com"), "Use a dedicated account for the business — never your personal Gmail. Console ownership is painful to transfer later.") +
+            radioSet("This account is for", [
+              ["me", "Myself — an individual developer", "Fastest. $25, no company documents.", true],
+              ["org", "An organisation", "A registered company / LLP. Needs a D-U-N-S number and takes longer to verify."]
+            ])
+          ) +
+          callout("info", "One-time cost", "Registration is a <b>US$25 one-time fee</b> (roughly ₹2,100). There is no annual renewal on Play — Apple's is separate at $99/year.")
+        );
+      },
+      what: "The entry point at play.google.com/console. You sign in with the Google Account that will own everything, and choose whether you're registering as an individual or an organisation.",
+      do: "Create or pick a dedicated Google Account, click ‘Get started’, and select the account type. Have your ID and a card ready.",
+      gotcha: "Whatever Google Account you use here is stuck as the owner. If you later hire, sell the app, or incorporate, moving the console is a manual support process. Make the account name generic (not your personal name).",
+      lp: "Provisions the dedicated Google Account, decides individual vs organisation from your uploaded entity documents, and keeps the credentials in your vault."
+    },
+    {
+      part: "Part 1 · Developer account",
+      nav: "Account type",
+      kick: "step 1 of 5 · account setup",
+      title: "Choose your account type",
+      lead: "This is a one-way door. Switching between Individual and Organisation later requires Google support and isn't guaranteed.",
+      crumb: "Developer account &rsaquo; <b>Account type</b>",
+      body: function () {
+        return (
+          tblWrap(
+            '<table class="pc"><thead><tr><th>&nbsp;</th><th>Individual</th><th>Organisation</th></tr></thead><tbody>' +
+            trow("Fee", "$25 one-time", "$25 one-time") +
+            trow("Documents", "Government photo ID", "Photo ID + <b>D-U-N-S number</b> + org proof + website") +
+            trow("Verification time", "Usually 2–3 days", "Often 1–3 weeks (D-U-N-S issuance is the bottleneck)") +
+            trow("Closed testing rule", "<span style='color:#d93025'>12 testers, 14 continuous days</span> before you can request production access", "<b>Exempt</b> — can go straight to production") +
+            trow("Shown on store as", "A name you choose", "Your organisation's name") +
+            '</tbody></table>'
+          ) +
+          radioSet("Register FocusGarden as", [
+            ["ind", "Individual — Aisha Rao", "We'll walk this path. It matches how most solo devs following this method start.", true],
+            ["org", "Organisation", "Choose this once you've registered a Pvt Ltd / LLP and want to skip the 12-tester rule."]
+          ]) +
+          callout("warn", "The 12-tester rule is real", "Individual accounts created after 13 Nov 2023 must run a closed test with <b>at least 12 testers opted in for 14 unbroken days</b> before applying for production. Plan your tester list now — friends, a Google Group, a small community. This bites people at the finish line.")
+        );
+      },
+      what: "The screen where you commit to Individual or Organisation. The consequences ripple through verification, testing and how your name appears on the store.",
+      do: "Pick Individual unless you already have a registered entity and D-U-N-S number. Read the closed-testing consequence before you decide.",
+      gotcha: "People pick Individual for speed, then discover the 12-tester / 14-day wall when they're ready to launch. If you have any way to line up 12 real testers, Individual is fine — otherwise incorporating and going Organisation removes that wall.",
+      lp: "Recommends the path from your situation, pre-fills the D-U-N-S application if you go Organisation, and — for Individual — assembles and manages the 12-tester closed test so the 14-day clock starts on day one, not at launch."
+    },
+    {
+      part: "Part 1 · Developer account",
+      nav: "Your details",
+      kick: "step 2 of 5 · account setup",
+      title: "Tell Google who you are",
+      lead: "This must match your government ID exactly, and it must match the payments profile you'll create in Part 2. Mismatches cause silent payout failures later.",
+      crumb: "Developer account &rsaquo; <b>About you</b>",
+      body: function () {
+        return (
+          card("Contact details",
+            row2(
+              fld("Legal first name", txt("Aisha")) +
+              fld("Legal last name", txt("Rao"))
+            ) +
+            fld("Developer / public name", txt("FocusGarden Labs", 50, true), "Shown on your store listing under the app title. Max 50 characters. Can be changed later.") +
+            fld("Contact email address", txtEmail("aisha.focusgarden@gmail.com"), "Google's private channel to you about policy and account issues. Not shown publicly.") +
+            fld("Contact phone (with country code)", txtTel("+91 98XXXXXX21"), "You'll verify this by OTP. Used for account recovery and urgent policy contact.") +
+            fld("Address", txtArea("Flat 4B, Lane 7, Baner, Pune, Maharashtra 411045, India"), "Your real residential address for an Individual account. Must match your ID.")
+          ) +
+          callout("info", "Verification by OTP", "Google sends a code to the phone and email here. The developer account is created only after both are confirmed.")
+        );
+      },
+      what: "The identity form for the account. Name, public developer name, contact email, phone, and address.",
+      do: "Enter your legal name and address exactly as on your ID. Pick a public developer name (this is your ‘brand’ on the store). Verify the OTPs.",
+      gotcha: "The ‘Developer name’ (public) and your ‘Legal name’ are different fields. And every name/address you enter here has to line up with the payments profile and bank account in Part 2 — Google cross-checks them and a mismatch means your first payout just never arrives, with no obvious error.",
+      lp: "Fills this from your onboarding record, and holds one canonical name+address that it reuses for the payments profile, tax forms and Apple enrolment so nothing drifts."
+    },
+    {
+      part: "Part 1 · Developer account",
+      nav: "Pay the $25 fee",
+      kick: "step 3 of 5 · account setup",
+      title: "Pay the one-time registration fee",
+      lead: "US$25, once, non-refundable — even if your identity verification is later rejected.",
+      crumb: "Developer account &rsaquo; <b>Registration fee</b>",
+      body: function () {
+        return (
+          card("Google payments",
+            kv([
+              ["Item", "Play Console developer registration"],
+              ["Amount", "US$25.00 (one-time)"],
+              ["Billed to", "aisha.focusgarden@gmail.com"]
+            ]) +
+            '<div style="height:10px"></div>' +
+            row2(
+              fld("Card number", txt("•••• •••• •••• 4242")) +
+              fld("Name on card", txt("AISHA RAO"))
+            ) +
+            row2(
+              fld("Expiry", txt("08 / 28")) +
+              fld("CVC", txt("•••"))
+            ) +
+            btnbar('<button class="btn primary" disabled>Pay US$25.00</button><span style="font-size:12px;color:#5f6368">Simulated — no charge is made</span>')
+          ) +
+          callout("warn", "Pay from the owning account", "Make the payment while signed in as the Google Account that will own the console. And keep the receipt — it's the only proof of registration date if you ever contest a suspension.")
+        );
+      },
+      what: "A standard Google payments checkout for the $25. Card or, in India, often UPI / netbanking too.",
+      do: "Enter a payment method and pay. It clears in seconds; the account moves to ‘verification pending’.",
+      gotcha: "Non-refundable. If your ID verification fails and you can't fix it, the $25 is gone and you start over with a new account. Double-check your name/address on the previous screen before paying.",
+      lp: "Pays the $25 (and Apple's $99) on your behalf, books it to your LaunchPad account, and stores the receipts."
+    },
+    {
+      part: "Part 1 · Developer account",
+      nav: "Identity verification",
+      kick: "step 4 of 5 · account setup",
+      title: "Verify your identity",
+      lead: "Since 2023 every developer must verify a real identity before publishing. No verification, no production release.",
+      crumb: "Developer account &rsaquo; <b>Identity verification</b>",
+      body: function () {
+        return (
+          card("Upload documents",
+            uploadRow("Government photo ID — front", "aadhaar_front.jpg · 1.2 MB", true) +
+            uploadRow("Government photo ID — back", "aadhaar_back.jpg · 1.1 MB", true) +
+            uploadRow("Selfie / liveness check", "captured via camera", true)
+          ) +
+          kv([
+            ["Name on ID", "Aisha Rao"],
+            ["Matches account name", "✓ yes"],
+            ["Status", "Submitted — under review"]
+          ]) +
+          callout("info", "Typical timeline", "2–3 business days for individuals, but it can run 1–3 weeks — especially if the photo is unclear or the name has a middle-name / initials mismatch. You can keep building your store listing (Part 3) while it's pending; you just can't publish.") +
+          callout("warn", "Organisation extra step", "Organisations also submit a <b>D-U-N-S number</b> (free from Dun &amp; Bradstreet, 7–30 days) and proof the org is real — website, registration certificate.")
+        );
+      },
+      what: "Document upload for identity verification — photo ID plus a liveness selfie. For organisations, also the D-U-N-S number.",
+      do: "Upload a clear, uncropped ID where the name matches your account name character-for-character. Complete the selfie step. Then wait.",
+      gotcha: "The #1 rejection reason is a name mismatch — ‘Aisha Rao’ on the account vs ‘Aisha K Rao’ on the ID, or a maiden name. Fix the account name to match the ID, not the other way round.",
+      lp: "Collects your ID once during onboarding, submits it to Play and Apple, chases the D-U-N-S application for organisations, and surfaces the verification status so you're not refreshing the Console."
+    },
+    {
+      part: "Part 1 · Developer account",
+      nav: "Agreements & done",
+      kick: "step 5 of 5 · account setup",
+      title: "Accept the agreements",
+      lead: "The Developer Distribution Agreement and Play Console Terms of Service are the contract. Breaking them is how accounts get terminated.",
+      crumb: "Developer account &rsaquo; <b>Agreements</b>",
+      body: function () {
+        return (
+          card("Before your account is created",
+            radioSet("", [
+              ["a", "I have read and agree to the Google Play Developer Distribution Agreement", "", false],
+              ["b", "I agree to the Play Console Terms of Service", "", false],
+              ["c", "I understand a single serious or repeated policy violation can permanently terminate this account and any related accounts", "", false]
+            ], true) +
+            btnbar('<button class="btn primary" disabled>Create developer account</button>')
+          ) +
+          callout("ok", "Account created — verification pending", "You now have a Play Console. A banner reads ‘Your account is being verified’. You <b>can</b>: create apps, build store listings, set up internal testing. You <b>cannot</b>: publish to production or open closed/open testing until verification clears.")
+        );
+      },
+      what: "The final consent step. Three agreements, then the account exists.",
+      do: "Read at least the policy summary, tick the boxes, create the account. You land on the Console home with a ‘verification in progress’ banner.",
+      gotcha: "‘Related accounts’ is not a bluff — Google links accounts by device, payment method, and address. If a previous account of yours was banned, a new one on the same card or phone can be auto-terminated. Use clean, dedicated identifiers.",
+      lp: "Records which agreement versions you accepted and when, and monitors policy-update emails so you're told when a re-acceptance is required (missing one can freeze your app)."
+    },
+
+    /* ============ PART 2 — PAYMENTS PROFILE ============ */
+    {
+      part: "Part 2 · Getting paid",
+      nav: "Why a payments profile",
+      kick: "Console · Setup › Payments profile",
+      title: "The $25 doesn't mean you can get paid",
+      lead: "The developer account lets you publish. A separate ‘payments profile’ is what lets you charge money and receive payouts. No profile = every paid product and subscription is greyed out.",
+      crumb: "Setup &rsaquo; <b>Payments profile</b>",
+      body: function () {
+        return (
+          flow([
+            ["n", "Developer account ✓", "Publish free apps, run test tracks. Done in Part 1."],
+            ["n", "Payments profile — <b>not started</b>", "Required to create paid apps, in-app products, or subscriptions."],
+            ["n", "Google Play Billing wired in the app", "The SDK that actually takes the customer's money. Part 4."]
+          ]) +
+          callout("info", "Where to find it", "Play Console → <b>Setup → Payments profile</b>. It opens the Google payments centre (the same system behind AdMob and Google Ads — if you already have an AdMob payments profile you can often reuse it).") +
+          callout("warn", "Do this early", "Bank verification and the tax interview each take a few days. If you leave the payments profile until the app is ready, you'll be live with a paywall that can't take payment.")
+        );
+      },
+      what: "An explainer screen. It's the mental model people miss: account fee ≠ ability to get paid.",
+      do: "Go to Setup → Payments profile and start ‘Create payments profile’. Set aside 20 minutes plus a few days of waiting for verification.",
+      gotcha: "Subscriptions and in-app products literally cannot be created in the Console until the payments profile exists and is active. Teams discover this the week they planned to launch.",
+      lp: "Starts the payments profile in parallel with identity verification on day one, so the multi-day waits overlap instead of stacking."
+    },
+    {
+      part: "Part 2 · Getting paid",
+      nav: "Create payments profile",
+      kick: "Google payments centre",
+      title: "Create your payments profile",
+      lead: "Country and currency here are permanent. Choose the country where you're tax-resident and will bank.",
+      crumb: "Payments profile &rsaquo; <b>Create</b>",
+      body: function () {
+        return (
+          card("Payments profile",
+            fld("Country / region", sel(["India", "United States", "United Kingdom", "Singapore", "United Arab Emirates"]), "Permanent. Determines your payout currency, tax rules and available payout methods.") +
+            fld("Currency", sel(["INR – Indian Rupee", "USD – US Dollar"]), "Your payouts arrive in this currency. Permanent.") +
+            radioSet("This profile is for", [
+              ["ind", "An individual", "You, personally. Payouts to a personal bank account, tax under your PAN.", true],
+              ["biz", "A business", "A registered entity. Needs the entity's tax IDs and bank account."]
+            ]) +
+            fld("Name (as it should appear on the profile)", txt("Aisha Rao"), "Must match your identity verification from Part 1.")
+          ) +
+          callout("err", "Permanent fields", "Country and currency <b>cannot be changed</b> after the profile is created. To change them you close the profile and open a new one — which can disrupt payouts. Get this right the first time.")
+        );
+      },
+      what: "The first screen of the Google payments centre. Sets country, currency, and individual-vs-business.",
+      do: "Choose India / INR / Individual for this example. Enter your name exactly as verified in Part 1.",
+      gotcha: "If you move countries later, or incorporate and want payouts to the company, you can't just edit this — you create a new profile and relink it, and the switchover can skip a payout cycle.",
+      lp: "Pre-fills every field from your onboarding data and blocks submission if the name doesn't byte-match your verified identity."
+    },
+    {
+      part: "Part 2 · Getting paid",
+      nav: "Bank account",
+      kick: "Google payments centre · payout method",
+      title: "Add the bank account for payouts",
+      lead: "Where Google deposits your money each month. The account holder name must match the payments profile name.",
+      crumb: "Payments profile &rsaquo; <b>Payout method</b>",
+      body: function () {
+        return (
+          card("Bank account (India)",
+            fld("Account holder name", txt("AISHA RAO"), "Must match the payments profile. A mismatch here = failed transfers.") +
+            row2(
+              fld("Account number", txt("50100XXXXXX847")) +
+              fld("Re-enter account number", txt("50100XXXXXX847"))
+            ) +
+            fld("IFSC code", txt("HDFC0000123"), "11 characters. Identifies the branch. One wrong character sends the payout nowhere.") +
+            fld("Account type", sel(["Savings", "Current"]))
+          ) +
+          callout("info", "Verification deposit", "Google sends a tiny test credit (a few paise/cents) in 1–2 business days. You confirm the amount in the payments centre to activate payouts. Some regions verify by document instead.") +
+          callout("warn", "First payout is usually delayed", "Even after the bank is verified, your <b>first</b> payout often lands one cycle late while Google runs additional checks. Budget for that gap.")
+        );
+      },
+      what: "The payout bank details form. In India: account holder name, account number (twice), IFSC, account type.",
+      do: "Enter the account, wait 1–2 days for the micro-deposit, then confirm its amount to activate payouts.",
+      gotcha: "Payout failures are silent. If the name or IFSC is slightly off, the money simply doesn't arrive and there's no red error — you find out when you check ‘why haven't I been paid’. Copy the IFSC from a bank statement, don't type it from memory.",
+      lp: "Validates the IFSC against the bank directory, checks the holder name against your profile, and watches for the verification deposit so you don't have to keep logging in."
+    },
+    {
+      part: "Part 2 · Getting paid",
+      nav: "Tax info — India",
+      kick: "Google payments centre · tax",
+      title: "India tax information",
+      lead: "Google needs your Indian tax identity to pay you and to report the income.",
+      crumb: "Payments profile &rsaquo; <b>Tax info (India)</b>",
+      body: function () {
+        return (
+          card("Indian tax details",
+            fld("PAN (Permanent Account Number)", txt("ABCDE1234F"), "Mandatory. 10 characters. Without it, higher tax is withheld on your payments.") +
+            radioSet("GST registration", [
+              ["no", "Not registered for GST", "Correct for most individuals below the turnover threshold. Select this — don't invent a GSTIN.", true],
+              ["yes", "Registered — I have a GSTIN", "Then you'll enter the 15-character GSTIN and handle GST on your Play payouts."]
+            ]) +
+            fld("Name as per PAN", txt("AISHA RAO"))
+          ) +
+          callout("info", "TDS / withholding", "Depending on your setup and thresholds, tax may be withheld at source from your payout and reflected in your Form 26AS. Your Play <b>Financial reports</b> show gross and net so you can reconcile at filing time.") +
+          callout("warn", "Consistency again", "Name-as-per-PAN, payments profile name, bank holder name and Part 1 identity should all be the same string. This is the single most common reason Indian devs don't get paid on time.")
+        );
+      },
+      what: "The India-specific tax section: PAN, GST status, name-as-per-PAN.",
+      do: "Enter your PAN. If you're not GST-registered (most individuals aren't), say so honestly. Keep the name identical to everything else.",
+      gotcha: "Don't guess or borrow a GSTIN to look ‘more legit’ — a wrong GST status creates filing problems and can freeze payouts. Not-registered is a perfectly normal answer.",
+      lp: "Completes the India tax fields from your PAN, flags whether your projected revenue will cross the GST threshold, and keeps a running gross/net record for your CA."
+    },
+    {
+      part: "Part 2 · Getting paid",
+      nav: "Tax info — United States",
+      kick: "Google payments centre · US tax interview",
+      title: "United States tax information (yes, even in India)",
+      lead: "Every Play payee completes a US tax interview. As a non-US individual you file a W-8BEN and claim the India–US treaty to reduce US withholding on US-sourced sales.",
+      crumb: "Payments profile &rsaquo; <b>US tax info</b>",
+      body: function () {
+        return (
+          card("US tax interview → Form W-8BEN",
+            kv([
+              ["Tax identity", "Individual / sole proprietor"],
+              ["US person?", "No"],
+              ["Form", "W-8BEN"],
+              ["Country of tax residence", "India"]
+            ]) +
+            fld("Foreign TIN", txt("ABCDE1234F"), "Your PAN doubles as the foreign tax identification number.") +
+            radioSet("Treaty benefits", [
+              ["yes", "Claim India–US tax treaty benefits", "Reduces the US withholding rate on US-sourced royalty/service income. Recommended.", true],
+              ["no", "Do not claim treaty benefits", "Default (higher) withholding applies to US-sourced earnings."]
+            ]) +
+            fld("Signature (type your legal name)", txt("Aisha Rao")) +
+            btnbar('<button class="btn primary" disabled>Submit W-8BEN</button>')
+          ) +
+          callout("info", "What it actually affects", "US withholding only applies to the <b>US-sourced</b> portion of certain earnings. Your India sales are unaffected. The form is valid ~3 years, then Google asks you to re-certify.") +
+          callout("warn", "Don't skip it", "An incomplete US tax interview puts your entire payout on hold — not just the US part. It's a 5-minute form; do it now.")
+        );
+      },
+      what: "Google's US tax questionnaire, which for an Indian individual produces a W-8BEN with a treaty claim.",
+      do: "Answer ‘not a US person’, country India, enter your PAN as the foreign TIN, claim treaty benefits, e-sign.",
+      gotcha: "People assume ‘I'm in India, US tax doesn't apply to me’ and skip it — then their whole payout freezes. The interview is mandatory for all payees; the treaty claim just lowers the rate on the US slice.",
+      lp: "Runs the interview for you, selects W-8BEN, claims the treaty, and re-files before the ~3-year expiry so payouts never pause."
+    },
+    {
+      part: "Part 2 · Getting paid",
+      nav: "Payout settings",
+      kick: "Google payments centre · settings",
+      title: "Payout schedule & threshold",
+      lead: "How often and when the money moves.",
+      crumb: "Payments profile &rsaquo; <b>Payout settings</b>",
+      body: function () {
+        return (
+          kv([
+            ["Payment schedule", "Monthly"],
+            ["Earnings period", "1st–last day of each calendar month"],
+            ["Paid on", "Around the 15th of the following month"],
+            ["Payout threshold", "≈ US$1 equivalent (default minimum)"],
+            ["Below threshold", "Rolls over to the next month"],
+            ["Method", "Electronic funds transfer to your verified bank account"],
+            ["Currency", "INR"]
+          ]) +
+          callout("info", "Example cadence", "Revenue earned in <b>March</b> (1–31 Mar) is finalised in early April and paid to your bank <b>around 15 April</b>. There's always roughly a six-week gap between a sale and the cash landing.") +
+          callout("warn", "Holds", "Google can place a payment hold for policy review, a spike in refunds/chargebacks, or a suspected-fraud flag. Keep refunds low and your content clean.")
+        );
+      },
+      what: "The schedule screen. Mostly fixed: monthly, paid ~15th, ~$1 threshold, EFT.",
+      do: "Confirm the defaults. There's little to change — just understand the ~6-week lag from sale to bank.",
+      gotcha: "New founders model cash as if a sale on the 3rd pays out on the 4th. It doesn't — it's ~6 weeks. If you're spending on ads, you'll be funding acquisition weeks before the revenue arrives.",
+      lp: "Shows projected payout dates and amounts on one calendar, and factors the 6-week lag into the growth dashboard's cash-flow view (Part 6)."
+    },
+    {
+      part: "Part 2 · Getting paid",
+      nav: "How the money flows",
+      kick: "reference · end-to-end",
+      title: "Where the money goes, in order",
+      lead: "From the customer's tap to your bank — and where Google's cut and LaunchPad's cut come out.",
+      crumb: "Payments profile &rsaquo; <b>Money flow</b>",
+      body: function () {
+        return (
+          flow([
+            ["n", "Customer taps ‘Start free trial’ / ‘Subscribe’", "In FocusGarden, on the RevenueCat paywall backed by Google Play Billing."],
+            ["n", "Google Play Billing charges their card / UPI", "Google is the merchant of record for digital goods. You never see card details."],
+            ["fee", "Google service fee comes off", "<b>15%</b> on subscriptions (and on the first US$1M/yr of all earnings); 30% above $1M. Deducted before you're paid."],
+            ["fee", "Taxes handled", "Google collects & remits GST/VAT/sales tax in most markets. Your reports show gross and net."],
+            ["n", "Net accrues in your payments profile", "Visible in Play Console → Financial reports, updated through the month."],
+            ["you", "Paid to your bank ≈ the 15th, monthly", "One EFT for the prior calendar month, in INR, once above ~$1."],
+            ["lp", "LaunchPad's 15% — separately", "Not taken from the Google payout. LaunchPad reads your Financial reports export and debits its share via a UPI AutoPay mandate you approved (next screen)."]
+          ]) +
+          callout("info", "So on a ₹399 subscription", "Customer pays ₹399 → Google keeps ~₹60 (15%) → ~₹339 net to you → LaunchPad later invoices 15% of that net (~₹51) via mandate → you keep ~₹288, before your own income tax.")
+        );
+      },
+      what: "The full pipeline as one picture. The key facts: Google is merchant of record, takes 15% on subs, remits sales tax, pays you monthly net.",
+      do: "Just understand it. You don't configure anything here — it's how Play works.",
+      gotcha: "Your ‘revenue’ number in Financial reports is already after Google's 15% and after tax remittance, but before your income tax and before any third-party (like LaunchPad) share. Three different ‘revenue’ numbers — know which one you're looking at.",
+      lp: "Collapses Play + RevenueCat + AdMob + its own reconciliation into a single ‘what you actually keep’ figure, updated daily (Part 6)."
+    },
+    {
+      part: "Part 2 · Getting paid",
+      nav: "LaunchPad's 15%",
+      kick: "LaunchPad · the one platform-specific step",
+      title: "Authorise LaunchPad's revenue share",
+      lead: "This is the only screen in Parts 1–3 that isn't part of Google. LaunchPad never touches your Google payout — it collects its 15% by a separate, cancellable mandate.",
+      crumb: "LaunchPad &rsaquo; <b>Revenue-share mandate</b>",
+      body: function () {
+        return (
+          card("Set up UPI AutoPay mandate",
+            kv([
+              ["Payable to", "LaunchPad Technologies Pvt Ltd"],
+              ["Amount", "15% of your monthly net app revenue"],
+              ["Source of truth", "Your Play Console ‘Financial reports’ export + RevenueCat + AdMob"],
+              ["Frequency", "Monthly, after you're paid by the stores"],
+              ["Maximum per debit", "₹25,000 (raise anytime; protects you from errors)"],
+              ["Cancel", "Anytime, from your bank app or LaunchPad settings"]
+            ]) +
+            btnbar('<button class="btn primary" disabled>Approve mandate in UPI app</button><span style="font-size:12px;color:#5f6368">Simulated</span>') +
+            '<div style="height:6px"></div>' +
+            miniRecon()
+          ) +
+          callout("info", "Why a mandate and not a cut of the payout", "Google pays <b>you</b> directly, into <b>your</b> bank, under <b>your</b> tax identity — there's no way for a third party to intercept a slice. So LaunchPad reconciles against your official reports and debits its share afterwards, transparently.") +
+          callout("warn", "You stay in control", "The mandate has a hard per-debit cap and you can cancel it in seconds. If a reconciliation looks wrong, you dispute it before the next debit — LaunchPad can't just pull arbitrary amounts.")
+        );
+      },
+      what: "The LaunchPad-side setup: a UPI AutoPay mandate that lets LaunchPad collect 15% of your net revenue each month, calculated from your real store reports.",
+      do: "Approve the mandate in your UPI app (GPay / PhonePe / etc.). Review the sample reconciliation so you know exactly how the number is derived.",
+      gotcha: "This only works cleanly if LaunchPad has read access to your Financial reports (granted in Part 1's delegated access). Without it, the 15% would be self-reported and disputable — the automated reconciliation is the whole point.",
+      lp: "This IS the LaunchPad step. Everything else on these screens, LaunchPad does on your behalf; this mandate is what pays for that."
+    },
+
+    /* ============ PART 3 — CREATE APP & STORE LISTING ============ */
+    {
+      part: "Part 3 · App & store listing",
+      nav: "Create app",
+      kick: "Console · All apps › Create app",
+      title: "Create the app",
+      lead: "A few fields here are permanent — especially Free vs Paid.",
+      crumb: "All apps &rsaquo; <b>Create app</b>",
+      body: function () {
+        return (
+          card("App details",
+            fld("App name", txt("FocusGarden — Focus Timer & Habits", 30, true), "Shown on Google Play. Max 30 characters. Editable later.") +
+            fld("Default language", sel(["English (United States) – en-US", "English (India) – en-IN", "Hindi – hi-IN"])) +
+            radioSet("App or game", [["app", "App", "", true], ["game", "Game", ""]]) +
+            radioSet("Free or paid", [
+              ["free", "Free", "Free to install. You can still charge with in-app purchases & subscriptions. This is what you want.", true],
+              ["paid", "Paid", "Costs money to install. You can switch Paid→Free later but NEVER Free→Paid."]
+            ])
+          ) +
+          card("Declarations",
+            radioSet("", [
+              ["p", "This app meets the Developer Program Policies", "", false],
+              ["e", "This app complies with US export laws", "", false]
+            ], true) +
+            btnbar('<button class="btn primary" disabled>Create app</button>')
+          ) +
+          callout("err", "Free is a one-way door", "You can go Paid → Free, but <b>never Free → Paid</b>. If there's any chance you'll sell the app for an upfront price, decide now. For an ads + subscription model, Free is correct.")
+        );
+      },
+      what: "The ‘Create app’ dialog. App name (30 chars), default language, app/game, free/paid, two declarations.",
+      do: "Name it, set language, choose App and Free, tick the declarations, create. The app now exists in draft.",
+      gotcha: "Free→Paid is impossible after creation. Also: the 30-char app name is not your full store title treatment — put the keyword-rich phrasing here, you get more room in the listing description.",
+      lp: "Generates the 30-char name and the localized variants, sets Free + in-app products, and keeps a checklist of the permanent choices so you confirm them deliberately."
+    },
+    {
+      part: "Part 3 · App & store listing",
+      nav: "Set up checklist",
+      kick: "Console · ‘Set up your app’",
+      title: "The set-up checklist Google gives you",
+      lead: "Every item must be green before you can send the app for review. This is Part 3's to-do list.",
+      crumb: "Dashboard &rsaquo; <b>Set up your app</b>",
+      body: function () {
+        return (
+          '<div class="checklist">' +
+          ci("done", "App access", "all functionality open, or test login provided") +
+          ci("done", "Ads", "declared — contains ads (AdMob)") +
+          ci("now", "Content rating", "IARC questionnaire — next screen") +
+          ci("", "Target audience & content", "age groups") +
+          ci("", "Data safety", "the big data-disclosure form") +
+          ci("", "Privacy policy", "a live URL") +
+          ci("", "Government apps / financial / health", "declarations — all ‘No’ for FocusGarden") +
+          ci("", "Store listing", "name, descriptions, graphics, screenshots") +
+          ci("", "Store settings", "category, contact details") +
+          '</div>' +
+          callout("info", "Order doesn't matter, completion does", "You can do these in any order. The ‘Send for review’ button stays disabled until all are complete and identity verification (Part 1) has cleared.")
+        );
+      },
+      what: "The Console's own ‘Set up your app’ task list. Nine-ish items gating your first submission.",
+      do: "Work through each. We'll do the substantive ones (content rating, data safety, store listing) on the next screens.",
+      gotcha: "Two of these — Data safety and Content rating — are where apps get rejected or later suspended for inaccurate answers. They're not tick-box formalities; they must match what your app and its SDKs actually do.",
+      lp: "Completes the whole checklist from your app's code and configuration, and re-opens the relevant items automatically when you ship an update that changes data collection or content."
+    },
+    {
+      part: "Part 3 · App & store listing",
+      nav: "Content rating",
+      kick: "Console · Content rating · IARC questionnaire",
+      title: "Content rating questionnaire",
+      lead: "Run by the IARC. Your answers generate age ratings for every territory (ESRB, PEGI, USK, etc.). Mandatory — unrated apps are removed.",
+      crumb: "Content rating &rsaquo; <b>Questionnaire</b>",
+      body: function () {
+        return (
+          card("FocusGarden — App / Utility",
+            '<div class="qset" id="qset">' +
+            q("Does the app contain violence?", "q1") +
+            q("Does the app contain sexual or suggestive content?", "q2") +
+            q("Does the app reference or depict alcohol, tobacco or drugs?", "q3") +
+            q("Does the app contain profanity or crude humour?", "q4") +
+            q("Does the app contain simulated or real gambling?", "q5") +
+            q("Can users interact or exchange content / messages?", "q6") +
+            q("Does the app share the user's physical location with other users?", "q7") +
+            q("Does the app let users purchase digital goods?", "q8", true) +
+            '</div>' +
+            btnbar('<button class="btn primary" id="calcRating" type="button">Calculate rating</button>') +
+            '<div class="rating-out" id="ratingOut">' +
+              '<span class="rating-pill">IARC: <b>3+</b></span>' +
+              '<span class="rating-pill">ESRB: <b>Everyone</b></span>' +
+              '<span class="rating-pill">PEGI: <b>3</b></span>' +
+              '<span class="rating-pill">USK: <b>0</b></span>' +
+              '<span class="rating-pill">Contains: <b>Digital purchases</b></span>' +
+            '</div>'
+          ) +
+          callout("warn", "Answer truthfully — both directions", "Inflating (‘we have violence’ when you don't) or deflating (‘no user chat’ when you have a comments feed) can both get the app suspended. If FocusGarden later adds a social feed, you must re-do this questionnaire.")
+        );
+      },
+      what: "The IARC questionnaire — yes/no questions about content. FocusGarden is a clean utility, so almost everything is ‘No’ except in-app digital purchases.",
+      do: "Answer each question about your actual app. Click ‘Calculate rating’ to see the generated ratings. Submit them.",
+      gotcha: "The questionnaire is attached to the app's current build. Add a chat feature, user-generated content, or a loot-box mechanic in a future version and you must re-answer — shipping new content under an old rating is a suspension risk.",
+      lp: "Answers the questionnaire from your app's declared features and content model, and automatically re-submits it when an update introduces something that changes the rating (chat, UGC, ads content settings)."
+    },
+    {
+      part: "Part 3 · App & store listing",
+      nav: "Target audience",
+      kick: "Console · Target audience and content",
+      title: "Target audience & content",
+      lead: "Which age groups the app is for. Including under-13 triggers Google's Families policy and a stricter rulebook.",
+      crumb: "Policy &rsaquo; <b>Target audience</b>",
+      body: function () {
+        return (
+          card("Target age groups",
+            radioSet("Select all that apply", [
+              ["a", "18 and over", "", true],
+              ["b", "16–17", ""],
+              ["c", "13–15", ""],
+              ["d", "Under 13", "Selecting this puts the app under the Families policy."]
+            ], true) +
+            radioSet("Could the app unintentionally appeal to children?", [
+              ["no", "No — the store listing, icon and content are clearly for adults", "", true],
+              ["yes", "Yes / unsure", "You'll need to address it in your listing and comply with Families rules."]
+            ])
+          ) +
+          callout("warn", "Under-13 changes everything", "If any selected group is under 13: only Google-certified ad SDKs, no interest-based ads or remarketing to children, no collecting certain data, a compliant privacy policy, and a separate content review. For an adult productivity app, keep it <b>18+</b> and keep the listing unambiguously adult.")
+        );
+      },
+      what: "Age-group targeting plus an ‘appeals to children’ check. Drives whether the Families policy applies.",
+      do: "For FocusGarden, select 18+ and ‘No’ to child-appeal. Keep your icon and screenshots looking like a productivity tool, not a game.",
+      gotcha: "Cartoonish art or playful language in your listing can make Google decide your app ‘appeals to children’ even if you didn't target them — dragging you into Families compliance you didn't plan for. Design the store presence to match your stated audience.",
+      lp: "Sets the audience from your product brief, checks your generated icon/screenshots against the ‘child-appeal’ heuristics, and warns you before they cause a Families reclassification."
+    },
+    {
+      part: "Part 3 · App & store listing",
+      nav: "Data safety",
+      kick: "Console · App content › Data safety",
+      title: "Data safety form",
+      lead: "The disclosure that becomes the ‘Data safety’ section on your store listing. It must match what your app AND its SDKs (Firebase, AdMob) actually do.",
+      crumb: "App content &rsaquo; <b>Data safety</b>",
+      body: function () {
+        return (
+          '<p style="font-size:13px;color:#5f6368;margin:0">FocusGarden uses Firebase (auth, analytics, crashlytics) and Google AdMob. That means it collects and shares more than a ‘simple timer’ would. Declare each:</p>' +
+          ds("Device or other IDs", "collected + shared", "Advertising ID used by AdMob for ads; shared with Google for advertising.", ["Collected", "Shared", "Advertising", "Required"]) +
+          ds("App activity", "collected", "Screen views and events via Firebase Analytics — app functionality & analytics.", ["Collected", "Analytics", "App functionality"]) +
+          ds("App info & performance", "collected", "Crash logs and diagnostics via Crashlytics.", ["Collected", "Crash logs", "Diagnostics"]) +
+          ds("Personal info — email address", "collected", "Only if the user creates an account (optional sign-in).", ["Collected", "Optional", "Account management"]) +
+          ds("Location", "not collected", "FocusGarden requests no location permission.", ["Not collected"]) +
+          ds("Financial info", "not collected", "Payments handled entirely by Google Play Billing — you never receive payment data.", ["Not collected"]) +
+          '<div style="height:8px"></div>' +
+          card("Security practices",
+            radioSet("", [
+              ["a", "Data is encrypted in transit", "", true],
+              ["b", "Users can request that their data be deleted", "in-app account deletion + a web form", true],
+              ["c", "Independent security review", "not claimed", false]
+            ], true)
+          ) +
+          callout("err", "This is a suspension trap", "If your declared Data safety doesn't match what Google's scanners see the app doing — e.g. you said ‘no data shared’ but AdMob is sharing the Advertising ID — the app can be removed. When in doubt, over-declare.")
+        );
+      },
+      what: "A structured questionnaire: for every data type, is it collected? shared? required or optional? for what purpose? Plus security practices. Generates the public ‘Data safety’ card.",
+      do: "Go SDK by SDK. AdMob → Advertising ID, collected + shared, for advertising. Firebase Analytics → app activity. Crashlytics → diagnostics. Declare account email as optional. Confirm encryption-in-transit and data-deletion.",
+      gotcha: "‘I just made a timer app’ doesn't mean ‘I collect nothing’. The moment you add AdMob and Firebase you're collecting and sharing identifiers, and you must say so. Under-declaring is the classic first-time suspension.",
+      lp: "Scans your dependency list and code, maps each SDK to the data types it touches, and drafts the entire Data safety form — then keeps it in sync when you add or remove an SDK."
+    },
+    {
+      part: "Part 3 · App & store listing",
+      nav: "Privacy policy",
+      kick: "Console · App content › Privacy policy",
+      title: "Privacy policy URL",
+      lead: "A live, public URL. Required because the app collects data and uses ads.",
+      crumb: "App content &rsaquo; <b>Privacy policy</b>",
+      body: function () {
+        return (
+          card("Privacy policy",
+            fld("Privacy policy URL", txt("https://focusgarden.app/privacy"), "Must resolve to a real page that names FocusGarden and lists every data type from your Data safety form.") +
+            btnbar('<button class="btn" type="button">Check URL</button><span style="font-size:12px;color:#137333">✓ reachable · mentions this app</span>')
+          ) +
+          '<ul style="font-size:12.5px;color:#5f6368;line-height:1.7;margin:0;padding-left:18px">' +
+          '<li>Hosted somewhere stable — your own domain, not a Google Doc or Notes link.</li>' +
+          '<li>Names the app specifically (not a generic template).</li>' +
+          '<li>Lists what you collect, why, who you share with (Google/AdMob/Firebase), and how users delete their data.</li>' +
+          '<li>Stays reachable — a 404 later can get the app pulled.</li>' +
+          '<li>Same URL goes in the app&rsquo;s settings screen and, for iOS, App Store Connect.</li>' +
+          '</ul>' +
+          callout("warn", "It must actually match", "Reviewers cross-check the policy against your Data safety declaration. If Data safety says you collect email + advertising ID, the policy must mention both. Auto-generated policies that don't reflect your real SDKs fail this check.")
+        );
+      },
+      what: "A single URL field — but with strict conditions on what's behind it.",
+      do: "Publish a policy on your own domain that mirrors your Data safety answers, paste the URL, and make sure it's also linked inside the app.",
+      gotcha: "A generic ‘privacy policy generator’ output that says ‘we may collect data’ isn't enough — it has to specifically match your Data safety form. And if the page ever goes down, the app can be suspended for a broken policy link.",
+      lp: "Generates a policy from the same SDK scan that produced your Data safety form (so they can't disagree), hosts it, and monitors the URL for downtime."
+    },
+    {
+      part: "Part 3 · App & store listing",
+      nav: "Store listing — text",
+      kick: "Console · Grow › Store presence › Main store listing",
+      title: "Store listing — the words",
+      lead: "App name, short description, full description. This is your primary ASO surface — but Play's metadata policy is strict about how you write it.",
+      crumb: "Main store listing &rsaquo; <b>Text</b>",
+      body: function () {
+        return (
+          card("Main store listing",
+            fld("App name", txt("FocusGarden: Focus Timer", 30, true), "30 characters. Put your strongest keyword phrase here.") +
+            fld("Short description", txtArea("Grow a garden while you focus. A calm Pomodoro timer and habit tracker.", 80, true), "80 characters. Shows at the top of your listing and in some search results. The single most valuable line.") +
+            fld("Full description", txtBigArea(fgDesc(), 4000, true), "4000 characters. Natural language, real keywords in context. No keyword stuffing.")
+          ) +
+          callout("err", "Metadata policy — what gets you rejected", "No ‘#1’, ‘Best’, ‘Top’ unless verifiable. No emojis or repeated symbols used as decoration or to game search. No competitor names. No fake urgency (‘Download now!!!’). No pricing or promo claims in the name/short description. Keep keywords in real sentences.") +
+          callout("info", "Localisation", "Each language you add is a separate listing with its own text — and its own keyword opportunity. Start with en-US and hi-IN for an India-first app.")
+        );
+      },
+      what: "The text fields of your main store listing: name (30), short description (80), full description (4000), per language.",
+      do: "Write a name with your key phrase, a short description that's a real sentence with the main keyword, and a full description that reads naturally while covering the terms people search.",
+      gotcha: "Play rejects listings for ‘decorative’ emojis, superlatives, competitor mentions, and keyword stuffing. The short description (80 chars) does the heavy lifting in search — spend real effort on it, as a sentence, not a keyword list.",
+      lp: "Generates all three fields per language from your app's features and a live keyword set, checks them against the metadata policy before you submit, and feeds them into the Part 7 A/B experiments."
+    },
+    {
+      part: "Part 3 · App & store listing",
+      nav: "Store listing — graphics",
+      kick: "Console · Main store listing › Graphics",
+      title: "Store listing — the assets",
+      lead: "Exact pixel dimensions. Wrong sizes block the release outright.",
+      crumb: "Main store listing &rsaquo; <b>Graphics</b>",
+      body: function () {
+        return (
+          tblWrap('<table class="pc"><thead><tr><th>Asset</th><th>Spec</th><th>Rule</th></tr></thead><tbody>' +
+            grow("App icon", "512 × 512 px, 32-bit PNG (alpha), ≤ 1 MB", "Required. No promo text, no ‘NEW’ badges, no fake notification dots.") +
+            grow("Feature graphic", "1024 × 500 px, PNG/JPG, no alpha", "Required — even though users rarely see it. Missing = can't publish.") +
+            grow("Phone screenshots", "2–8 images, PNG/JPG, 16:9 or 9:16, 320–3840 px/side", "Minimum 2. These drive install rate — treat them as the pitch.") +
+            grow("Tablet screenshots", "7-inch & 10-inch, optional", "Add them or your app looks stretched on tablets and Chromebooks.") +
+            grow("Promo video", "YouTube URL, optional", "Autoplays muted on the listing. Nice-to-have, not required.") +
+          '</tbody></table>') +
+          '<div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;margin-top:4px">' +
+          uploadRow("App icon", "focusgarden_icon_512.png · 512×512 · 88 KB", true) +
+          uploadRow("Feature graphic", "focusgarden_feature_1024x500.png · 210 KB", true) +
+          '</div>' +
+          uploadRow("Phone screenshots (5)", "shot_1…5.png · 1080×1920 each", true) +
+          callout("info", "The screenshots are the ad", "Most installs are decided from the first 2–3 screenshots without reading a word. Lead with the benefit (‘Grow a garden while you focus’), caption each shot, use device frames. This is the highest-leverage art in the whole listing.")
+        );
+      },
+      what: "The image requirements: icon 512², feature graphic 1024×500, 2+ phone screenshots at set aspect ratios, optional tablet shots and video.",
+      do: "Upload each asset at the exact spec. Design the screenshots as a mini pitch deck — benefit-led captions, not raw UI dumps.",
+      gotcha: "One wrong dimension (a 500×500 icon, a screenshot at 4:3) blocks the whole release with a validation error. And an icon with a fake badge or notification dot is an instant policy rejection.",
+      lp: "Generates the icon, feature graphic and a set of captioned, device-framed screenshots at exact spec — and produces per-experiment variants for Part 7."
+    },
+    {
+      part: "Part 3 · App & store listing",
+      nav: "Store settings",
+      kick: "Console · Store presence › Store settings",
+      title: "Store settings",
+      lead: "Category, tags, and the contact details shown on your listing.",
+      crumb: "Store presence &rsaquo; <b>Store settings</b>",
+      body: function () {
+        return (
+          card("App category & contact",
+            fld("App category", sel(["Productivity", "Health & Fitness", "Lifestyle", "Tools", "Education"]), "Pick the category users would browse to find you. Affects which charts you appear in.") +
+            fld("Tags", txt("focus, pomodoro, habit tracker, timer, study"), "Google-provided tags you select from — they refine where you're surfaced.") +
+            fld("Store listing contact — email", txtEmail("support@focusgarden.app"), "Public. Shown on your store listing.") +
+            fld("Store listing contact — website", txt("https://focusgarden.app")) +
+            fld("Store listing contact — phone", txtTel("optional")) +
+            radioSet("External marketing", [["on", "Allow Google to promote this app outside Google Play", "Ads for your app on the web, YouTube, etc. Usually leave on.", true], ["off", "Don't allow", ""]])
+          ) +
+          callout("info", "Category matters for discovery", "Productivity is competitive but correct for FocusGarden. Picking a less-contested category to ‘rank easier’ backfires — you get browsed by the wrong audience and your install-to-retain rate drops, which hurts ranking anyway.")
+        );
+      },
+      what: "Category, tags, public contact info, and the external-marketing opt-in.",
+      do: "Choose the honest category, select relevant tags, add a real support email and website.",
+      gotcha: "The contact email here is public and monitored for responsiveness — a dead support address hurts you. And you can't game the category; wrong-category installs churn fast and Play's ranking notices.",
+      lp: "Sets the category and tags from your keyword research and competitive set, and routes the public support email into a shared inbox with response-time tracking."
+    },
+    {
+      part: "Part 3 · App & store listing",
+      nav: "Listing preview → next",
+      kick: "Console · preview",
+      title: "Preview the listing — then on to testing",
+      lead: "This is what a user sees on the Play Store. When every checklist item is green and identity verification has cleared, the app can move to testing (Part 4).",
+      crumb: "Main store listing &rsaquo; <b>Preview</b>",
+      body: function () {
+        return (
+          '<div style="display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start">' +
+          '<div class="preview">' +
+            '<div class="pv-hero"></div>' +
+            '<div class="pv-body">' +
+              '<div class="pv-top"><span class="pv-ico"></span><div><h3>FocusGarden: Focus Timer</h3><div class="pv-dev">FocusGarden Labs</div><div style="font-size:11px;color:#5f6368">Contains ads · In-app purchases</div></div></div>' +
+              '<div class="pv-stats"><span><b>—</b>Reviews</span><span><b>3+</b>Rated</span><span><b>4.2MB</b>Size</span></div>' +
+              '<div class="pv-install">Install</div>' +
+              '<div class="pv-shots"><i></i><i></i><i></i><i></i></div>' +
+              '<div class="pv-desc">Grow a garden while you focus. A calm Pomodoro timer and habit tracker…</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="flex:1;min-width:240px">' +
+            '<div class="checklist">' +
+            ci("done", "App access", "") + ci("done", "Ads", "") + ci("done", "Content rating", "3+") +
+            ci("done", "Target audience", "18+") + ci("done", "Data safety", "") + ci("done", "Privacy policy", "") +
+            ci("done", "Store listing", "") + ci("done", "Store settings", "") +
+            '</div>' +
+            '<div style="height:12px"></div>' +
+            callout("ok", "Parts 1–3 complete", "Account live, payments profile active, store listing done. The ‘Send for review’ button unlocks once identity verification clears.") +
+          '</div>' +
+          '</div>' +
+          callout("info", "Next: build, test and go live", "Upload the app bundle &amp; Play App Signing · closed testing with 12 testers for 14 days · production release &amp; staged rollout — starting on the next screen.")
+        );
+      },
+      what: "A rendered preview of the store listing plus the completed checklist. The bridge into Part 4 (testing & release).",
+      do: "Review the preview as a user would — is the first screenshot compelling, is the short description clear? Then proceed to testing.",
+      gotcha: "The listing looking ‘done’ in the Console isn't the same as being live. Identity verification (Part 1) still has to clear, and then the 12-tester / 14-day closed test stands between you and production.",
+      lp: "Runs an automated pre-submission audit across all of Parts 1–3, then manages the closed test and the review submission in Part 4."
+    },
+
+    /* ============ (continued from separate Part 4-7 build) ============ */
+/* ============ PART 4 — BUILD, SIGN & TEST ============ */
+    {
+      part: "Part 4 · Build &amp; test",
+      nav: "Upload your first build",
+      kick: "Console · Testing › Internal testing",
+      title: "Upload your first build",
+      lead: "Internal testing is the fastest loop on Play — up to 100 testers, no policy review, live in minutes.",
+      crumb: "Testing &amp; release &rsaquo; <b>Upload your first build</b>",
+      body: function () {
+        return (
+          card("Internal testing release",
+            uploadRow("App bundle", "focusgarden-release-1.0.0.aab · 18.4 MB", true) +
+            kv([
+              ["Format", "Android App Bundle (.aab) — required for new apps, not a raw .apk"],
+              ["Version code", "1 → this build"],
+              ["Version name", "1.0.0"],
+              ["Track", "Internal testing"]
+            ]) +
+            fld("Release name", txt("1.0.0 (1)")) +
+            fld("Release notes", txtArea("Initial release: 25-minute focus sessions, garden growth, AdMob ads, FocusGarden Pro subscription.")) +
+            btnbar('<button class="btn primary" disabled>Save &amp; review release</button><button class="btn" disabled>Start rollout to Internal testing</button>')
+          ) +
+          callout("info", "Minutes, not days", "Internal testing releases skip policy review entirely and are installable within minutes. Use it to smoke-test every single build before it goes anywhere near real testers.") +
+          callout("warn", "Version codes only go up", "Every upload needs a strictly higher version code than the last. Reuse or lower it and Play rejects the upload outright — no warning in advance, just a hard stop.")
+        );
+      },
+      what: "The upload screen for the internal testing track — the .aab file, version info, and release notes.",
+      do: "Build a release .aab (via EAS Build / Codemagic / your CI), upload it, write real release notes, and roll it out to Internal testing.",
+      gotcha: "New developers upload a debug-signed or mismatched build and wonder why Internal testing installs but the app crashes instantly — always upload the release build, signed with the same configuration you will eventually promote.",
+      lp: "Builds and uploads automatically on every push to your main branch, auto-increments the version code, and drafts the release notes from your commit messages."
+    },
+    {
+      part: "Part 4 · Build &amp; test",
+      nav: "Play App Signing",
+      kick: "Console · Setup › App signing",
+      title: "Play App Signing: two keys, not one",
+      lead: "Google holds the key that actually signs what users download. You hold the key you upload with. Losing the wrong one is a disaster.",
+      crumb: "Setup &rsaquo; <b>App signing</b>",
+      body: function () {
+        return (
+          tblWrap(
+            '<table class="pc"><thead><tr><th>&nbsp;</th><th>App signing key</th><th>Upload key</th></tr></thead><tbody>' +
+            trow("Held by", "Google — never leaves Play App Signing", "You, in your CI's signing vault") +
+            trow("Signs", "The APK actually served to users", "The .aab you upload to the Console") +
+            trow("If lost", "Never — Google manages and backs it up", "Recoverable via an identity-verified reset request (a few business days)") +
+            '</tbody></table>'
+          ) +
+          callout("err", "Never opt out of Play App Signing", "The legacy alternative — signing with one key you hold entirely yourself — means that if you ever lose that single key, you can never update that app listing again. New installs only, under a brand-new listing, losing every review and every ranking signal. Play App Signing (the default since 2021) removes this risk completely.") +
+          callout("info", "Where it lives", "Console → Setup → App integrity → App signing. Your upload-key certificate fingerprint is shown here — LaunchPad checks it matches on every release to catch a misconfigured CI before it ships.")
+        );
+      },
+      what: "Explains the two-key model Play uses so a lost key is recoverable instead of fatal.",
+      do: "Confirm Play App Signing is enrolled (default for all apps created after August 2021). Keep your upload key backed up in your CI's secrets manager, not on a laptop.",
+      gotcha: "Apps migrated from very old accounts sometimes opted out years ago. If yours predates 2017 and was never migrated, check this screen first — it is worth fixing before it becomes an emergency.",
+      lp: "Generates and stores the upload key in a managed vault (cloud KMS), rotates access on team changes, and verifies the app-signing enrolment on every release."
+    },
+    {
+      part: "Part 4 · Build &amp; test",
+      nav: "Choose a testing track",
+      kick: "Console · Testing",
+      title: "Four tracks, four purposes",
+      lead: "Internal, closed, open, production — each has a different audience size, review requirement, and job to do.",
+      crumb: "Testing &amp; release &rsaquo; <b>Tracks</b>",
+      body: function () {
+        return (
+          tblWrap(
+            '<table class="pc"><thead><tr><th>Track</th><th>Audience</th><th>Review?</th><th>Purpose</th></tr></thead><tbody>' +
+            trow("Internal testing", "Up to 100, by email list", "No", "Smoke-test every build, minutes to install") +
+            trow("Closed testing", "Unlimited, by email list or Google Group", "No (to release the track)", "Real users, real feedback — and the 12-tester / 14-day clock for Individual accounts") +
+            trow("Open testing", "Anyone with the link, public listing", "Yes", "Broader beta, visible on the store as a beta program") +
+            trow("Production", "Everyone on Google Play", "Yes", "The real, public release") +
+            '</tbody></table>'
+          ) +
+          callout("info", "FocusGarden's path", "Internal testing now, for the team. Then Closed testing, where the mandatory 12 testers for 14 days run (Part 5). Open testing is optional — most solo developers skip straight from Closed to Production.")
+        );
+      },
+      what: "A map of the four release tracks and what each is actually for.",
+      do: "Use Internal for yourself and your team continuously; move to Closed testing once the build is stable enough for outside eyes.",
+      gotcha: "People confuse 'closed testing requires no review' with 'closed testing has no rules' — Google still checks your Data safety, content rating and policy declarations before opted-in testers can install, exactly as it would for production.",
+      lp: "Manages all four tracks from one dashboard and promotes a build from Internal → Closed → Production automatically once each gate (stability, tester count, days elapsed) is met."
+    },
+    {
+      part: "Part 4 · Build &amp; test",
+      nav: "Pre-launch report",
+      kick: "Console · Testing › Pre-launch report",
+      title: "Read the pre-launch report",
+      lead: "Google installs your app on real physical devices and hands you the results — free automated QA on every release.",
+      crumb: "Testing &amp; release &rsaquo; <b>Pre-launch report</b>",
+      body: function () {
+        return (
+          kv([
+            ["Devices tested", "8 physical devices, Android 11 – 15"],
+            ["Crashes / ANRs", "2 found — Pixel 6 (Android 14), Galaxy A54 (Android 13)"],
+            ["Screenshots", "Auto-captured on every screen, every device"],
+            ["Accessibility", "1 warning — low colour contrast on the timer label"],
+            ["Security", "No vulnerabilities detected"],
+            ["Performance", "Cold start 1.9s average — within Google's guidance"]
+          ]) +
+          callout("warn", "It does not block release by itself", "A pre-launch report failure will not stop your submission — but reviewers see it, and real crashes on real devices are one of the fastest routes to a manual policy flag. Treat every crash here as a launch blocker, not a nice-to-have.")
+        );
+      },
+      what: "Google's automated device-farm test: crashes, screenshots, accessibility and performance across real hardware.",
+      do: "Open every flagged crash's stack trace, reproduce it, fix it, and re-upload before moving further down the pipeline.",
+      gotcha: "The report runs on whatever build is in your Internal testing track — if you never uploaded there, you never get this report, and you find these crashes from real users instead.",
+      lp: "Parses every pre-launch report automatically, files the crash stack traces as issues, and re-runs the report after each fix until it is clean."
+    },
+    {
+      part: "Part 4 · Build &amp; test",
+      nav: "Fix, bump, re-upload",
+      kick: "Console · release loop",
+      title: "The build-test-fix loop",
+      lead: "Every fix means a new version code, a fresh build, and watching the same checks run again — until they are clean.",
+      crumb: "Testing &amp; release &rsaquo; <b>Iterate</b>",
+      body: function () {
+        return (
+          '<div class="checklist">' +
+          ci("done", "Diagnose from the crash stack trace") +
+          ci("done", "Patch the code") +
+          ci("done", "Bump version code — 1 → 2") +
+          ci("now", "Rebuild the .aab") +
+          ci("", "Re-upload to Internal testing") +
+          ci("", "Pre-launch report re-runs (about 1–2 hours)") +
+          ci("", "Confirm clean, then promote toward Closed testing") +
+          '</div>' +
+          callout("info", "Automate this loop", "A CI pipeline (EAS Build / Codemagic / GitHub Actions) that builds and uploads on every push turns this from a half-day manual chore into something that happens automatically behind every commit.")
+        );
+      },
+      what: "The repeatable cycle every release goes through until the pre-launch report and your own testing are both clean.",
+      do: "Treat this as normal, not exceptional — budget at least one or two iterations before any release, even a routine update.",
+      gotcha: "Skipping straight to Closed testing with an unverified build wastes your 14-day clock (Part 5) if the build turns out to be broken and testers can't actually use it — always clear Internal testing first.",
+      lp: "Runs this entire loop inside the CI pipeline: build, upload, wait for the pre-launch report, and only notify you if something is actually still broken."
+    },
+
+    /* ============ PART 5 — CLOSED TESTING & GOING LIVE ============ */
+    {
+      part: "Part 5 · Release to production",
+      nav: "Set up closed testing",
+      kick: "Console · Testing › Closed testing",
+      title: "Create a closed testing track",
+      lead: "This is where the mandatory 12 testers, 14 days actually happens for Individual accounts.",
+      crumb: "Testing &amp; release &rsaquo; <b>Closed testing</b>",
+      body: function () {
+        return (
+          card("Closed track — “Early testers”",
+            fld("Track name", txt("Early testers")) +
+            radioSet("Tester list method", [
+              ["email", "Email list", "Paste up to 2,000 email addresses directly.", true],
+              ["group", "Google Group", "Anyone in the group is automatically eligible."]
+            ]) +
+            fld("Tester emails", txtArea("aisha.friend1@gmail.com, aisha.friend2@gmail.com, tester3@gmail.com … (12 total)")) +
+            kv([["Opt-in URL", "play.google.com/apps/testing/com.focusgarden.app"]])
+          ) +
+          callout("warn", "Opted in is not installed", "A tester must open the opt-in link, tap ‘Become a tester’, install the app from the Play Store, and open it at least once. An email address sitting on your list that never does all four steps does not count toward the twelve.")
+        );
+      },
+      what: "The screen where you name a closed track and add your list of testers.",
+      do: "Add at least 12 real people who will actually follow every step, send them the opt-in link directly (not just an email address), and confirm each one has installed and opened the app.",
+      gotcha: "Family and friends often opt in and never actually install — chase confirmation, don't assume. A closed test with 20 opted-in emails but only 9 real installs still fails the requirement.",
+      lp: "Recruits and manages the 12-tester panel for you (or coordinates your own list), sends the opt-in link, and chases anyone who has opted in but not yet installed."
+    },
+    {
+      part: "Part 5 · Release to production",
+      nav: "Track the 14-day countdown",
+      kick: "Console · Testing › Closed testing · status",
+      title: "Watch opt-ins and the 14-day clock",
+      lead: "Play shows you exactly who has opted in and how many continuous days remain — check it, don't guess.",
+      crumb: "Testing &amp; release &rsaquo; <b>Countdown</b>",
+      body: function () {
+        return (
+          '<div class="progress-row"><span>Testers opted in and installed</span><span>9 / 12</span></div>' +
+          '<div class="meter"><i style="width:75%"></i></div>' +
+          '<div class="progress-row"><span>Days elapsed (continuous)</span><span>Day 6 of 14</span></div>' +
+          '<div class="meter"><i style="width:43%"></i></div>' +
+          tblWrap(
+            '<table class="pc"><thead><tr><th>Tester</th><th>Opted in</th><th>Installed</th><th>Opened app</th></tr></thead><tbody>' +
+            trow("aisha.friend1@gmail.com", "✓", "✓", "✓") +
+            trow("aisha.friend2@gmail.com", "✓", "✓", "✓") +
+            trow("tester3@gmail.com", "✓", "—", "—") +
+            '</tbody></table>'
+          ) +
+          callout("warn", "Do not disturb a running clock", "Changing the track significantly — swapping out most of your tester list, renaming the track — can reset the continuous-day count. Once it is running, leave it alone and just wait.")
+        );
+      },
+      what: "The live status view: how many of the required testers have genuinely completed onboarding, and how far through the 14 days you are.",
+      do: "Check in every couple of days, nudge testers who opted in but haven't installed, and do not touch the track configuration while the clock runs.",
+      gotcha: "This screen is where Individual-account developers get impatient and start adding/removing testers to 'fix' the count — that is exactly the action that can reset the days-elapsed counter back to zero.",
+      lp: "Watches this status daily and messages you only when action is genuinely needed — a stalled tester, or the moment eligibility is reached."
+    },
+    {
+      part: "Part 5 · Release to production",
+      nav: "Apply for production access",
+      kick: "Console · Testing › Production access",
+      title: "Request production access",
+      lead: "Once you are eligible, Play shows a ‘promote to production’ option — with one more compliance check first.",
+      crumb: "Testing &amp; release &rsaquo; <b>Production access</b>",
+      body: function () {
+        return (
+          '<div class="checklist">' +
+          ci("done", "Identity verification cleared", "Part 1") +
+          ci("done", "Closed test complete — 12 / 12 testers, 14 / 14 days") +
+          ci("done", "All ‘Set up your app’ items green", "Part 3") +
+          ci("done", "Target API level current for new apps") +
+          '</div>' +
+          btnbar('<button class="btn primary" disabled>Continue to production release</button>') +
+          callout("info", "Organisations skip this entirely", "Organisation accounts (Part 1) are exempt from the 12-tester / 14-day requirement and can request production access as soon as the store listing is complete — this whole screen and the previous one do not apply to them.")
+        );
+      },
+      what: "The gate screen: every prerequisite from Parts 1, 3, 4 and 5 confirmed in one place before production unlocks.",
+      do: "Review the checklist; if anything is not green, go fix it in the relevant part rather than waiting for Play to reject the request.",
+      gotcha: "A stale target API level is an easy miss — Play requires new apps to target a current Android API level, and an old build sitting untouched for months can silently fall out of compliance.",
+      lp: "Runs this exact checklist automatically after every change and only surfaces this screen to you once every item is genuinely green."
+    },
+    {
+      part: "Part 5 · Release to production",
+      nav: "Configure the production release",
+      kick: "Console · Production",
+      title: "Configure your production release",
+      lead: "Countries, rollout percentage, release notes — the actual go-live configuration.",
+      crumb: "Production &rsaquo; <b>Configure</b>",
+      body: function () {
+        return (
+          card("Production release",
+            radioSet("Countries and regions", [
+              ["all", "Available worldwide", "All eligible countries. FocusGarden's default.", true],
+              ["some", "Select countries", "Choose specific markets — useful for phased or region-locked launches."]
+            ]) +
+            fld("Staged rollout", sel(["10% of users", "25% of users", "50% of users", "100% of users"]), "Start low; Play lets you ramp up once you're confident nothing is broken.") +
+            fld("Release notes", txtArea("FocusGarden is here! Grow a garden while you focus, track your streaks, and go Pro for unlimited gardens."))
+          ) +
+          callout("info", "Why staged rollout matters", "At 10%, a bad release reaches a tenth of your eventual audience instead of all of it. Watch crash rate and ratings for a day or two, then ramp to 50% and then 100% once it holds steady.")
+        );
+      },
+      what: "The final configuration before submitting the public release: which countries, what percentage of users see it first, and the release notes.",
+      do: "Choose worldwide (or your target markets), start the rollout at 10–20%, write real release notes, and hold there before ramping further.",
+      gotcha: "Jumping straight to 100% removes your safety net — if something is wrong, every single user hits it at once instead of a controlled fraction.",
+      lp: "Runs the staged rollout on a schedule you set — for example, auto-ramping 10% → 50% → 100% over 48 hours if the crash-free rate stays above a threshold, and pausing it automatically if it doesn't."
+    },
+    {
+      part: "Part 5 · Release to production",
+      nav: "Review and go live",
+      kick: "Console · Production · review",
+      title: "Submit for review — then you are live",
+      lead: "The last wait. Typically hours, sometimes up to three days.",
+      crumb: "Production &rsaquo; <b>Review</b>",
+      body: function () {
+        return (
+          kv([
+            ["Submitted", "Just now"],
+            ["Status", "In review"],
+            ["Typical duration", "A few hours, up to about 3 days"],
+            ["If rejected", "A specific policy reference is given — fix and resubmit; most resubmissions clear within a day"]
+          ]) +
+          callout("ok", "Live", "FocusGarden — Focus Timer &amp; Habits is now available on Google Play, worldwide, at 10% staged rollout.") +
+          callout("warn", "Most rejections trace back to earlier screens", "A mismatched Data safety declaration (Part 3), an inaccurate content rating (Part 3), or missing test credentials (Part 3) account for the large majority of first-submission rejections — not anything on this screen itself.")
+        );
+      },
+      what: "The submission and review-status screen, ending in the app going live.",
+      do: "Submit, then wait — there is nothing to actively do here except monitor status and be ready to respond quickly if it is rejected.",
+      gotcha: "A rejection is not a ban — it is a specific, fixable reason. Read it fully, fix precisely what it names, and resubmit rather than guessing at unrelated changes.",
+      lp: "Monitors review status continuously, parses any rejection reason automatically, applies the fix where it can (metadata, missing declarations), and resubmits without you needing to check back."
+    },
+
+    /* ============ PART 6 — REVENUE, BILLING & DASHBOARDS ============ */
+    {
+      part: "Part 6 · Revenue &amp; dashboards",
+      nav: "Statistics dashboard",
+      kick: "Console · Statistics",
+      title: "Read your Statistics dashboard",
+      lead: "Your day-to-day pulse — installs, uninstalls, ratings — before you even look at money.",
+      crumb: "Statistics &rsaquo; <b>Overview</b>",
+      body: function () {
+        return (
+          '<div class="tiles">' +
+          '<div class="tile"><div class="tl">Installs (30d)</div><div class="tv">12,480</div><div class="td">+18% vs prior</div></div>' +
+          '<div class="tile"><div class="tl">Uninstalls (30d)</div><div class="tv">3,110</div><div class="td down">25% of installs</div></div>' +
+          '<div class="tile"><div class="tl">Active devices</div><div class="tv">31,900</div><div class="td">+9% vs prior</div></div>' +
+          '<div class="tile"><div class="tl">Average rating</div><div class="tv">4.6</div><div class="td">812 reviews</div></div>' +
+          '</div>' +
+          callout("info", "Segment everything", "Break these down by country, device and Android version — a spike in uninstalls that is concentrated on one device model usually points to a specific bug, not a general problem with the app.") +
+          callout("warn", "Watch the install-to-uninstall ratio", "A healthy consumer app sits well under 20–25% uninstalls in the first 30 days. FocusGarden's 25% is on the edge — worth investigating before spending on paid acquisition (Part 7).")
+        );
+      },
+      what: "Play's built-in analytics: installs, uninstalls, active devices and ratings, over time and by segment.",
+      do: "Check this weekly at minimum; segment by device and country whenever a number moves sharply.",
+      gotcha: "Installs alone can look great while uninstalls quietly climb — always read the two together, not installs in isolation.",
+      lp: "Rolls Statistics into the same dashboard as RevenueCat and AdMob (later on this screen list) so you see engagement and revenue side by side instead of in three separate consoles."
+    },
+    {
+      part: "Part 6 · Revenue &amp; dashboards",
+      nav: "Financial reports",
+      kick: "Console · Financial reports",
+      title: "Download your Financial reports",
+      lead: "This is the source of truth — what LaunchPad reconciles its 15% against, and what your CA reconciles for tax.",
+      crumb: "Financial reports &rsaquo; <b>Downloads</b>",
+      body: function () {
+        return (
+          kv([
+            ["Estimated sales report", "Daily estimated revenue, before final reconciliation"],
+            ["Earnings report", "Order-level detail — product, country, amount, Google's fee, net"],
+            ["Payouts report", "Each bank transfer, with the earning period it covers"]
+          ]) +
+          tblWrap(
+            '<table class="pc"><thead><tr><th>Date</th><th>Product</th><th>Country</th><th>Amount</th><th>Google fee</th><th>Net</th></tr></thead><tbody>' +
+            trow("2026-08-14", "premium_monthly", "IN", "₹399.00", "₹59.85", "₹339.15") +
+            trow("2026-08-14", "premium_annual", "IN", "₹2,999.00", "₹449.85", "₹2,549.15") +
+            '</tbody></table>'
+          ) +
+          callout("warn", "It runs a few days behind", "Financial reports are not real-time — expect a lag of a few days before a given day's sales fully settle. Build your reconciliation cadence around that, not around same-day numbers.")
+        );
+      },
+      what: "The three exportable reports behind everything you see summarised elsewhere: estimated sales, order-level earnings, and payouts.",
+      do: "Export the earnings report monthly (CSV) and keep it — it is what your CA uses for tax filing and what LaunchPad's reconciliation reads.",
+      gotcha: "The estimated sales report can shift slightly after the fact (refunds, currency conversion adjustments) — treat the final earnings report, not the daily estimate, as the number that matters.",
+      lp: "Pulls this report automatically every month via the Play Developer Reporting API, so neither you nor your CA has to log in and export it by hand."
+    },
+    {
+      part: "Part 6 · Revenue &amp; dashboards",
+      nav: "RevenueCat dashboard",
+      kick: "RevenueCat · Overview",
+      title: "RevenueCat: your subscription cockpit",
+      lead: "MRR, trials, conversion, churn — the numbers Play Console doesn't show you directly.",
+      crumb: "RevenueCat &rsaquo; <b>Overview</b>",
+      body: function () {
+        return (
+          '<div class="tiles">' +
+          '<div class="tile"><div class="tl">MRR</div><div class="tv">₹47,200</div><div class="td">+12% MoM</div></div>' +
+          '<div class="tile"><div class="tl">Active subs</div><div class="tv">402</div><div class="td">1,910 trials started</div></div>' +
+          '<div class="tile"><div class="tl">Trial → paid</div><div class="tv">21%</div><div class="td">industry avg ~15–25%</div></div>' +
+          '<div class="tile"><div class="tl">Monthly churn</div><div class="tv">4.2%</div><div class="td down">watch this</div></div>' +
+          '</div>' +
+          callout("info", "Where this connects", "RevenueCat sits on top of Google Play Billing — the entitlement (‘premium’) you wired up in Part 3's paywall screen is what these numbers are tracking. It normalises the same subscription across Android and, later, iOS.") +
+          callout("warn", "Churn is the number to protect", "At 4.2% monthly churn, roughly half your subscriber base turns over within about a year even if new signups stay flat. Retention work (Part 7) pays for itself faster than most acquisition spend.")
+        );
+      },
+      what: "RevenueCat's subscriber analytics: MRR, active subscriptions, trial conversion, churn, and (not shown here) LTV and cohort views.",
+      do: "Check MRR and churn weekly; investigate any churn spike against a specific release or price change.",
+      gotcha: "RevenueCat's numbers and Play's Financial reports will not match to the rupee — RevenueCat reports subscription events in real time, Play settles a few days later, and refunds land differently in each. Reconcile monthly, not daily.",
+      lp: "Reads the RevenueCat API continuously and is the single dashboard where MRR, churn and the Play/AdMob numbers finally sit next to each other."
+    },
+    {
+      part: "Part 6 · Revenue &amp; dashboards",
+      nav: "AdMob dashboard",
+      kick: "AdMob · Overview",
+      title: "AdMob: your ad revenue",
+      lead: "Impressions, fill rate, eCPM — where the ad half of FocusGarden's revenue comes from.",
+      crumb: "AdMob &rsaquo; <b>Overview</b>",
+      body: function () {
+        return (
+          '<div class="tiles">' +
+          '<div class="tile"><div class="tl">Impressions</div><div class="tv">184K</div><div class="td">last 30 days</div></div>' +
+          '<div class="tile"><div class="tl">Fill rate</div><div class="tv">96%</div><div class="td">healthy</div></div>' +
+          '<div class="tile"><div class="tl">eCPM</div><div class="tv">₹68</div><div class="td">blended</div></div>' +
+          '<div class="tile"><div class="tl">Est. earnings</div><div class="tv">₹9,240</div><div class="td">last 30 days</div></div>' +
+          '</div>' +
+          callout("info", "Separate payments profile, separate payout", "AdMob pays out on its own schedule — a separate minimum threshold, roughly around the 21st of the month for the prior month's earnings, into the same or a different bank account you choose. It does not travel through the Play payments profile from Part 2.") +
+          callout("warn", "Ads and subscriptions can fight each other", "Show too many ads to a free user close to a paywall moment and you cut conversion to the paid tier — FocusGarden's dashboard tracks eCPM against trial-start rate for exactly this reason.")
+        );
+      },
+      what: "AdMob's revenue dashboard: impression volume, fill rate, eCPM (effective cost per thousand impressions), and estimated earnings.",
+      do: "Watch eCPM by country and ad format (banner vs interstitial vs rewarded); rewarded ads typically pay the most per impression but need the right in-app moment to offer them.",
+      gotcha: "A falling fill rate usually means too many ad requests for too little demand in that market — mediation (multiple ad networks competing) usually fixes it, a single network alone often can't.",
+      lp: "Configures ad mediation across multiple networks to lift fill rate and eCPM, and folds AdMob's payout into the same unified reconciliation as Play and RevenueCat, next screen."
+    },
+    {
+      part: "Part 6 · Revenue &amp; dashboards",
+      nav: "The unified reconciliation",
+      kick: "LaunchPad · Revenue reconciliation",
+      title: "One number: what you actually keep",
+      lead: "Gross across every source, minus every cut, equals your real take-home — matched to the date it lands in your bank.",
+      crumb: "LaunchPad &rsaquo; <b>Reconciliation</b>",
+      body: function () {
+        return (
+          flow([
+            ["n", "Play subscriptions, net of Google's 15%", "₹28,410"],
+            ["n", "Play one-time purchases, net", "₹1,900"],
+            ["n", "AdMob estimated earnings", "₹9,240"],
+            ["n", "RevenueCat web billing, net (if any)", "₹0"],
+            ["you", "Gross app revenue", "₹39,550"],
+            ["lp", "LaunchPad — 15% of net", "− ₹5,932"],
+            ["you", "Your take-home", "₹33,618 → bank, on the payout dates from Part 2"]
+          ])
+        );
+      },
+      what: "The single reconciled figure LaunchPad shows you: every revenue source, minus every cut, matched against when the cash actually lands.",
+      do: "Use this as your one true number for the month — not the Play dashboard alone, not RevenueCat alone, not AdMob alone.",
+      gotcha: "Because Play, AdMob and RevenueCat each report and pay out on different schedules, no single one of their dashboards ever shows your true combined monthly income — only a reconciliation across all three does.",
+      lp: "This entire screen is the point of LaunchPad's reconciliation engine from Part 2 — it exists so you never have to build this table by hand."
+    },
+
+    /* ============ PART 7 — MARKETING & GROWTH ============ */
+    {
+      part: "Part 7 · Marketing &amp; growth",
+      nav: "ASO fundamentals",
+      kick: "Console · Store presence · ASO",
+      title: "How Play search ranking actually works",
+      lead: "Title and short-description keywords, category fit, rating velocity, and how many people uninstall — that is most of it.",
+      crumb: "Growth &rsaquo; <b>ASO</b>",
+      body: function () {
+        return (
+          tblWrap(
+            '<table class="pc"><thead><tr><th>Ranking factor</th><th>What it means</th><th>What you control</th></tr></thead><tbody>' +
+            trow("Keyword relevance", "Terms in your title, short and full description", "Write them as real sentences (Part 3), not lists") +
+            trow("Category fit", "Do installs from your category convert and stay?", "Pick the honest category, not the least competitive one") +
+            trow("Rating &amp; review velocity", "Recent ratings count more than old ones", "Prompt happy users at the right moment, never all users") +
+            trow("Retention signal", "Uninstall rate and Day-1/7/30 retention", "The single biggest lever — a great app outranks a great keyword list") +
+            '</tbody></table>'
+          ) +
+          callout("info", "The honest summary", "ASO is roughly 20% keyword craft and 80% making an app people actually keep. No amount of title tuning fixes a 25% uninstall rate.")
+        );
+      },
+      what: "The mental model behind Play's organic search ranking — what actually moves it, and what doesn't.",
+      do: "Revisit your title and short description (Part 3) quarterly against real search terms; prioritise retention fixes over keyword tweaks.",
+      gotcha: "Stuffing keywords into the title beyond what reads naturally can trigger Play's metadata policy (Part 3) and gets the listing rejected — the policy and good ASO actually point the same direction.",
+      lp: "Runs keyword-rank tracking continuously (an ASOMobile/AppTweak-style tool) and flags when a competitor overtakes a term FocusGarden used to rank for."
+    },
+    {
+      part: "Part 7 · Marketing &amp; growth",
+      nav: "Store listing experiments",
+      kick: "Console · Store presence › Store listing experiments",
+      title: "Run a store listing experiment",
+      lead: "Play can A/B test your icon, screenshots or description against real traffic and tell you which one wins.",
+      crumb: "Growth &rsaquo; <b>Experiments</b>",
+      body: function () {
+        return (
+          card("Experiment: Icon — warm vs cool palette",
+            kv([
+              ["Element under test", "App icon"],
+              ["Traffic split", "50% / 50%"],
+              ["Variant A (control)", "Current icon — install rate 4.1%"],
+              ["Variant B", "Warmer palette — install rate 4.8%"],
+              ["Significance", "95% confidence, after ~9 days"],
+              ["Recommendation", "Apply Variant B to 100% of traffic"]
+            ]) +
+            btnbar('<button class="btn primary" disabled>Apply winning variant</button>')
+          ) +
+          callout("info", "What is worth testing", "Icon and first screenshot move install rate the most; short description usually matters less than people expect, because most visitors decide from the graphics first.")
+        );
+      },
+      what: "Play's built-in A/B testing for store listing elements, measuring real install-rate lift with statistical confidence.",
+      do: "Test one element at a time, let it run to statistical significance (roughly a week or more depending on traffic), then apply the winner and move to the next element.",
+      gotcha: "Ending a test early because a variant looks ahead after two days is the most common mistake — small early leads reverse constantly; wait for the confidence figure.",
+      lp: "Queues and runs experiments continuously in priority order (icon → first screenshot → short description) and auto-applies a winner once significance is reached."
+    },
+    {
+      part: "Part 7 · Marketing &amp; growth",
+      nav: "Custom store listings",
+      kick: "Console · Store presence › Custom store listings",
+      title: "Different listings for different audiences",
+      lead: "Same app, different pitch — by country or by where the visitor came from.",
+      crumb: "Growth &rsaquo; <b>Custom listings</b>",
+      body: function () {
+        return (
+          tblWrap(
+            '<table class="pc"><thead><tr><th>Listing</th><th>Shown to</th><th>Differs by</th></tr></thead><tbody>' +
+            trow("Default", "Everyone not covered below", "Worldwide baseline, English") +
+            trow("India custom listing", "Visitors from India", "₹ pricing emphasis, Hindi language option, local screenshots") +
+            trow("Campaign listing", "Traffic from a specific Google Ads campaign", "Headline matches the ad creative exactly, for message continuity") +
+            '</tbody></table>'
+          ) +
+          callout("info", "Keep the core promise identical", "Customise emphasis and language, never the actual functionality claimed — a listing that overpromises to one audience creates uninstalls and bad reviews from that same audience.")
+        );
+      },
+      what: "Play's ability to show a different store listing to different countries or acquisition sources, without creating a separate app.",
+      do: "Start with one India-specific custom listing; add campaign-specific ones only once you are running paid acquisition (next screen) at meaningful volume.",
+      gotcha: "A custom listing still has to pass the same content-rating and Data safety rules as the default — it is a different pitch, not a different app.",
+      lp: "Generates and maintains locale-specific listings from the same underlying product data, so a change to the real feature set updates every listing at once."
+    },
+    {
+      part: "Part 7 · Marketing &amp; growth",
+      nav: "Google Ads App campaigns",
+      kick: "Google Ads · App campaigns",
+      title: "Set up a Google Ads App campaign",
+      lead: "Give Google your budget and target cost; it finds installs across Search, YouTube, Play and the Display Network automatically.",
+      crumb: "Growth &rsaquo; <b>Google Ads</b>",
+      body: function () {
+        return (
+          card("New App campaign",
+            radioSet("Campaign goal", [
+              ["installs", "Drive app installs", "Optimises purely for install volume.", true],
+              ["actions", "Drive in-app actions", "Optimises for a signal like trial start, once you have enough conversion data."]
+            ]) +
+            fld("Daily budget", txt("₹2,500")) +
+            fld("Target cost per install (CPI)", txt("₹6"), "India benchmark for a well-converting utility/productivity app is roughly ₹5–8 CPI.") +
+            fld("Countries", txt("India")) +
+            fld("Asset group", txt("Headlines, descriptions and images pulled automatically from the Part 3 store listing"))
+          ) +
+          callout("warn", "It needs data before it optimises well", "Universal App Campaigns lean on machine learning that needs roughly 50+ conversions to start optimising properly — expect a rougher, more expensive first one to two weeks before cost per install settles near your target.")
+        );
+      },
+      what: "The setup for a Google Ads App campaign (UAC) — budget, target CPI, goal, and the creative assets it draws from automatically.",
+      do: "Start with a modest daily budget and a realistic target CPI, let it run past the initial learning period before judging performance, and lean on your store listing assets rather than building separate ad creative.",
+      gotcha: "Setting the target CPI too aggressively low from day one usually means the campaign simply can't spend the budget — Google won't chase installs it can't deliver at that price, so spend quietly stalls.",
+      lp: "Launches and tunes the campaign, raising or lowering target CPI based on the CAC-versus-LTV numbers from the growth dashboard (next screen) rather than budget alone."
+    },
+    {
+      part: "Part 7 · Marketing &amp; growth",
+      nav: "The growth dashboard",
+      kick: "LaunchPad · Growth",
+      title: "Organic vs paid, CAC vs LTV",
+      lead: "The one dashboard that tells you whether growth spend is actually working.",
+      crumb: "Growth &rsaquo; <b>Dashboard</b>",
+      body: function () {
+        return (
+          '<div class="tiles">' +
+          '<div class="tile"><div class="tl">Organic installs</div><div class="tv">9,120</div><div class="td">73% of total</div></div>' +
+          '<div class="tile"><div class="tl">Paid installs</div><div class="tv">3,360</div><div class="td">27% of total</div></div>' +
+          '<div class="tile"><div class="tl">CAC</div><div class="tv">₹82</div><div class="td">blended, paid only</div></div>' +
+          '<div class="tile"><div class="tl">LTV</div><div class="tv">₹410</div><div class="td">payback ≈ 10 weeks</div></div>' +
+          '</div>' +
+          callout("ok", "Stage 2 of LaunchPad", "This is where LaunchPad stops being pure infrastructure and becomes a growth partner: pricing and paywall experiments, ASO, creative and campaigns, retention — all measured against this one CAC-versus-LTV view, not vanity install counts.") +
+          callout("info", "The whole arc, closed", "Aisha started with a finished app and no idea how to publish it. Twenty screens across Parts 4 to 7 later — build, test, release, get paid, and grow — FocusGarden is live, monetised, and its growth is measured, not guessed at.")
+        );
+      },
+      what: "The combined view of organic vs paid growth, cost to acquire a customer, and their lifetime value — the numbers that decide whether to spend more or fix retention first.",
+      do: "Only increase paid spend once LTV comfortably exceeds CAC with room for payback within a period you're comfortable with — 10 weeks here is healthy for a ₹399/month subscription.",
+      gotcha: "A rising CAC is often first evidence of ad fatigue or a saturating audience, not a strategy failure — refreshing creative (icon, screenshots, ad assets) usually restores it faster than raising the budget does.",
+      lp: "This dashboard is Stage 2 of the LaunchPad platform: once Stage 1 gets an app live and monetised, Stage 2 runs pricing experiments, ASO, creative refreshes and campaign tuning against exactly this CAC-vs-LTV view, continuously."
+    }
+
+  ];
+
+  /* ---------- spoken narration, one per screen (Priya's voice) ---------- */
+  var V = [
+    "Welcome. I am Priya, and I will walk you through getting FocusGarden onto Google Play, one screen at a time. There is no rush, so take it slowly. This first screen is where you sign in. Use a Google account made just for the business, never your personal Gmail, because whoever signs in here owns the console forever. Then you choose: are you registering as yourself, or as a company? Registration costs twenty five US dollars, one time. Whenever you have a question, type it or tap the microphone in the Ask Priya box below, and I will answer.",
+    "Now the big choice: Individual or Organisation. As an Individual, it is just your photo I D, and it is quicker. As an Organisation you also need a D U N S number, which is a free business identifier that can take a couple of weeks to arrive. Here is the catch that surprises people. If you register as an Individual, before you can go live you must run a closed test with at least twelve testers for fourteen days in a row. Organisations skip that. For FocusGarden we will go Individual. Just start lining up those twelve testers today, not at the finish line.",
+    "This is your identity form. The golden rule: every name and address you type here must match your government I D exactly, and it must match the bank details you add later. Notice there are two name fields. Your legal name stays private. Your developer name is public, and it shows under your app on the store, so choose something you are happy for the world to see. Google will text and email you a code to confirm your phone and your address. Enter them, and you are verified.",
+    "Time to pay the twenty five dollar registration fee. It is a one time charge. Play has no yearly renewal, unlike Apple. Two things matter here. Pay while you are signed in as the account that will own the console. And save the receipt, because it is your only proof of when you registered if there is ever a dispute. The fee is non refundable, even if your I D check fails later, so double check your name on the previous screen before you pay.",
+    "Google now needs to confirm that you are a real person. Upload a clear photo of your government I D, front and back, then do the quick selfie check. The most common reason this gets rejected is a tiny name mismatch. Your I D says Aisha K Rao, but your account says Aisha Rao. If they differ, change your account to match the I D, not the other way round. It usually takes two to three days, sometimes longer. While you wait, you can keep building your store listing. You just cannot publish yet.",
+    "Last step for the account: three agreements. The Developer Distribution Agreement and the Console terms are the actual contract you are signing. The third line matters. Google links accounts by device, card, and address, so if a past account of yours was banned, a new one on the same details can be shut down automatically. Tick the boxes, create the account, and you will land on the Console home with a verification in progress banner. Part one, done.",
+    "Here is something people miss. The twenty five dollars lets you publish. It does not let you get paid. To charge anything, a subscription or an unlock, you need a separate thing called a payments profile. Without it, every paid option in the Console is greyed out. You will find it under Setup, then Payments profile. Start it now, today, because the bank check and the tax forms each take a few days, and you do not want to be launch ready with a paywall that cannot take money.",
+    "This is the first screen of your payments profile. Country and currency here are permanent. You cannot change them later without closing the profile and opening a new one, which disrupts your payouts. So choose the country where you are tax resident and where you will bank. For FocusGarden that is India, in rupees, as an individual. And once again, the name on this profile must match the identity you just verified.",
+    "Now the bank account where Google deposits your money each month. The account holder name has to match the payments profile name exactly. Type the account number twice, and copy the eleven character I F S C code straight from a bank statement. Do not type it from memory, because one wrong character sends your payout into a void, with no error message. Google will send a tiny test deposit in a day or two. You confirm the amount to switch payouts on.",
+    "Your Indian tax details. PAN is mandatory. Without it, Google withholds tax at a higher rate. Then it asks about G S T. If your turnover is below the threshold, like most individual developers, just select not registered. Do not borrow or invent a G S T number to look more official. A wrong answer here creates real filing problems. Keep the name identical to your PAN, your bank, and your I D. Name mismatches are the number one reason Indian developers do not get paid on time.",
+    "Yes, you file United States tax information, even though you are in India. Every Play developer does. As an Indian individual, you complete a form called the W 8 B E N. You say you are not a US person, your country is India, your PAN doubles as the tax I D, and you claim the India US treaty, which lowers the US tax on any US sales. Your India sales are not touched. Do not skip this thinking it does not apply to you. An incomplete US tax form freezes your entire payout, not just the American part. It takes five minutes.",
+    "The payout schedule. It is mostly fixed, and there is little to change. What you need to burn into your memory is the timing. Money you earn in March is finalised in early April and reaches your bank around the fifteenth of April. That is a six week gap between a sale and the cash. If you are spending on ads, you will be paying for installs weeks before the revenue lands, so plan your cash accordingly.",
+    "Let me show you the whole journey of a rupee. A customer taps subscribe. Google Play Billing charges their card or U P I. Google is the seller of record, so you never see card details. Google takes its service fee, which is fifteen percent on subscriptions. It handles the sales tax. What is left builds up in your profile and is paid to your bank once a month. So on a three hundred and ninety nine rupee subscription, Google keeps about sixty, and you receive about three hundred and thirty nine, before your own income tax.",
+    "This is the one screen that is not Google. It is how LaunchPad gets paid. LaunchPad never touches your Google payout. The money goes straight to your bank, under your name, and no one can intercept a slice of that. Instead, you approve a U P I AutoPay mandate. Each month, LaunchPad reads your official Play financial report, works out fifteen percent of your net revenue, and debits that. There is a hard cap per charge, and you can cancel the mandate from your bank app in seconds. You stay in control.",
+    "Now we create the app itself. The name here is capped at thirty characters, so put your strongest search phrase in it. Set it as an App, not a Game, and choose Free. Free is a one way door. You can switch a paid app to free later, but never free to paid. Since FocusGarden makes money from ads and a subscription, Free is exactly right. Tick the two policy declarations and create it. The app now exists as a draft.",
+    "Google gives you a checklist, and every item must turn green before you can send the app for review. You can do them in any order. We will walk through the ones that actually catch people out: the content rating, the data safety form, and the store listing. The rest are quick declarations. For FocusGarden, the government, financial, and health questions are all no.",
+    "This is the content rating questionnaire, run by an independent body called the I A R C. Answer each question about what is actually in your app. FocusGarden is a calm utility, so nearly everything is no. The only yes is that it sells digital items, because of the subscription. Click Calculate rating, and it generates age ratings for every region. Answer honestly in both directions. Claiming content you do not have, or hiding a chat feature you do have, can both get the app suspended. If you add social features later, you redo this.",
+    "Which age groups is FocusGarden for? Choose eighteen and over. The moment you include anyone under thirteen, your app falls under the Families policy: certified ad networks only, no interest based ads to children, stricter data rules, a separate review. There is a second question. Could your app accidentally appeal to children? Keep your icon and screenshots looking like a serious productivity tool, not a colourful game, or Google may decide it appeals to kids and pull you into all those extra rules anyway.",
+    "The data safety form. This becomes a public label on your listing, and it has to match what your app and its building blocks actually do. Here is the trap. You might think, it is just a timer, I collect nothing. But the moment you add AdMob and Firebase, you are collecting and sharing an advertising I D, logging events, and capturing crash reports. You must declare every one of those. Go through it piece by piece. When in doubt, over declare. Under declaring is the classic first suspension.",
+    "You need a privacy policy at a live web address. It has to be on your own domain, not a Google Doc link. It has to name FocusGarden specifically. And it has to list every data type you declared on the data safety form, because reviewers cross check the two. If the policy ever goes offline with a 404, the app can be pulled. Paste the U R L, and make sure the same link also sits inside the app's settings screen.",
+    "Now the words people read on the store. Three fields: a thirty character name, an eighty character short description, and a four thousand character full description. That short description is the single most valuable line. It shows at the top and in search, so write it as a real sentence with your main keyword, not a list of words. Play's rules are strict. No number one, no best, no decorative emojis, no competitor names, no download now. Keep keywords inside natural sentences.",
+    "The images, and the sizes are exact. An icon at five hundred and twelve by five hundred and twelve pixels. A feature graphic at one thousand and twenty four by five hundred. It is required, even though you will rarely see it. And at least two phone screenshots. One wrong dimension blocks the whole release. Spend your real effort on the screenshots. Most people decide to install from the first two or three images without reading a word, so lead with the benefit, add a caption to each, and use device frames. These screenshots are your advertisement.",
+    "Category and contact details. Pick the honest category, Productivity, for FocusGarden. Choosing an easier category to rank in backfires, because the wrong people install, they churn fast, and Play's ranking notices. Add real support contact details. That email is public, and Google watches whether you actually answer it. Leave external marketing on, so Google can promote your app around the web.",
+    "And here is your listing, as a shopper will see it. Look at it with fresh eyes. Is the first screenshot compelling? Is the short description clear in one read? On the right, every checklist item is green. The Send for review button unlocks the moment your identity verification clears. That is parts one to three done: account, payments, and a complete store listing. Next comes uploading your app bundle, the twelve tester closed test, and the production release. That is the next build. Well done.",
+"Welcome back. FocusGarden's account, payments and store listing are done — now we build, test, and get it live. First: upload your build to Internal testing. It is an Android App Bundle, not an A P K, and it needs a version code higher than anything you have uploaded before. Internal testing skips policy review completely, so it is live for your own team within minutes. Use it to smoke-test every single build before anyone outside your team sees it.",
+    "Play App Signing uses two separate keys, and understanding the difference matters. Google holds the app signing key — the one that actually signs what a user downloads — and it never leaves Google, so it is effectively unlosable. You hold the upload key, the one that signs what you send to the Console. Lose that, and you can request a reset with proof of identity; it takes a few days but it is recoverable. Never opt out of Play App Signing — the old alternative means losing your one key locks you out of updating the app forever.",
+    "There are four testing tracks, and each has a job. Internal testing: up to a hundred people, no review, minutes to install — that is you and your team. Closed testing: unlimited testers by email or group, no review to release, and this is where the mandatory twelve testers for fourteen days happens for individual accounts. Open testing is a public beta, and Production is everyone. For FocusGarden: Internal now, Closed next, and Open is optional — most solo developers skip straight from Closed to Production.",
+    "Google installs your app on eight real physical devices and hands you a free report: crashes, screenshots on every device, an accessibility check, and performance timing. This build found two crashes and one accessibility warning. It will not block your release by itself, but treat every crash here as a launch blocker anyway — real users will hit the same one Google's devices did.",
+    "Every fix means a higher version code, a fresh build, a re-upload, and waiting about an hour or two for the pre-launch report to run again. This is completely normal — budget at least one or two of these loops before any release. If you have a continuous-integration pipeline building on every push, this entire loop can run itself.",
+    "Now for the closed test — this is where your twelve testers and fourteen days actually happen, if you registered as an individual back in Part one. Name the track, add at least twelve real email addresses, and send them the opt-in link directly. Here is the trap: opted in does not mean installed. Each tester has to open the link, tap become a tester, install from the Play Store, and open the app at least once. Chase confirmation — don't assume it happened.",
+    "This screen is your countdown: nine of twelve testers have genuinely opted in and installed, and you are on day six of the required fourteen continuous days. Check in every couple of days and nudge anyone who opted in but never installed. And once the clock is running, leave the track configuration alone — swapping out most of your testers or renaming the track can reset the day count back to zero.",
+    "Once you are eligible, Play shows a promote-to-production option, gated behind one more checklist: identity verified, the closed test complete at twelve and fourteen, every setup item green, and your target API level current. If you registered as an organisation back in Part one, all of this — the tester requirement, the fourteen days — does not apply to you; you can request production access as soon as your store listing is done.",
+    "Configure the actual release: which countries, and what percentage of users see it first. Start a staged rollout at around ten percent rather than jumping straight to everyone. Watch the crash rate and ratings for a day or two, then ramp to fifty, then a hundred, once it holds steady. That staged percentage is your safety net if something is quietly broken.",
+    "Submit, and then the last wait — typically a few hours, sometimes up to three days. If it comes back rejected, that is not a ban, it is a specific, fixable reason; read it fully and fix exactly what it names. Most rejections at this stage actually trace back to something earlier — a mismatched data safety form or content rating from Part three — not anything on this screen. Once it clears: FocusGarden is live on Google Play.",
+    "Play's Statistics dashboard is your day-to-day pulse before you even look at money: installs, uninstalls, active devices, and your rating. FocusGarden is at twelve thousand four hundred and eighty installs this month, but a twenty five percent uninstall rate is right on the edge of healthy — worth investigating before you spend a rupee on paid acquisition.",
+    "Financial reports are the real source of truth — the estimated sales report, the order-level earnings report, and the payouts report. This is exactly what LaunchPad reconciles its fifteen percent against, and what your C A uses at tax time. It runs a few days behind real time, so build your own reconciliation rhythm around that lag, not around same-day numbers.",
+    "RevenueCat is your subscription cockpit — the numbers Play Console alone doesn't show you. FocusGarden is at forty seven thousand two hundred rupees of monthly recurring revenue, four hundred and two active subscribers, a twenty one percent trial-to-paid conversion, which is solidly within the normal range, and four point two percent monthly churn. That churn number is the one to protect — at that rate, roughly half your subscribers turn over within a year even with flat new signups.",
+    "AdMob is the other half of FocusGarden's revenue: a hundred and eighty four thousand impressions, ninety six percent fill rate, an effective cost per thousand impressions of sixty eight rupees, and about nine thousand two hundred and forty rupees estimated this month. It pays out separately from Play, on its own schedule around the twenty first of the month. And watch the balance — show too many ads right before a paywall moment and you'll quietly cut your subscription conversion.",
+    "Here is the number that actually matters: everything from Play subscriptions, one-time purchases, and AdMob, added up to a gross of thirty nine thousand five hundred and fifty rupees. LaunchPad's fifteen percent share comes off that — about five thousand nine hundred rupees — leaving you roughly thirty three thousand six hundred rupees landing in your bank, on the payout dates we covered back in part two. No single dashboard — not Play, not RevenueCat, not AdMob — ever shows you this one true number by itself.",
+    "Play search ranking comes down to a few things: keyword relevance in your title and description, whether your category actually fits, how many recent ratings you're getting, and — the biggest lever by far — retention. An app people keep will outrank a perfectly keyword-tuned app that people delete. A S O is roughly twenty percent keyword craft and eighty percent building something worth keeping.",
+    "Play can run a genuine A/B test on your icon, screenshots, or description. FocusGarden tested a warmer icon palette against the original: four point one percent install rate for the original, four point eight percent for the warmer version, statistically significant after about nine days. Apply the winner, then move to testing the next element — icon and the first screenshot move install rate the most.",
+    "You can show a different store listing to different audiences without building a separate app — an India-specific listing with rupee pricing and a Hindi option, or a listing that matches a specific ad campaign word for word. Just keep the actual functionality claim identical everywhere; customise emphasis and language, never what the app actually does.",
+    "A Google Ads App campaign lets you set a daily budget and a target cost per install, and Google finds installs across Search, YouTube, Play and its display network automatically, pulling creative straight from your store listing. For India, five to eight rupees is a realistic target C P I for a well-converting app like FocusGarden. Give it fifty or more conversions before judging it — the first week or two is usually rougher while it learns.",
+    "And here is the dashboard that ties it all together: nine thousand one hundred organic installs against three thousand three hundred and sixty paid ones, a blended cost to acquire a customer of eighty two rupees, against a lifetime value of four hundred and ten — a payback period of about ten weeks. This is where LaunchPad stops being pure infrastructure and becomes a growth partner. Aisha started with a finished app and no idea what came next. Twenty screens later, FocusGarden is live, monetised, and its growth is measured, not guessed at."
+
+  ];
+
+  /* ---------- plain search keywords per screen, since the spoken narration spells
+     acronyms out ("D U N S", "W 8 B E N") in a way word-search would otherwise miss ---------- */
+  var KW = [
+    "sign up google account developer console get started owner",
+    "duns d-u-n-s individual organisation organization account type twelve testers 12 testers 14 days closed testing",
+    "legal name developer name public name contact phone address otp verification details",
+    "25 dollars twenty five fee registration payment card pay",
+    "id verification identity aadhaar passport photo id selfie duns organisation verification time how long",
+    "developer distribution agreement terms of service policy violation banned related accounts",
+    "payments profile setup get paid subscriptions in-app purchases greyed out",
+    "country currency individual business payments profile create permanent",
+    "bank account ifsc account number payout holder name verification deposit",
+    "pan gst gstin india tax tds not registered",
+    "w8ben w-8ben w 8 ben us tax united states treaty withholding foreign tin",
+    "payout schedule monthly threshold payout date fifteenth six week when paid",
+    "google fee 15 percent commission service fee money flow how it works",
+    "launchpad revenue share upi autopay mandate 15 percent fifteen percent reconciliation",
+    "app name free paid game category declarations create app one way door",
+    "checklist tasks app access ads declaration set up",
+    "iarc content rating questionnaire esrb pegi age rating violence digital purchases",
+    "target audience age group families policy children appeal",
+    "data safety form admob firebase advertising id crashlytics privacy data collection",
+    "privacy policy url website link",
+    "app name short description full description aso keywords metadata policy store listing text",
+    "icon feature graphic screenshots 512 1024x500 dimensions graphics assets",
+    "category tags contact email website external marketing store settings",
+    "preview checklist send for review listing preview next steps",
+"upload build aab bundle internal testing version code release notes",
+    "play app signing signing key upload key lost key recovery opt out",
+    "testing tracks internal closed open production audience review",
+    "pre-launch report device farm crash anr accessibility performance screenshots",
+    "fix bump reupload iterate build loop ci pipeline",
+    "closed testing track testers email list google group opt-in twelve 12",
+    "fourteen 14 days countdown opted in installed opened clock reset",
+    "production access request promote checklist organisation exempt",
+    "staged rollout countries regions release notes percent ramp",
+    "submit review live rejected rejection reason resubmit",
+    "statistics installs uninstalls active devices rating dashboard",
+    "financial reports estimated sales earnings payouts csv download",
+    "revenuecat mrr subscribers trial conversion churn ltv cohort dashboard",
+    "admob impressions fill rate ecpm ad earnings mediation payout",
+    "reconciliation gross net launchpad 15 percent take home unified",
+    "aso keyword ranking category rating retention uninstall search",
+    "store listing experiment ab test icon screenshot significance",
+    "custom store listing country audience campaign localisation",
+    "google ads app campaign uac target cpi budget asset group",
+    "growth dashboard organic paid cac ltv payback retention"
+
+  ];
+
+  /* ---------- helpers to build screen HTML ---------- */
+  function card(title, inner) {
+    return '<div style="border:1px solid var(--line-2);border-radius:10px;overflow:hidden">' +
+      (title ? '<div style="padding:11px 14px;border-bottom:1px solid var(--line-2);font-size:12px;font-weight:600;color:#5f6368;text-transform:uppercase;letter-spacing:.04em">' + title + '</div>' : '') +
+      '<div style="padding:16px 14px;display:flex;flex-direction:column;gap:14px">' + inner + '</div></div>';
+  }
+  function fld(label, control, hint, req) {
+    return '<div class="fld' + (req ? ' req' : '') + '"><label>' + label + '</label>' + control +
+      (hint ? '<div class="hint"><span>' + hint + '</span></div>' : '') + '</div>';
+  }
+  function fldCount(label, control, hint, max) {
+    return '<div class="fld"><label>' + label + '</label>' + control +
+      '<div class="hint"><span>' + (hint || '') + '</span><span class="count" data-max="' + max + '">0 / ' + max + '</span></div></div>';
+  }
+  function txt(v, max, count) {
+    return '<input type="text" value="' + esc(v) + '"' + (max ? ' maxlength="' + max + '"' : '') + (count ? ' class="pc-count"' : '') + '>';
+  }
+  function txtEmail(v) { return '<input type="email" value="' + esc(v) + '">'; }
+  function txtTel(v) { return '<input type="tel" value="' + esc(v) + '">'; }
+  function txtArea(v, max, count) {
+    return '<textarea' + (max ? ' maxlength="' + max + '"' : '') + (count ? ' class="pc-count"' : '') + '>' + esc(v) + '</textarea>';
+  }
+  function txtBigArea(v, max, count) {
+    return '<textarea style="min-height:150px"' + (max ? ' maxlength="' + max + '"' : '') + (count ? ' class="pc-count"' : '') + '>' + esc(v) + '</textarea>';
+  }
+  function sel(opts) { return '<select>' + opts.map(function (o) { return '<option>' + esc(o) + '</option>'; }).join('') + '</select>'; }
+  function row2(inner) { return '<div class="row2">' + inner + '</div>'; }
+  function radioSet(label, items, multi) {
+    var type = multi ? 'checkbox' : 'radio';
+    var name = 'r' + (Math.random().toString(36).slice(2, 7));
+    var rows = items.map(function (it) {
+      return '<label><input type="' + type + '" name="' + name + '"' + (it[3] ? ' checked' : '') + '><span>' + it[1] +
+        (it[2] ? '<span class="sub">' + it[2] + '</span>' : '') + '</span></label>';
+    }).join('');
+    return (label ? '<div class="fld"><label>' + label + '</label></div>' : '') + '<div class="radio-set' + (multi ? ' ' : '') + '">' + rows + '</div>';
+  }
+  function btnbar(inner) { return '<div class="btnbar">' + inner + '</div>'; }
+  function callout(kind, t, body) { return '<div class="callout ' + kind + '"><span class="t">' + t + '</span><span>' + body + '</span></div>'; }
+  function kv(pairs) {
+    return '<div class="kv">' + pairs.map(function (p) {
+      return '<div class="r"><span class="k">' + p[0] + '</span><span class="v">' + p[1] + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function tblWrap(t) { return '<div class="tbl-wrap">' + t + '</div>'; }
+  function trow(k, a, b) { return '<tr><td style="color:#5f6368">' + k + '</td><td>' + a + '</td><td>' + b + '</td></tr>'; }
+  function grow(a, b, c) { return '<tr><td style="font-weight:500">' + a + '</td><td class="mono" style="font-family:var(--mono);font-size:11.5px">' + b + '</td><td style="color:#5f6368">' + c + '</td></tr>'; }
+  function ci(state, label, meta) {
+    var mark = state === 'done' ? '✓' : (state === 'now' ? '▸' : '');
+    return '<div class="ci ' + state + '"><span class="box">' + mark + '</span><span>' + label + '</span>' + (meta ? '<span class="meta">' + meta + '</span>' : '') + '</div>';
+  }
+  function q(text, id, yes) {
+    return '<div class="q"><span>' + text + '</span><span class="opts">' +
+      '<label><input type="radio" name="' + id + '"' + (yes ? '' : ' checked') + '> No</label>' +
+      '<label><input type="radio" name="' + id + '"' + (yes ? ' checked' : '') + '> Yes</label></span></div>';
+  }
+  function ds(name, tag, detail, chips) {
+    return '<details class="ds"><summary><span>' + name + '</span><span class="tag">' + tag + '</span></summary>' +
+      '<div class="inner"><span style="color:#5f6368">' + detail + '</span><div class="chip-row">' +
+      chips.map(function (c) { return '<span class="chip on">' + c + '</span>'; }).join('') + '</div></div></details>';
+  }
+  function flow(nodes) {
+    return '<div class="flow">' + nodes.map(function (n, i) {
+      return (i ? '<span class="arrow">↓</span>' : '') + '<div class="n ' + n[0] + '"><span class="lab">' + n[1] + '</span><br><span class="det">' + n[2] + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function uploadRow(label, file, ok) {
+    return '<div style="display:flex;gap:10px;align-items:center;border:1px dashed var(--line);border-radius:8px;padding:9px 12px;font-size:12.5px;flex:1;min-width:220px">' +
+      '<span style="color:#5f6368">' + label + '</span>' +
+      '<span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:#137333">' + (ok ? '✓ ' : '') + file + '</span></div>';
+  }
+  function miniRecon() {
+    return '<div style="border:1px solid var(--line-2);border-radius:8px;overflow:hidden;font-size:12px">' +
+      '<div style="background:var(--surface-2);padding:8px 12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#5f6368">Sample monthly reconciliation</div>' +
+      reconRow("Play — subscriptions (net of Google 15%)", "₹28,410") +
+      reconRow("Play — one-time purchases (net)", "₹1,900") +
+      reconRow("AdMob — estimated earnings", "₹9,240") +
+      reconRow("RevenueCat — web billing (net)", "₹0") +
+      reconRow("<b>Net app revenue</b>", "<b>₹39,550</b>") +
+      reconRow("<span style='color:var(--lp)'>LaunchPad 15% — debited by mandate</span>", "<span style='color:var(--lp)'>₹5,932</span>") +
+      '</div>';
+  }
+  function reconRow(a, b) {
+    return '<div style="display:flex;justify-content:space-between;gap:12px;padding:7px 12px;border-top:1px solid var(--line-2)"><span>' + a + '</span><span class="mono" style="font-family:var(--mono)">' + b + '</span></div>';
+  }
+  function fgDesc() {
+    return "FocusGarden turns focused work into something you can see grow.\n\n" +
+      "Start a focus session and a plant begins to grow. Stay off your phone and it flourishes; leave the app and it wilts. Over days and weeks your garden becomes a picture of the work you've actually done.\n\n" +
+      "• Pomodoro-style focus timer with adjustable work and break lengths\n" +
+      "• A daily habit tracker with streaks\n" +
+      "• Gentle focus soundscapes\n" +
+      "• Weekly insights into when you concentrate best\n\n" +
+      "Free to use with ads. FocusGarden Pro removes ads and unlocks unlimited gardens, all soundscapes and detailed insights.";
+  }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+  /* ---------- engine ---------- */
+  var i = 0;
+  var nav = document.getElementById('sidenav');
+  var elKick = document.getElementById('s-kick'), elTitle = document.getElementById('s-title'), elLead = document.getElementById('s-lead'), elBody = document.getElementById('s-body');
+  var cWhat = document.getElementById('c-what'), cDo = document.getElementById('c-do'), cGot = document.getElementById('c-gotcha'), cLp = document.getElementById('c-lp');
+  var prog = document.getElementById('prog'), pcount = document.getElementById('pcount'), crumb = document.getElementById('crumb');
+  var btnPrev = document.getElementById('prev'), btnNext = document.getElementById('next');
+
+  // build nav
+  var lastPart = null;
+  S.forEach(function (s, n) {
+    if (s.part !== lastPart) {
+      var p = document.createElement('div'); p.className = 'part'; p.textContent = s.part.replace(/&amp;/g, '&'); nav.appendChild(p); lastPart = s.part;
+    }
+    var b = document.createElement('button'); b.className = 'nav'; b.dataset.n = n;
+    b.innerHTML = '<span class="n">' + (n + 1) + '</span><span>' + s.nav + '</span>';
+    b.addEventListener('click', function () { go(n); });
+    nav.appendChild(b);
+  });
+
+  function go(n) {
+    i = Math.max(0, Math.min(S.length - 1, n));
+    var s = S[i];
+    elKick.textContent = s.kick;
+    elTitle.textContent = s.title;
+    elLead.innerHTML = s.lead;
+    elBody.innerHTML = typeof s.body === 'function' ? s.body() : s.body;
+    cWhat.innerHTML = s.what; cDo.innerHTML = s.do; cGot.innerHTML = s.gotcha; cLp.innerHTML = s.lp;
+    crumb.innerHTML = s.crumb || s.nav;
+    prog.style.width = ((i + 1) / S.length * 100) + '%';
+    pcount.textContent = (i + 1) + ' / ' + S.length;
+    btnPrev.disabled = i === 0;
+    btnNext.disabled = i === S.length - 1;
+    btnNext.textContent = i === S.length - 1 ? 'End of walkthrough' : 'Next →';
+    Array.prototype.forEach.call(nav.querySelectorAll('button.nav'), function (b) {
+      var bn = +b.dataset.n;
+      b.classList.toggle('active', bn === i);
+      b.classList.toggle('done', bn < i);
+    });
+    wireBody();
+    if (typeof narrateScreen === 'function') narrateScreen();
+    document.querySelector('.canvas').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }
+
+  function wireBody() {
+    // char counters
+    Array.prototype.forEach.call(elBody.querySelectorAll('.pc-count'), function (input) {
+      var max = input.getAttribute('maxlength');
+      var hint = input.parentElement.querySelector('.hint');
+      if (!hint) return;
+      var badge = document.createElement('span');
+      badge.className = 'count';
+      hint.appendChild(badge);
+      var upd = function () {
+        var len = input.value.length;
+        badge.textContent = len + ' / ' + max;
+        badge.classList.toggle('over', +max && len >= +max);
+      };
+      input.addEventListener('input', upd); upd();
+    });
+    // content rating calculate
+    var calc = elBody.querySelector('#calcRating');
+    if (calc) {
+      calc.addEventListener('click', function () {
+        var out = elBody.querySelector('#ratingOut');
+        if (out) out.classList.add('show');
+      });
+    }
+  }
+
+  btnPrev.addEventListener('click', function () { go(i - 1); });
+  btnNext.addEventListener('click', function () { go(i + 1); });
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (e.key === 'ArrowRight') go(i + 1);
+    if (e.key === 'ArrowLeft') go(i - 1);
+  });
+
+  /* ===================== narration (Priya's voice) ===================== */
+  var synth = window.speechSynthesis || null;
+  var voices = [], chosenVoice = null, rate = 0.8;
+  var speakQ = [], speakIdx = 0, speaking = false, speakingAnswer = false;
+  var narrateAuto = true;
+
+  var caption = document.getElementById('caption');
+  var nPlay = document.getElementById('nPlay'), nStop = document.getElementById('nStop');
+  var nRate = document.getElementById('nRate'), nVoice = document.getElementById('nVoice'), nAuto = document.getElementById('nAuto');
+  var gStatus = document.getElementById('gStatus');
+
+  function splitSentences(t) {
+    return (String(t).match(/[^.!?]+[.!?]*/g) || [String(t)])
+      .map(function (s) { return s.trim(); }).filter(Boolean);
+  }
+  function escc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+  function pickFemale(list) {
+    var pref = /(zira|aria|jenny|michelle|sonia|libby|maisie|hazel|susan|catherine|samantha|karen|moira|tessa|fiona|veena|raveena|heera|priya|neerja|asha|ananya|female|woman|girl)/i;
+    var en = list.filter(function (v) { return /^en(-|_|$)/i.test(v.lang); });
+    var pool = en.length ? en : list;
+    return pool.filter(function (v) { return pref.test(v.name); })[0]
+        || pool.filter(function (v) { return /en[-_]IN/i.test(v.lang); })[0]
+        || pool.filter(function (v) { return /en[-_]GB/i.test(v.lang); })[0]
+        || pool[0] || null;
+  }
+  function loadVoices() {
+    if (!synth) return;
+    voices = synth.getVoices() || [];
+    if (!voices.length) return;
+    var en = voices.filter(function (v) { return /^en(-|_|$)/i.test(v.lang); });
+    var show = en.length ? en : voices;
+    nVoice.innerHTML = show.map(function (v) {
+      return '<option value="' + voices.indexOf(v) + '">' + escc(v.name) + ' (' + v.lang + ')</option>';
+    }).join('');
+    if (!chosenVoice) chosenVoice = pickFemale(voices);
+    if (chosenVoice) nVoice.value = String(voices.indexOf(chosenVoice));
+  }
+  if (synth) {
+    loadVoices();
+    synth.onvoiceschanged = loadVoices;
+  } else {
+    var nEl = document.getElementById('narrate');
+    if (nEl) nEl.style.opacity = '.55';
+    nPlay.disabled = true;
+  }
+
+  function clearHi() {
+    Array.prototype.forEach.call(caption.querySelectorAll('.cap-s.active'), function (e) { e.classList.remove('active'); });
+  }
+  function hi(idx) {
+    clearHi();
+    var el = caption.querySelector('[data-s="' + idx + '"]');
+    if (el) el.classList.add('active');
+  }
+  function renderCaption(text) {
+    var parts = splitSentences(text);
+    caption.innerHTML = parts.map(function (p, idx) {
+      return '<span class="cap-s" data-s="' + idx + '">' + escc(p) + ' </span>';
+    }).join('');
+    return parts;
+  }
+
+  function stopSpeak() {
+    speaking = false; speakingAnswer = false; speakQ = []; speakIdx = 0;
+    if (synth) synth.cancel();
+    nPlay.innerHTML = '&#9654; Play';
+    nStop.disabled = true;
+    clearHi();
+  }
+  function runQueue() {
+    if (!speaking || speakIdx >= speakQ.length) {
+      if (speakIdx >= speakQ.length) stopSpeak();
+      return;
+    }
+    var u = new SpeechSynthesisUtterance(speakQ[speakIdx]);
+    if (chosenVoice) u.voice = chosenVoice;
+    u.rate = rate; u.pitch = 1.06;
+    if (!speakingAnswer) hi(speakIdx);
+    u.onend = function () { if (!speaking) return; speakIdx++; runQueue(); };
+    u.onerror = function () { if (!speaking) return; speakIdx++; runQueue(); };
+    synth.speak(u);
+  }
+  function speak(sentences, fromIdx, isAnswer) {
+    if (!synth || !sentences.length) return;
+    synth.cancel();
+    speakQ = sentences; speakIdx = fromIdx || 0;
+    speaking = true; speakingAnswer = !!isAnswer;
+    nPlay.innerHTML = '&#10073;&#10073; Pause';
+    nStop.disabled = false;
+    runQueue();
+  }
+  function pauseSpeak() {
+    if (!speaking) return;
+    speaking = false;
+    if (synth) synth.cancel();
+    nPlay.innerHTML = '&#9654; Play';
+  }
+
+  var currentSentences = [];
+  function narrateScreen() {
+    stopSpeak();
+    var t = (typeof V !== 'undefined' && V[i]) ? V[i] : S[i].lead;
+    currentSentences = renderCaption(t);
+    if (narrateAuto && synth) setTimeout(function () { speak(currentSentences, 0, false); }, 350);
+  }
+
+  nPlay.addEventListener('click', function () {
+    if (!synth) return;
+    if (speaking) { pauseSpeak(); }
+    else { speak(currentSentences, (speakIdx > 0 && speakIdx < currentSentences.length && !speakingAnswer) ? speakIdx : 0, false); }
+  });
+  nStop.addEventListener('click', stopSpeak);
+  nRate.addEventListener('change', function () {
+    rate = parseFloat(nRate.value) || 0.8;
+    if (speaking && !speakingAnswer) speak(currentSentences, speakIdx, false);
+  });
+  nVoice.addEventListener('change', function () {
+    var v = voices[+nVoice.value];
+    if (v) chosenVoice = v;
+    if (speaking) speak(speakQ, speakIdx, speakingAnswer);
+  });
+  nAuto.addEventListener('change', function () { narrateAuto = nAuto.checked; });
+  // Chrome cuts long speech runs; nudge it while we are mid-narration.
+  setInterval(function () { if (synth && speaking) { try { synth.resume(); } catch (e) {} } }, 9000);
+  window.addEventListener('beforeunload', function () { if (synth) synth.cancel(); });
+
+  /* ===================== Ask Priya (intervene any time) ===================== */
+  var chatLog = document.getElementById('chatLog');
+  var askForm = document.getElementById('askForm');
+  var askInput = document.getElementById('askInput');
+  var askSend = document.getElementById('askSend');
+  var micBtn = document.getElementById('micBtn');
+  var askHint = document.getElementById('askHint');
+  var SAMPLE = null;
+  var chatHistory = [];
+
+  var RULES =
+    "You are Priya, a warm, patient mentor helping an indie developer in India publish, launch and grow their first Android app through the Google Play Console. " +
+    "You know this entire walkthrough end to end — all 44 screens across seven parts: the developer account, the payments profile, the app and store listing, building and signing the app, testing tracks and the closed-testing requirement, the production release, revenue and billing dashboards (Play Statistics and Financial reports, RevenueCat, AdMob, and a unified LaunchPad reconciliation), and marketing and growth (ASO, store listing experiments, custom listings, Google Ads App campaigns, and a CAC-versus-LTV growth dashboard) — not just the one screen the developer happens to be on. " +
+    "The developer may ask about ANY of it, in any order: the account types, the $25 fee, identity verification, the payments profile, bank accounts, India tax and GST, the US W-8BEN form, payout timing, how Google's cut works, LaunchPad's 15 percent, creating the app, content rating, target audience, the data safety form, the privacy policy, the store listing, app signing keys, testing tracks, the 12-tester / 14-day closed test, staged rollout, Statistics, Financial reports, RevenueCat, AdMob, ASO, store listing experiments, Google Ads campaigns, CAC and LTV, or anything related. " +
+    "Answer whatever they actually asked using the knowledge base below, even if it belongs to a different screen than the one they are currently on — and if it does, say which screen covers it by name so they can find it. " +
+    "Answer in two to five short spoken sentences, plain language, no markdown, no bullet lists. " +
+    "Use Indian context where relevant: rupees, PAN, GST, UPI, IFSC. Be accurate to the real Google Play Console and Google Play policies as of early 2026; if a detail varies or you are not certain, say so briefly and suggest checking the live Console. " +
+    "The app in this walkthrough is FocusGarden, a Flutter focus-timer app, published free with Google AdMob ads plus a RevenueCat subscription at 399 rupees per month with a 7-day trial. " +
+    "A separate platform called LaunchPad automates these steps and collects a 15 percent revenue share via a UPI AutoPay mandate. " +
+    "Do not invent specific figures you do not actually know. Never say you are an AI or a language model; you are Priya, their guide.";
+
+  // Shown when the live sample() capability is unavailable — this is expected, not broken:
+  // it only connects when the page is open inside Claude's own artifact view, which is also
+  // the one situation where the microphone usually cannot be granted (see the mic handler).
+  var NO_LIVE_NOTE = "I am running on my built-in notes right now, not a live Claude connection — that only works when this page is open inside the Claude app's own artifact view. Here is what I have on that: ";
+
+  /* ---------- full knowledge base across all 44 screens, so Priya can answer any related
+     question, not only the one for the screen currently on display ---------- */
+  var KB_TEXT = S.map(function (s, idx) {
+    return "Screen " + (idx + 1) + " — " + s.title + " (" + s.part.replace(/&amp;/g, "&") + "):\n" +
+      ((typeof V !== "undefined" && V[idx]) || s.lead) + "\n" +
+      "Gotcha: " + stripTags(s.gotcha) + "\n" +
+      "LaunchPad automates: " + stripTags(s.lp);
+  }).join("\n\n");
+
+  var KB_ITEMS = S.map(function (s, idx) {
+    var blob = (s.title + " " + s.nav + " " + ((typeof V !== "undefined" && V[idx]) || s.lead) + " " +
+      stripTags(s.what) + " " + stripTags(s.gotcha) + " " + stripTags(s.lp)).toLowerCase();
+    return { idx: idx, title: s.title, blob: blob, kw: (KW[idx] || "").toLowerCase(), snippet: ((typeof V !== "undefined" && V[idx]) || s.lead) };
+  });
+
+  var STOPWORDS = ("the a an is are do does did what when how why where to of in on for and or i me my you your " +
+    "it this that can could should would will about with be being been if need needed needs want wants like " +
+    "please tell explain okay ok so just also there here").split(" ").reduce(function (m, w) { m[w] = 1; return m; }, {});
+  function tokenize(q) {
+    return String(q).toLowerCase().replace(/[^a-z0-9%$₹ ]+/g, " ").split(/\s+/)
+      .filter(function (w) { return w && w.length > 1 && !STOPWORDS[w]; });
+  }
+  function bestMatches(q, topN) {
+    var words = tokenize(q);
+    if (!words.length) return [];
+    var scored = KB_ITEMS.map(function (item) {
+      var score = 0;
+      words.forEach(function (w) {
+        if (item.title.toLowerCase().indexOf(w) !== -1) score += 3;
+        if (item.kw.indexOf(w) !== -1) score += 3;
+        else if (item.blob.indexOf(w) !== -1) score += 1;
+      });
+      return { item: item, score: score };
+    }).filter(function (r) { return r.score > 0; });
+    scored.sort(function (a, b) { return b.score - a.score; });
+    return scored.slice(0, topN || 1);
+  }
+  function kbAnswer(q) {
+    var top = bestMatches(q, 1)[0];
+    if (!top || top.score < 2) return null;
+    var idx = top.item.idx;
+    var sset = splitSentences(top.item.snippet).slice(0, 3).join(" ");
+    var lead = (idx === i) ? "" : ("On the \"" + S[idx].title + "\" screen: ");
+    return { text: lead + sset, idx: idx };
+  }
+  function addJumpLink(bubble, idx) {
+    var link = document.createElement("button");
+    link.type = "button";
+    link.className = "jumplink";
+    link.textContent = "Open “" + S[idx].title + "” →";
+    link.addEventListener("click", function () { go(idx); });
+    bubble.appendChild(document.createElement("br"));
+    bubble.appendChild(link);
+  }
+
+  var sampleChecked = false;
+  function setSampleStatus() {
+    sampleChecked = true;
+    if (SAMPLE) {
+      askHint.textContent = ' · live answers on';
+      if (gStatus) gStatus.textContent = 'live';
+    } else {
+      askHint.textContent = ' · built-in notes';
+      if (gStatus) gStatus.textContent = 'offline notes';
+    }
+  }
+  askHint.textContent = ' · checking…';
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('sample').then(function (fn) {
+      SAMPLE = fn || null;
+      setSampleStatus();
+    }).catch(function () { SAMPLE = null; setSampleStatus(); });
+    // window.claude.use() can take up to ~10s to settle; do not leave "checking..." forever.
+    setTimeout(function () { if (!sampleChecked) setSampleStatus(); }, 10500);
+  } else {
+    SAMPLE = null;
+    setSampleStatus();
+  }
+
+  function stripTags(s) { return String(s).replace(/<[^>]+>/g, ''); }
+  function addBubble(cls, text) {
+    var b = document.createElement('div');
+    b.className = 'bubble ' + cls;
+    b.textContent = text;
+    chatLog.appendChild(b);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    return b;
+  }
+
+  function faqAnswer(q) {
+    q = ' ' + q.toLowerCase() + ' ';
+    var f = [
+      [/dun|d[-\s]?u[-\s]?n[-\s]?s/, "A D U N S number is a free nine-digit business identifier from Dun and Bradstreet. Google uses it to confirm an organisation is real, and it can take one to four weeks, so request it early. Individual accounts do not need one."],
+      [/(how long|take).*(verif|approv|review)|verif.*(how long|take|wait)/, "Identity verification is usually two to three business days for an individual, though it can take a few weeks if the photo is unclear or the name does not match. You can keep building your listing while you wait."],
+      [/twelve tester|12 tester|14 day|fourteen day|closed test/, "If you register as an individual, Google requires a closed test with at least twelve testers opted in for fourteen straight days before you can request production access. Start gathering testers now, not at launch."],
+      [/ gst /, "If your turnover is below the GST threshold, select not registered. That is normal for most individual developers. Do not enter a GST number you do not have, because a wrong answer causes filing problems and can hold up payouts."],
+      [/w[-\s]?8[-\s]?ben|us tax|united states tax|america tax/, "Every Play developer completes United States tax information, even in India. You file a W 8 B E N, state you are not a US person, put India as your country, use your PAN as the tax ID, and claim the India US treaty to reduce US withholding. Skipping it freezes your whole payout."],
+      [/(when|how).*(paid|payout)|payout|get my money/, "Google pays monthly, around the fifteenth, for the previous calendar month, once you are above about one dollar. Expect roughly a six-week gap between a sale and the cash reaching your bank."],
+      [/15 ?%|15 percent|fifteen percent| cut |commission|google.*(take|fee)/, "Google takes fifteen percent on subscriptions, and fifteen percent on the first one million dollars of earnings each year, thirty percent above that. It is deducted before you are paid."],
+      [/free to paid|paid to free|change (the )?price|switch price/, "You can move a paid app to free, but never free to paid. For an ads plus subscription app like FocusGarden, choose Free with in-app products."],
+      [/privacy policy/, "It must be a live web page on your own domain, it must name FocusGarden specifically, and it must list every data type from your Data safety form. Reviewers cross-check the two, and a dead link can get the app pulled."],
+      [/data safety/, "Declare what your app and its SDKs really do. AdMob shares the advertising ID, Firebase logs events, Crashlytics collects diagnostics, and all of that must be disclosed. Under-declaring is a common first suspension."],
+      [/(cost|fee|how much|price)/, "Google Play is a one-time twenty-five dollars. Apple charges ninety-nine dollars a year. LaunchPad is free to start and takes fifteen percent of your net revenue."],
+      [/reject|rejection|suspend|banned/, "The usual causes are an inaccurate Data safety form, a broken or generic privacy policy, a wrong content rating, metadata that breaks the rules, or a login screen with no test credentials. This simulator flags each one as you go."],
+      [/launchpad/, "LaunchPad does everything on these screens for you and keeps the forms updated. It never touches your Google payout; it collects fifteen percent of your net revenue through a UPI mandate that you can cancel anytime."],
+      [/icon|screenshot|feature graphic|graphics/, "The icon is five hundred and twelve pixels square, the feature graphic is one thousand and twenty four by five hundred, and you need at least two phone screenshots. Wrong sizes block the release. Put your effort into the screenshots, because most installs are decided from the first few images."],
+      [/app signing key|upload key|lost.*key|opt out.*signing/, "Google holds the app signing key and it never leaves Play — that one is effectively unlosable. You hold the upload key; lose it and you can request a reset with identity proof, taking a few days. Never opt out of Play App Signing, or losing your one key locks you out of updating the app forever."],
+      [/twelve tester|12 tester|14 day|fourteen day|closed test/, "Closed testing needs at least twelve testers opted in and actually installed for fourteen continuous days before an individual account can request production access. Opted in is not enough — they must install and open the app too. Organisation accounts skip this entirely."],
+      [/staged rollout/, "A staged rollout releases your update to a percentage of users first, so a bad release only reaches that fraction instead of everyone. Start around 10 percent and ramp up once crash rate and ratings hold steady."],
+      [/mrr|revenuecat|churn|ltv|trial conversion/, "RevenueCat is the subscription cockpit: monthly recurring revenue, active subscribers, trial-to-paid conversion, and churn — figures Play Console alone doesn't show you directly."],
+      [/admob|ecpm|fill rate|ad revenue/, "AdMob reports impressions, fill rate, and eCPM, and pays out separately from Play on its own schedule. Too many ads right before a paywall moment can quietly hurt your subscription conversion."],
+      [/reconciliation|take.home|unified/, "LaunchPad's reconciliation adds up Play, AdMob and RevenueCat revenue, subtracts its 15 percent share, and shows you the one true take-home number — something none of those three dashboards shows on its own."],
+      [/aso|app store optimi[sz]ation|keyword ranking/, "Play's ranking mostly comes from keyword relevance, category fit, rating and review velocity, and retention. Roughly 80 percent of ASO is actually just building an app people keep, not keyword tricks."],
+      [/store listing experiment|a\/?b test/, "Play can A/B test your icon, screenshots or description against real traffic and tell you which wins with statistical confidence. Test one element at a time and wait for significance before applying the winner."],
+      [/google ads|user acquisition|app campaign|cost per install/, "A Google Ads App campaign takes your budget and target cost per install and finds installs across Search, YouTube, Play and Display automatically. In India, roughly five to eight rupees CPI is a realistic target, but it needs about fifty conversions before it optimises well."],
+      [/\bcac\b|customer acquisition cost|payback/, "CAC is what you spend to acquire one paying customer; compare it to lifetime value. A payback period of around ten weeks or less is generally healthy for a monthly subscription like FocusGarden's."]
+    ];
+    for (var k = 0; k < f.length; k++) if (f[k][0].test(q)) return f[k][1];
+    return null;
+  }
+
+  var askCtl = null;
+  async function ask(q) {
+    pauseSpeak();
+    addBubble('q', q);
+    var a = addBubble('a streaming', '…');
+    askInput.value = '';
+    askSend.disabled = true;
+    var answer = '';
+    var selfContained = false; // true once a curated FAQ answer already fully covers it — skip the jump link then
+    try {
+      if (SAMPLE) {
+        askCtl = new AbortController();
+        var ctx = "KNOWLEDGE BASE — every screen of this Play Console walkthrough:\n\n" + KB_TEXT +
+          "\n\nThe developer is currently looking at: " + S[i].title + ".";
+        var turns = [{ role: 'user', content: RULES + '\n\n' + ctx }];
+        chatHistory.slice(-6).forEach(function (t) { turns.push(t); });
+        turns.push({ role: 'user', content: q });
+        var r = await SAMPLE(turns, {
+          cache: false, modelTier: 'quick', signal: askCtl.signal,
+          onText: function (u) { a.textContent = u.text; chatLog.scrollTop = chatLog.scrollHeight; }
+        });
+        answer = r.text;
+        chatHistory.push({ role: 'user', content: q }, { role: 'assistant', content: r.text });
+        if (chatHistory.length > 12) chatHistory.splice(0, chatHistory.length - 12);
+      } else {
+        var fa = faqAnswer(q);
+        var kb = fa ? null : kbAnswer(q);
+        selfContained = !!fa;
+        answer = fa || (kb && kb.text) || (NO_LIVE_NOTE + stripTags(S[i].gotcha));
+        a.textContent = answer;
+      }
+    } catch (e) {
+      var code = e && e.code;
+      if (code === 'cancelled') { a.classList.remove('streaming'); askSend.disabled = false; return; }
+      var fb = faqAnswer(q);
+      var fbkb = fb ? null : kbAnswer(q);
+      selfContained = !!fb;
+      answer = (code === 'not_granted' || code === 'sampling_disabled')
+        ? (fb || (fbkb && fbkb.text) || (NO_LIVE_NOTE + stripTags(S[i].gotcha)))
+        : (e && e.text) ? e.text
+        : (fb || (fbkb && fbkb.text) || 'Sorry, that did not go through. Try again in a moment, or rephrase the question.');
+      a.textContent = answer;
+    }
+    a.classList.remove('streaming');
+    askSend.disabled = false;
+    if (!selfContained) {
+      var jump = bestMatches(q, 1)[0];
+      if (jump && jump.item.idx !== i && jump.score >= 4) addJumpLink(a, jump.item.idx);
+    }
+    if (synth && answer) speak(splitSentences(answer), 0, true);
+  }
+
+  askForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = askInput.value.trim();
+    if (q) ask(q);
+  });
+  askInput.addEventListener('focus', function () { if (speaking && !speakingAnswer) pauseSpeak(); });
+
+  /* voice input — diagnosed: silent failures now surface a message, plus a watchdog for the
+     "nothing happens at all" case (usually an embedded view blocking mic permission). */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  var rec = null, recActive = false, starting = false, watchdog = null;
+  micBtn.hidden = false;
+
+  function micIdle() {
+    recActive = false; starting = false;
+    micBtn.classList.remove('rec');
+    askInput.placeholder = 'Type your question…';
+    if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+  }
+
+  if (SR) {
+    rec = new SR();
+    rec.lang = 'en-IN'; rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = false;
+    rec.onstart = function () {
+      starting = false;
+      if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+      askInput.placeholder = 'Listening…';
+    };
+    rec.onresult = function (e) {
+      var s = '';
+      for (var k = 0; k < e.results.length; k++) s += e.results[k][0].transcript;
+      askInput.value = s;
+    };
+    rec.onend = function () { micIdle(); askInput.focus(); };
+    rec.onerror = function (ev) {
+      micIdle();
+      var code = ev && ev.error;
+      var msg =
+        (code === 'not-allowed' || code === 'service-not-allowed') ?
+          'This embedded view (or your browser) blocked microphone access. Tap the expand icon to open the page in its own browser tab, allow the microphone when it asks, then try the mic again — or just type your question.' :
+        (code === 'no-speech') ?
+          'I did not catch any speech. Tap the mic and try again, a little closer to it.' :
+        (code === 'audio-capture') ?
+          'No microphone was found on this device. Type your question instead.' :
+        (code === 'network') ?
+          'Voice recognition needs an internet connection and could not reach it. Type your question instead.' :
+          'Voice input did not work that time (' + (code || 'unknown reason') + '). Try again, or type it instead.';
+      addBubble('a', msg);
+    };
+    micBtn.addEventListener('click', function () {
+      if (recActive || starting) { try { rec.stop(); } catch (e) {} micIdle(); return; }
+      pauseSpeak();
+      try {
+        rec.start();
+        recActive = true; starting = true;
+        micBtn.classList.add('rec');
+        askInput.placeholder = 'Requesting microphone…';
+        watchdog = setTimeout(function () {
+          if (starting) {
+            micIdle();
+            addBubble('a', 'The microphone did not respond — this embedded view is most likely blocking it. Tap the expand icon to open the page in its own browser tab and try again there, or just type your question below.');
+          }
+        }, 4000);
+      } catch (e) {
+        micIdle();
+        addBubble('a', 'Could not start voice input. Type your question instead.');
+      }
+    });
+  } else {
+    micBtn.addEventListener('click', function () {
+      addBubble('a', 'Voice input needs Chrome, Edge, or another Chromium browser — this browser does not support it. Type your question and I will still answer.');
+    });
+  }
+
+  go(0);
+})();
+</script>

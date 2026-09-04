@@ -1,0 +1,971 @@
+<title>FocusGarden Goes Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    --bg: #08090c;
+    --chrome: #0c0e13;
+    --stage: #0a0c10;
+    --screen: #ffffff;
+    --screen-2: #f2f4f8;
+    --screen-ink: #1a1d24;
+    --screen-soft: #5a616f;
+    --screen-rule: #e2e5ec;
+    --line: #1e222c;
+    --line-soft: #171b23;
+    --text: #e8eaef;
+    --text-soft: #9aa1b0;
+    --text-faint: #626a7a;
+    --accent: #3b6bff;
+    --accent-soft: #8aa6ff;
+    --accent-wash: #e9edff;
+    --ship: #12855a;
+    --ship-bright: #1fbd82;
+    --ship-wash: #e0f3ea;
+    --warn: #b5470f;
+    --warn-wash: #fbe9dd;
+    --font-ui: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Bricolage Grotesque", "IBM Plex Sans", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: clamp(1.2rem, 4vw, 3rem) clamp(0.9rem, 3vw, 2rem) 4rem;
+  }
+
+  .masthead { margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .masthead .brand {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    display: flex; align-items: center; gap: 0.55rem;
+  }
+  .masthead .brand::before { content: ""; width: 1.5rem; height: 1px; background: var(--accent-soft); opacity: .55; }
+  .masthead h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-size: clamp(1.7rem, 4.5vw, 2.7rem);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .masthead p { margin: 0; color: var(--text-soft); font-size: 0.98rem; max-width: 60ch; }
+
+  /* ---------- player ---------- */
+  .player {
+    background: var(--chrome);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,.55);
+  }
+
+  .stage {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--stage);
+    overflow: hidden;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    padding: clamp(0.8rem, 3.2vw, 2.2rem);
+    padding-bottom: clamp(5.5rem, 21%, 8rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1.6vw, 1rem);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .55s ease;
+  }
+  .scene.is-active { opacity: 1; visibility: visible; }
+  @media (prefers-reduced-motion: reduce) { .scene { transition: none; } }
+
+  .scene-tag {
+    font-family: var(--font-mono);
+    font-size: clamp(0.6rem, 1.5vw, 0.72rem);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    flex-shrink: 0;
+  }
+  .scene-tag b { color: var(--accent-soft); font-weight: 600; }
+
+  /* window chrome */
+  .win {
+    background: var(--screen);
+    color: var(--screen-ink);
+    border-radius: 12px;
+    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0,0,0,.15);
+    box-shadow: 0 24px 60px rgba(0,0,0,.4);
+  }
+  .win-bar {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 0.8rem;
+    background: var(--screen-2);
+    border-bottom: 1px solid var(--screen-rule);
+    flex-shrink: 0;
+  }
+  .win-bar .dots { display: flex; gap: 0.32rem; }
+  .win-bar .dots i { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: #cdd2dc; }
+  .win-url {
+    font-family: var(--font-mono);
+    font-size: clamp(0.58rem, 1.4vw, 0.72rem);
+    color: var(--screen-soft);
+    background: var(--screen);
+    border: 1px solid var(--screen-rule);
+    border-radius: 6px;
+    padding: 0.16rem 0.6rem;
+    margin-left: 0.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .win-body {
+    padding: clamp(0.7rem, 2.4vw, 1.5rem);
+    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1.6vw, 0.9rem);
+  }
+  .win-body h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(0.95rem, 2.3vw, 1.35rem);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .win-body .sub { color: var(--screen-soft); font-size: clamp(0.72rem, 1.7vw, 0.9rem); margin: 0; }
+
+  /* editor / code scene */
+  .code {
+    background: #0f1218;
+    border-radius: 10px;
+    padding: clamp(0.7rem, 2.2vw, 1.2rem);
+    font-family: var(--font-mono);
+    font-size: clamp(0.6rem, 1.5vw, 0.82rem);
+    line-height: 1.75;
+    color: #aeb7c7;
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .code .k { color: #7ea2ff; }
+  .code .s { color: #8fd6a9; }
+  .code .c { color: #5b6473; }
+  .code .term { color: var(--ship-bright); }
+
+  .tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tabchip {
+    font-family: var(--font-mono);
+    font-size: clamp(0.56rem, 1.4vw, 0.72rem);
+    padding: 0.28rem 0.6rem;
+    border-radius: 999px;
+    background: var(--line-soft);
+    border: 1px solid var(--line);
+    color: var(--text-soft);
+    white-space: nowrap;
+  }
+  .tabchip.hot { color: #ffb38a; border-color: #4a3324; background: #241812; }
+
+  /* the wall */
+  .wall { display: flex; align-items: stretch; gap: 0.3rem; flex-wrap: wrap; flex: 1; align-content: center; }
+  .wall .w {
+    flex: 1 1 120px;
+    font-family: var(--font-mono);
+    font-size: clamp(0.6rem, 1.5vw, 0.78rem);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: clamp(0.6rem, 2vw, 1rem) 0.6rem;
+    border-radius: 9px;
+    text-align: center;
+    background: var(--line-soft);
+    border: 1px solid var(--line);
+    color: var(--text-faint);
+    position: relative;
+  }
+  .wall .w.done { color: var(--text-soft); }
+  .wall .w.done::after { content: "✓"; display: block; color: var(--ship-bright); margin-top: 0.2rem; }
+  .wall .w.blocked {
+    color: #ffd7c2; border-color: var(--warn); background: #2a1a12;
+  }
+  .wall .w.blocked::after { content: "STUCK"; display: block; color: var(--warn); font-weight: 600; margin-top: 0.2rem; letter-spacing: 0.1em; }
+  .wall .w.future { opacity: .5; }
+  .wall .arr { align-self: center; color: var(--text-faint); font-size: 0.8rem; flex: 0 0 auto; }
+
+  /* form scene */
+  .form { display: grid; gap: 0.55rem; }
+  .field { display: grid; grid-template-columns: 40% 1fr; gap: 0.6rem; align-items: center; }
+  .field .lbl { font-size: clamp(0.66rem, 1.6vw, 0.82rem); color: var(--screen-soft); font-family: var(--font-mono); }
+  .field .val {
+    font-size: clamp(0.7rem, 1.7vw, 0.9rem);
+    font-weight: 500;
+    background: var(--screen-2);
+    border: 1px solid var(--screen-rule);
+    border-radius: 7px;
+    padding: 0.4rem 0.7rem;
+  }
+  .field .val.typed { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-wash); }
+  .btn-primary {
+    justify-self: start;
+    margin-top: 0.3rem;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: clamp(0.74rem, 1.8vw, 0.92rem);
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
+  }
+  .btn-primary.pulse { animation: pulse 1.1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 var(--accent-wash); } 50% { box-shadow: 0 0 0 8px rgba(59,107,255,.12); } }
+  @media (prefers-reduced-motion: reduce) { .btn-primary.pulse { animation: none; } }
+
+  /* checklist / log — staggered reveal */
+  .stream { display: flex; flex-direction: column; gap: 0.42rem; overflow: hidden; }
+  .row {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-size: clamp(0.68rem, 1.65vw, 0.88rem);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  .scene.is-active .row { opacity: 1; transform: none; transition-delay: calc(var(--i, 0) * 0.62s); }
+  @media (prefers-reduced-motion: reduce) {
+    .scene .row { opacity: 1; transform: none; transition: none; }
+  }
+  .row .tick {
+    width: 1.15rem; height: 1.15rem; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--ship-wash); color: var(--ship);
+    font-size: 0.72rem; flex-shrink: 0;
+  }
+  .row .tick.warn { background: var(--warn-wash); color: var(--warn); }
+  .row .tick.dot { background: var(--screen-2); color: var(--screen-soft); }
+  .row .rt { font-weight: 500; }
+  .row .rm { color: var(--screen-soft); font-family: var(--font-mono); font-size: 0.82em; margin-left: auto; white-space: nowrap; }
+  .row.mono { font-family: var(--font-mono); font-size: clamp(0.62rem, 1.5vw, 0.8rem); }
+
+  /* monetize split */
+  .split { display: grid; grid-template-columns: 1fr 0.72fr; gap: clamp(0.6rem, 2vw, 1.2rem); flex: 1; min-height: 0; }
+  @media (max-width: 620px) { .split { grid-template-columns: 1fr; } }
+  .phone {
+    background: #0f1218;
+    border-radius: 16px;
+    border: 4px solid #23262f;
+    padding: clamp(0.6rem, 2vw, 1rem);
+    color: #e8eaef;
+    display: flex; flex-direction: column; gap: 0.5rem;
+    align-self: center;
+    width: 100%;
+    max-width: 190px;
+    justify-self: center;
+  }
+  .phone .ph-t { font-family: var(--font-display); font-weight: 700; font-size: clamp(0.78rem, 2vw, 1rem); }
+  .phone ul { margin: 0; padding-left: 1rem; font-size: clamp(0.58rem, 1.4vw, 0.72rem); color: var(--text-soft); display: grid; gap: 0.2rem; }
+  .phone .ph-cta { margin-top: auto; background: var(--ship-bright); color: #04120c; font-weight: 600; text-align: center; border-radius: 7px; padding: 0.4rem; font-size: clamp(0.6rem, 1.5vw, 0.76rem); }
+
+  .pricebox { display: grid; gap: 0.4rem; }
+  .priceitem {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 0.45rem 0.7rem;
+    background: var(--screen-2);
+    border: 1px solid var(--screen-rule);
+    border-radius: 7px;
+    font-size: clamp(0.68rem, 1.6vw, 0.86rem);
+  }
+  .priceitem b { font-family: var(--font-mono); }
+
+  /* live scene */
+  .live-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(0.7rem, 2.5vw, 1.4rem); text-align: center; }
+  .approvals { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; }
+  .appr {
+    font-family: var(--font-mono);
+    font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+    padding: 0.5rem 0.9rem;
+    border-radius: 9px;
+    background: var(--ship-wash);
+    color: var(--ship);
+    border: 1px solid var(--ship-bright);
+  }
+  .live-head {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    color: #fff;
+    text-wrap: balance;
+  }
+  .storecard {
+    display: flex; align-items: center; gap: 0.7rem;
+    background: var(--screen); color: var(--screen-ink);
+    border-radius: 12px; padding: 0.6rem 0.9rem;
+  }
+  .storecard .ic { width: 2.4rem; height: 2.4rem; border-radius: 11px; background: linear-gradient(140deg,#2fbd7e,#3b6bff); flex-shrink: 0; }
+  .storecard .st { text-align: left; }
+  .storecard .st .t1 { font-weight: 600; font-size: 0.82rem; }
+  .storecard .st .t2 { font-size: 0.68rem; color: var(--screen-soft); }
+  .storecard .get { margin-left: 0.6rem; font-family: var(--font-mono); font-size: 0.66rem; font-weight: 600; color: #fff; background: var(--accent); border-radius: 999px; padding: 0.22rem 0.7rem; }
+
+  /* dashboard */
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+  @media (max-width: 620px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+  .tile { background: var(--screen-2); border: 1px solid var(--screen-rule); border-radius: 9px; padding: 0.55rem 0.7rem; }
+  .tile .tl { font-family: var(--font-mono); font-size: clamp(0.54rem, 1.3vw, 0.66rem); text-transform: uppercase; letter-spacing: 0.06em; color: var(--screen-soft); }
+  .tile .tv { font-family: var(--font-display); font-weight: 700; font-size: clamp(0.95rem, 2.6vw, 1.5rem); font-variant-numeric: tabular-nums; }
+  .chartbox { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .chartbox svg { width: 100%; height: 100%; display: block; }
+  .chart-line { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 1400; stroke-dashoffset: 1400; transition: stroke-dashoffset 2.4s ease; }
+  .scene.is-active .chart-line { stroke-dashoffset: 0; }
+  .chart-fill { fill: url(#g1); opacity: 0; transition: opacity 1.4s ease .6s; }
+  .scene.is-active .chart-fill { opacity: .16; }
+  .chart-x { font-family: var(--font-mono); font-size: 9px; fill: var(--screen-soft); }
+  @media (prefers-reduced-motion: reduce) {
+    .chart-line { transition: none; stroke-dashoffset: 0; }
+    .chart-fill { transition: none; opacity: .16; }
+  }
+  .recon {
+    font-family: var(--font-mono);
+    font-size: clamp(0.58rem, 1.45vw, 0.78rem);
+    background: var(--screen-2);
+    border: 1px dashed var(--screen-rule);
+    border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+    color: var(--screen-soft);
+  }
+  .recon b { color: var(--screen-ink); }
+  .recon .cut { color: var(--ship); }
+
+  .expts { display: grid; gap: 0.45rem; }
+  .expt {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 0.6rem; align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: var(--screen-2); border: 1px solid var(--screen-rule); border-radius: 8px;
+    font-size: clamp(0.66rem, 1.6vw, 0.85rem);
+  }
+  .expt .ex-k { font-family: var(--font-mono); font-size: 0.78em; color: var(--screen-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+  .expt .ex-v { font-weight: 600; }
+  .expt .ex-r { font-family: var(--font-mono); font-size: 0.78em; color: var(--ship); }
+
+  /* closing */
+  .closing { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.9rem; text-align: center; }
+  .closing .wm {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em;
+    font-size: clamp(1.6rem, 5vw, 3rem); color: #fff;
+  }
+  .closing .tag { font-family: var(--font-display); font-weight: 600; font-size: clamp(1rem, 2.8vw, 1.5rem); color: var(--accent-soft); text-wrap: balance; }
+  .closing .fine { font-family: var(--font-mono); font-size: clamp(0.58rem, 1.4vw, 0.74rem); color: var(--text-faint); max-width: 44ch; }
+
+  /* caption bar */
+  .caption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: clamp(0.6rem, 2vw, 1rem) clamp(0.9rem, 4vw, 3rem) clamp(0.8rem, 2.6vw, 1.35rem);
+    background: linear-gradient(to top, rgba(6,7,10,.97) 62%, rgba(6,7,10,0));
+    font-size: clamp(0.72rem, 1.7vw, 0.96rem);
+    line-height: 1.4;
+    color: #f3f4f7;
+    text-align: center;
+    text-wrap: balance;
+    min-height: 3.2em;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .caption span { max-width: 84ch; }
+
+  /* poster */
+  .poster {
+    position: absolute; inset: 0; z-index: 5;
+    background: radial-gradient(120% 120% at 30% 20%, #12161f, #08090c 70%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 1rem; text-align: center;
+    padding: 2rem;
+  }
+  .poster.hidden { display: none; }
+  .poster .pk { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-soft); }
+  .poster h2 { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.6rem, 5vw, 3rem); margin: 0; letter-spacing: -0.02em; color: #fff; text-wrap: balance; }
+  .poster p { margin: 0; color: var(--text-soft); max-width: 44ch; font-size: 0.95rem; }
+  .playbtn {
+    margin-top: 0.6rem;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-family: var(--font-ui); font-weight: 600; font-size: 1rem;
+    color: #fff; background: var(--accent); border: none;
+    border-radius: 999px; padding: 0.7rem 1.6rem; cursor: pointer;
+  }
+  .playbtn:hover { background: #2f5bef; }
+
+  /* controls */
+  .controls {
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+    padding: 0.7rem clamp(0.7rem, 2vw, 1.2rem);
+    background: var(--chrome);
+    border-top: 1px solid var(--line);
+  }
+  .controls button {
+    font-family: var(--font-ui);
+    background: transparent; border: 1px solid var(--line);
+    color: var(--text); border-radius: 7px;
+    padding: 0.35rem 0.6rem; cursor: pointer; font-size: 0.82rem;
+    display: inline-flex; align-items: center; gap: 0.35rem;
+  }
+  .controls button:hover { border-color: var(--accent); color: var(--accent-soft); }
+  .controls button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-soft); background: rgba(59,107,255,.1); }
+  .scrub { flex: 1 1 200px; display: flex; gap: 3px; }
+  .seg { flex: 1; height: 6px; border-radius: 3px; background: var(--line); cursor: pointer; overflow: hidden; position: relative; }
+  .seg i { position: absolute; inset: 0; width: 0; background: var(--accent); border-radius: 3px; }
+  .seg.done i { width: 100%; }
+  .clock { font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-faint); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .scene-name { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-soft); white-space: nowrap; max-width: 30vw; overflow: hidden; text-overflow: ellipsis; }
+
+  /* production notes below player */
+  .notes { margin-top: 2.4rem; display: grid; gap: 1.6rem; }
+  .notes h2 {
+    font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; margin: 0 0 0.3rem;
+    letter-spacing: -0.01em;
+  }
+  .notes .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+  @media (max-width: 720px) { .notes .grid3 { grid-template-columns: 1fr; } }
+  .prodcard { background: var(--chrome); border: 1px solid var(--line); border-radius: 11px; padding: 1rem 1.1rem; }
+  .prodcard .step { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-soft); letter-spacing: 0.1em; }
+  .prodcard h3 { font-family: var(--font-display); font-size: 1rem; margin: 0.3rem 0 0.4rem; font-weight: 600; }
+  .prodcard p { margin: 0; font-size: 0.86rem; color: var(--text-soft); }
+
+  .script { background: var(--chrome); border: 1px solid var(--line); border-radius: 11px; padding: 1.1rem 1.2rem; }
+  .script summary { cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 1rem; }
+  .script ol { margin: 1rem 0 0; padding-left: 1.3rem; display: grid; gap: 0.7rem; }
+  .script li { font-size: 0.9rem; color: var(--text-soft); line-height: 1.55; }
+  .script li b { color: var(--text); font-family: var(--font-mono); font-size: 0.78em; letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 0.15rem; }
+
+  .disclaimer { margin-top: 1.6rem; font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-faint); }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  ::selection { background: var(--accent); color: #fff; }
+</style>
+
+<div class="page">
+  <header class="masthead">
+    <span class="brand">LaunchPad · product walkthrough</span>
+    <h1>FocusGarden Goes Live</h1>
+    <p>A three-minute simulated run: one solo developer takes a finished app from a Git repo to paying subscribers, without touching a store console. Press play — it narrates itself.</p>
+  </header>
+
+  <div class="player">
+    <div class="stage" id="stage">
+
+      <!-- SCENE 1 -->
+      <section class="scene" data-dur="14000" data-name="1 · The problem"
+        data-vo="Aisha Rao built FocusGarden over three weekends, with an AI writing most of the code. It compiles, it runs, it's genuinely good — and it is going nowhere.">
+        <div class="scene-tag"><b>Aisha's laptop</b> · Pune · 11:40pm</div>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-url">focusgarden / lib / main.dart</span></div>
+          <div class="win-body">
+            <div class="code">
+<span class="c">// FocusGarden — 3 weekends, mostly AI-written</span><br>
+<span class="k">class</span> FocusSession <span class="k">extends</span> StatefulWidget {<br>
+&nbsp;&nbsp;<span class="k">const</span> FocusSession({<span class="k">this</span>.length = <span class="k">const</span> Duration(minutes: <span class="s">25</span>)});<br>
+}<br>
+<span class="term">✓ flutter build — succeeded in 12.4s</span><br>
+<span class="term">✓ 214 tests passed</span>
+            </div>
+            <p class="sub">It works. Now what?</p>
+            <div class="tabs">
+              <span class="tabchip hot">App Store Connect</span>
+              <span class="tabchip hot">Play Console</span>
+              <span class="tabchip">RevenueCat docs</span>
+              <span class="tabchip hot">"GST on app income india"</span>
+              <span class="tabchip">"paywall best practices"</span>
+              <span class="tabchip hot">"what is a D-U-N-S number"</span>
+              <span class="tabchip">"App Store review rejection 4.2.6"</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 2 -->
+      <section class="scene" data-dur="12000" data-name="2 · The wall"
+        data-vo="Publishing, monetization, billing, operations, growth — five different disciplines, each weeks of unfamiliar work. This is where almost every solo builder stops.">
+        <div class="scene-tag">Build → <b>everything after the build</b></div>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-url">the part nobody warns you about</span></div>
+          <div class="win-body">
+            <div class="wall">
+              <span class="w done">Build</span>
+              <span class="arr">→</span>
+              <span class="w blocked">Publish</span>
+              <span class="arr">→</span>
+              <span class="w future">Monetize</span>
+              <span class="arr">→</span>
+              <span class="w future">Bill</span>
+              <span class="arr">→</span>
+              <span class="w future">Operate</span>
+              <span class="arr">→</span>
+              <span class="w future">Grow</span>
+            </div>
+            <p class="sub">AI collapsed the first box. The other five didn't move.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 3 -->
+      <section class="scene" data-dur="14000" data-name="3 · Hand it over"
+        data-vo="So she hands the whole thing to LaunchPad. One form — the repo, the name, the category, how she wants to charge. That's the last complicated decision she has to make.">
+        <div class="scene-tag"><b>launchpad.dev</b> · new project</div>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-url">app.launchpad.dev/new</span></div>
+          <div class="win-body">
+            <h3>Tell us about your app</h3>
+            <div class="form">
+              <div class="field"><span class="lbl">GitHub repo</span><span class="val typed">aisha-rao/focusgarden</span></div>
+              <div class="field"><span class="lbl">App name</span><span class="val typed">FocusGarden</span></div>
+              <div class="field"><span class="lbl">Category</span><span class="val">Productivity</span></div>
+              <div class="field"><span class="lbl">Pricing model</span><span class="val">Free trial → subscription</span></div>
+              <div class="field"><span class="lbl">Markets</span><span class="val">India · US · UK · +42</span></div>
+              <button class="btn-primary pulse">Start &rarr;</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 4 -->
+      <section class="scene" data-dur="18000" data-name="4 · The paperwork"
+        data-vo="First, the boring fortnight — entity, D-U-N-S number, a Play account, Apple enrolment, bank and tax forms — done for her or walked through step by step. She also authorises the revenue-share mandate: LaunchPad only gets paid when she does.">
+        <div class="scene-tag"><b>Onboarding</b> · handled or guided</div>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-url">app.launchpad.dev/onboarding</span></div>
+          <div class="win-body">
+            <h3>Getting you ready to publish</h3>
+            <div class="stream">
+              <div class="row" style="--i:0"><span class="tick">✓</span><span class="rt">Business entity — LLP registered</span><span class="rm">guided · 6 days</span></div>
+              <div class="row" style="--i:1"><span class="tick">✓</span><span class="rt">D-U-N-S number — issued</span><span class="rm">auto · 4 days</span></div>
+              <div class="row" style="--i:2"><span class="tick">✓</span><span class="rt">Google Play developer account — created</span><span class="rm">$25</span></div>
+              <div class="row" style="--i:3"><span class="tick">✓</span><span class="rt">Apple Developer Program — enrolled</span><span class="rm">$99/yr</span></div>
+              <div class="row" style="--i:4"><span class="tick">✓</span><span class="rt">Bank &amp; tax — W-8BEN, GST, payout account</span><span class="rm">submitted</span></div>
+              <div class="row" style="--i:5"><span class="tick">✓</span><span class="rt">Store API access — delegated to LaunchPad</span><span class="rm">scoped</span></div>
+              <div class="row" style="--i:6"><span class="tick">✓</span><span class="rt">Revenue-share mandate — authorised</span><span class="rm">UPI AutoPay · 15%</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 5 -->
+      <section class="scene" data-dur="14000" data-name="5 · Build & sign"
+        data-vo="The app is pulled straight from her repo, configured, and signed with a key held in a managed vault — so she never babysits a certificate again. Build one: green.">
+        <div class="scene-tag"><b>Build pipeline</b> · run #1</div>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-url">app.launchpad.dev/builds/1</span></div>
+          <div class="win-body">
+            <h3>Build #1</h3>
+            <div class="stream">
+              <div class="row mono" style="--i:0"><span class="tick dot">›</span>Cloning aisha-rao/focusgarden @ main</div>
+              <div class="row mono" style="--i:1"><span class="tick dot">›</span>Detected Flutter 3.x · Dart 3.x</div>
+              <div class="row mono" style="--i:2"><span class="tick dot">›</span>Configuring release flavour · bundle id fixed</div>
+              <div class="row mono" style="--i:3"><span class="tick dot">›</span>Signing · key from managed vault (HSM)</div>
+              <div class="row mono" style="--i:4"><span class="tick">✓</span>Build #1 succeeded · 3m 41s</div>
+              <div class="row mono" style="--i:5"><span class="tick">✓</span>Artifacts: focusgarden.aab · focusgarden.ipa</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 6 -->
+      <section class="scene" data-dur="18000" data-name="6 · Test & auto-fix"
+        data-vo="Forty-seven checks: crashes, performance, and every store-policy rule. Three problems turn up — and all three are fixed automatically, then the suite re-runs clean. This is why the app won't bounce back from review.">
+        <div class="scene-tag"><b>QA &amp; auto-fix</b> · pre-submission</div>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-url">app.launchpad.dev/qa</span></div>
+          <div class="win-body">
+            <h3>47 checks</h3>
+            <div class="stream">
+              <div class="row" style="--i:0"><span class="tick">✓</span><span class="rt">Static analysis · crash &amp; startup · performance</span><span class="rm">38 passed</span></div>
+              <div class="row" style="--i:1"><span class="tick warn">!</span><span class="rt">Store-policy pre-check</span><span class="rm">3 issues</span></div>
+              <div class="row" style="--i:2"><span class="tick">✓</span><span class="rt">Auto-fix · privacy manifest added</span><span class="rm">4.2.6</span></div>
+              <div class="row" style="--i:3"><span class="tick">✓</span><span class="rt">Auto-fix · deprecated API migrated</span><span class="rm">API 36</span></div>
+              <div class="row" style="--i:4"><span class="tick">✓</span><span class="rt">Auto-fix · oversized launch image resized</span><span class="rm">−1.2 MB</span></div>
+              <div class="row" style="--i:5"><span class="tick">✓</span><span class="rt">Re-run · 47 / 47 passed · policy clean</span><span class="rm">no human needed</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 7 -->
+      <section class="scene" data-dur="15000" data-name="7 · Monetize"
+        data-vo="Now the money model. A seven-day free trial, three hundred and ninety-nine rupees a month or two thousand nine hundred and ninety-nine a year, with local pricing filled in for every market. The paywall is built, previewed, and wired to entitlements — no SDK glue.">
+        <div class="scene-tag"><b>Monetization</b> · paywall builder</div>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-url">app.launchpad.dev/paywall</span></div>
+          <div class="win-body">
+            <div class="split">
+              <div>
+                <h3>Products</h3>
+                <div class="pricebox">
+                  <div class="priceitem"><span>7-day free trial</span><b>then auto-convert</b></div>
+                  <div class="priceitem"><span>Monthly</span><b>₹399</b></div>
+                  <div class="priceitem"><span>Annual</span><b>₹2,999</b></div>
+                  <div class="priceitem"><span>Local pricing</span><b>45 markets ✓</b></div>
+                  <div class="priceitem"><span>Entitlement</span><b>premium ✓ wired</b></div>
+                </div>
+              </div>
+              <div class="phone">
+                <div class="ph-t">FocusGarden Pro</div>
+                <ul><li>Unlimited gardens</li><li>Deep-focus soundscapes</li><li>Streak insights</li><li>No ads</li></ul>
+                <div class="ph-cta">Start 7-day free trial</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 8 -->
+      <section class="scene" data-dur="14000" data-name="8 · Submit"
+        data-vo="LaunchPad generates the store listing — title, keywords, screenshots in device frames, a preview video — and submits to both stores under Aisha's own accounts. Then everyone waits.">
+        <div class="scene-tag"><b>Store listing</b> · generated &amp; submitted</div>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-url">app.launchpad.dev/submit</span></div>
+          <div class="win-body">
+            <h3>FocusGarden — Focus Timer &amp; Habits</h3>
+            <p class="sub">Deep-focus timer with a garden that grows while you work.</p>
+            <div class="tabs">
+              <span class="tabchip">focus timer</span><span class="tabchip">pomodoro</span>
+              <span class="tabchip">habit tracker</span><span class="tabchip">study focus</span>
+              <span class="tabchip">screen time</span><span class="tabchip">deep work</span>
+            </div>
+            <div class="stream">
+              <div class="row" style="--i:0"><span class="tick">✓</span><span class="rt">6 screenshots · preview video · rendered</span></div>
+              <div class="row" style="--i:1"><span class="tick dot">›</span><span class="rt">App Store Connect · submitted</span><span class="rm">in review</span></div>
+              <div class="row" style="--i:2"><span class="tick dot">›</span><span class="rt">Play Console · submitted</span><span class="rm">in review</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 9 -->
+      <section class="scene" data-dur="12000" data-name="9 · Live"
+        data-vo="Google clears it in eight hours. Apple, in a day. FocusGarden is live on both stores — and Aisha hasn't opened a store console once.">
+        <div class="scene-tag"><b>Approved</b></div>
+        <div class="live-wrap">
+          <div class="approvals">
+            <span class="appr">Play Store · Approved · 8h</span>
+            <span class="appr">App Store · Approved · 26h</span>
+          </div>
+          <div class="live-head">FocusGarden is live.</div>
+          <div class="storecard">
+            <span class="ic"></span>
+            <span class="st"><span class="t1">FocusGarden — Focus Timer &amp; Habits</span><span class="t2">Productivity · 4.8 ★ · Aisha Rao</span></span>
+            <span class="get">GET</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 10 -->
+      <section class="scene" data-dur="18000" data-name="10 · Revenue"
+        data-vo="Installs come in. Trials start. Subscriptions convert. Six weeks later FocusGarden is at forty-seven thousand rupees of monthly recurring revenue. The store pays Aisha; LaunchPad invoices its fifteen percent against reconciled reports, automatically.">
+        <div class="scene-tag"><b>Revenue</b> · week 6</div>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-url">app.launchpad.dev/revenue</span></div>
+          <div class="win-body">
+            <div class="tiles">
+              <div class="tile"><div class="tl">Installs</div><div class="tv"><span class="count" data-to="12480">0</span></div></div>
+              <div class="tile"><div class="tl">Trials</div><div class="tv"><span class="count" data-to="1910">0</span></div></div>
+              <div class="tile"><div class="tl">Paid subs</div><div class="tv"><span class="count" data-to="402">0</span></div></div>
+              <div class="tile"><div class="tl">MRR</div><div class="tv">₹<span class="count" data-to="47200">0</span></div></div>
+            </div>
+            <div class="chartbox">
+              <svg viewBox="0 0 400 130" aria-label="MRR climbing over six weeks">
+                <defs><linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0" stop-color="#3b6bff"/><stop offset="1" stop-color="#3b6bff" stop-opacity="0"/>
+                </linearGradient></defs>
+                <path class="chart-fill" d="M4,120 L4,116 C60,110 90,104 140,88 C190,72 210,60 260,44 C300,32 340,24 396,14 L396,120 Z"/>
+                <path class="chart-line" d="M4,116 C60,110 90,104 140,88 C190,72 210,60 260,44 C300,32 340,24 396,14"/>
+                <text class="chart-x" x="4" y="129">wk 1</text>
+                <text class="chart-x" x="370" y="129">wk 6</text>
+              </svg>
+            </div>
+            <div class="recon">Week-6 payout &nbsp;·&nbsp; store → <b>Aisha ₹40,120</b> &nbsp;·&nbsp; <span class="cut">LaunchPad 15% ₹7,080</span> &nbsp;·&nbsp; auto-collected via mandate</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 11 -->
+      <section class="scene" data-dur="16000" data-name="11 · Growth"
+        data-vo="Then the growth engine goes to work. A better paywall wins a test and ships to everyone. App-store keywords climb. A small ad campaign pays itself back in ten weeks. The line steepens.">
+        <div class="scene-tag"><b>Growth engine</b> · Stage 2 · week 12</div>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-url">app.launchpad.dev/growth</span></div>
+          <div class="win-body">
+            <div class="expts">
+              <div class="expt"><span class="ex-k">Paywall</span><span class="ex-v">Variant B · annual-first</span><span class="ex-r">+22% trial start → 100%</span></div>
+              <div class="expt"><span class="ex-k">ASO</span><span class="ex-v">"focus timer" ranking</span><span class="ex-r">#14 → #6</span></div>
+              <div class="expt"><span class="ex-k">UA</span><span class="ex-v">Google App Campaign</span><span class="ex-r">CAC ₹82 · payback 10 wks</span></div>
+            </div>
+            <div class="chartbox">
+              <svg viewBox="0 0 400 130" aria-label="MRR steepening through week twelve">
+                <path class="chart-fill" d="M4,120 L4,116 C50,112 80,108 120,96 C165,82 185,66 230,44 C280,20 330,10 396,4 L396,120 Z"/>
+                <path class="chart-line" d="M4,116 C50,112 80,108 120,96 C165,82 185,66 230,44 C280,20 330,10 396,4"/>
+                <text class="chart-x" x="4" y="129">wk 6</text>
+                <text class="chart-x" x="360" y="129">wk 12</text>
+              </svg>
+            </div>
+            <div class="recon">MRR &nbsp;<b>₹47,200 → ₹1,12,000</b>&nbsp; · &nbsp;Aisha's time spent on any of this: <span class="cut">zero</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 12 -->
+      <section class="scene" data-dur="10000" data-name="12 · Close"
+        data-vo="Aisha's job is now exactly one thing: make FocusGarden better. Everything after the build runs itself.">
+        <div class="closing">
+          <div class="wm">LaunchPad</div>
+          <div class="tag">Build with AI. We handle everything after the build.</div>
+          <div class="fine">Illustrative demo · FocusGarden, Aisha Rao and LaunchPad are fictional · figures are for demonstration only</div>
+        </div>
+      </section>
+
+      <!-- caption -->
+      <div class="caption"><span id="cap"></span></div>
+
+      <!-- poster -->
+      <div class="poster" id="poster">
+        <span class="pk">LaunchPad · simulated walkthrough</span>
+        <h2>FocusGarden Goes Live</h2>
+        <p>From a Git repo to paying subscribers in three minutes — narrated, scene by scene.</p>
+        <button class="playbtn" id="play0">▶ &nbsp;Play</button>
+      </div>
+    </div>
+
+    <!-- controls -->
+    <div class="controls">
+      <button id="playpause" aria-label="Play or pause">▶ <span>Play</span></button>
+      <button id="restart" aria-label="Restart">⟲</button>
+      <button id="voice" aria-pressed="false" aria-label="Toggle voice narration">🔊 <span>Voice</span></button>
+      <div class="scrub" id="scrub"></div>
+      <span class="scene-name" id="sname">Ready</span>
+      <span class="clock" id="clock">0:00 / 3:05</span>
+    </div>
+  </div>
+
+  <div class="notes">
+    <div>
+      <h2>Turning this into a real video</h2>
+      <div class="grid3">
+        <div class="prodcard">
+          <span class="step">01 · CAPTURE</span>
+          <h3>Screen-record the demo</h3>
+          <p>Play it full-screen and record at 1080p/60 with OBS or your OS recorder. This piece is the storyboard and the footage in one — no separate mockups to build.</p>
+        </div>
+        <div class="prodcard">
+          <span class="step">02 · VOICE</span>
+          <h3>Generate the narration</h3>
+          <p>Feed the script below to ElevenLabs (~$5) for a natural read, or record a human voiceover. One take per scene keeps editing simple.</p>
+        </div>
+        <div class="prodcard">
+          <span class="step">03 · ASSEMBLE</span>
+          <h3>Lay VO over footage</h3>
+          <p>In Descript or CapCut: drop the voice track under the recording, nudge scene timings to match, add quiet background music, export MP4. Half a day.</p>
+        </div>
+      </div>
+      <p class="disclaimer">Avoid Runway / Sora / Veo for the interface shots — generative video can't reproduce an accurate UI walkthrough. Use them only for an optional atmospheric opening or closing shot.</p>
+    </div>
+
+    <details class="script">
+      <summary>Narration script — 12 scenes, ~3:05</summary>
+      <ol>
+        <li><b>Scene 1 · The problem</b>Aisha Rao built FocusGarden over three weekends, with an AI writing most of the code. It compiles, it runs, it's genuinely good — and it is going nowhere.</li>
+        <li><b>Scene 2 · The wall</b>Publishing, monetization, billing, operations, growth — five different disciplines, each weeks of unfamiliar work. This is where almost every solo builder stops.</li>
+        <li><b>Scene 3 · Hand it over</b>So she hands the whole thing to LaunchPad. One form — the repo, the name, the category, how she wants to charge. That's the last complicated decision she has to make.</li>
+        <li><b>Scene 4 · The paperwork</b>First, the boring fortnight — entity, D-U-N-S number, a Play account, Apple enrolment, bank and tax forms — done for her or walked through step by step. She also authorises the revenue-share mandate: LaunchPad only gets paid when she does.</li>
+        <li><b>Scene 5 · Build &amp; sign</b>The app is pulled straight from her repo, configured, and signed with a key held in a managed vault — so she never babysits a certificate again. Build one: green.</li>
+        <li><b>Scene 6 · Test &amp; auto-fix</b>Forty-seven checks: crashes, performance, and every store-policy rule. Three problems turn up — and all three are fixed automatically, then the suite re-runs clean. This is why the app won't bounce back from review.</li>
+        <li><b>Scene 7 · Monetize</b>Now the money model. A seven-day free trial, three hundred and ninety-nine rupees a month or two thousand nine hundred and ninety-nine a year, with local pricing filled in for every market. The paywall is built, previewed, and wired to entitlements — no SDK glue.</li>
+        <li><b>Scene 8 · Submit</b>LaunchPad generates the store listing — title, keywords, screenshots in device frames, a preview video — and submits to both stores under Aisha's own accounts. Then everyone waits.</li>
+        <li><b>Scene 9 · Live</b>Google clears it in eight hours. Apple, in a day. FocusGarden is live on both stores — and Aisha hasn't opened a store console once.</li>
+        <li><b>Scene 10 · Revenue</b>Installs come in. Trials start. Subscriptions convert. Six weeks later FocusGarden is at forty-seven thousand rupees of monthly recurring revenue. The store pays Aisha; LaunchPad invoices its fifteen percent against reconciled reports, automatically.</li>
+        <li><b>Scene 11 · Growth</b>Then the growth engine goes to work. A better paywall wins a test and ships to everyone. App-store keywords climb. A small ad campaign pays itself back in ten weeks. The line steepens.</li>
+        <li><b>Scene 12 · Close</b>Aisha's job is now exactly one thing: make FocusGarden better. Everything after the build runs itself.</li>
+      </ol>
+    </details>
+  </div>
+</div>
+
+<script>
+(function () {
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('.scene'));
+  var durs = scenes.map(function (s) { return +s.dataset.dur; });
+  var names = scenes.map(function (s) { return s.dataset.name; });
+  var vos = scenes.map(function (s) { return s.dataset.vo; });
+  var total = durs.reduce(function (a, b) { return a + b; }, 0);
+
+  var stage = document.getElementById('stage');
+  var poster = document.getElementById('poster');
+  var cap = document.getElementById('cap');
+  var sname = document.getElementById('sname');
+  var clock = document.getElementById('clock');
+  var scrub = document.getElementById('scrub');
+  var ppBtn = document.getElementById('playpause');
+  var voiceBtn = document.getElementById('voice');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var idx = 0, playing = false, sceneStart = 0, rafId = null, voiceOn = false;
+
+  // build scrubber
+  var segs = durs.map(function (d, n) {
+    var seg = document.createElement('button');
+    seg.className = 'seg';
+    seg.style.flexGrow = d;
+    seg.setAttribute('aria-label', 'Jump to ' + names[n]);
+    var fill = document.createElement('i');
+    seg.appendChild(fill);
+    seg.addEventListener('click', function () { jump(n); });
+    scrub.appendChild(seg);
+    return fill;
+  });
+
+  function fmt(ms) {
+    var s = Math.max(0, Math.round(ms / 1000));
+    return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+  }
+  function elapsedBefore(n) {
+    var t = 0; for (var i = 0; i < n; i++) t += durs[i]; return t;
+  }
+
+  function speak(text) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    if (!voiceOn) return;
+    var u = new SpeechSynthesisUtterance(text);
+    u.rate = 1; u.pitch = 1;
+    window.speechSynthesis.speak(u);
+  }
+
+  function runCounters(scene) {
+    var counts = scene.querySelectorAll('.count');
+    counts.forEach(function (el) {
+      var to = +el.dataset.to;
+      if (reduce) { el.textContent = to.toLocaleString('en-IN'); return; }
+      var start = performance.now(), dur = 2200;
+      function step(now) {
+        var p = Math.min(1, (now - start) / dur);
+        var e = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(to * e).toLocaleString('en-IN');
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  function activate(n) {
+    scenes.forEach(function (s, i) { s.classList.toggle('is-active', i === n); });
+    // restart transitions in the newly active scene
+    var sc = scenes[n];
+    void sc.offsetWidth;
+    sname.textContent = names[n];
+    cap.textContent = vos[n];
+    segs.forEach(function (f, i) {
+      f.parentElement.classList.toggle('done', i < n);
+      if (i > n) { f.parentElement.classList.remove('done'); f.style.width = '0'; }
+      if (i < n) f.style.width = '100%';
+    });
+    segs[n].style.width = '0';
+    runCounters(sc);
+    speak(vos[n]);
+  }
+
+  function tick(now) {
+    if (!playing) return;
+    var el = now - sceneStart;
+    if (el >= durs[idx]) {
+      if (idx < scenes.length - 1) {
+        idx++;
+        sceneStart = now;
+        activate(idx);
+        el = 0;
+      } else {
+        segs[idx].style.width = '100%';
+        segs[idx].parentElement.classList.add('done');
+        clock.textContent = fmt(total) + ' / ' + fmt(total);
+        pause(true);
+        return;
+      }
+    }
+    var frac = Math.min(1, el / durs[idx]);
+    segs[idx].style.width = (frac * 100) + '%';
+    clock.textContent = fmt(elapsedBefore(idx) + el) + ' / ' + fmt(total);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function play() {
+    poster.classList.add('hidden');
+    if (idx >= scenes.length) idx = 0;
+    playing = true;
+    ppBtn.innerHTML = '❚❚ <span>Pause</span>';
+    sceneStart = performance.now() - 0;
+    // if resuming mid-scene, approximate from current seg width
+    var w = parseFloat(segs[idx].style.width) || 0;
+    sceneStart = performance.now() - (w / 100) * durs[idx];
+    if (!scenes[idx].classList.contains('is-active')) activate(idx);
+    else if (voiceOn) speak(vos[idx]);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function pause(ended) {
+    playing = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    ppBtn.innerHTML = ended ? '⟲ <span>Replay</span>' : '▶ <span>Play</span>';
+    if (ended) idx = scenes.length; // next play restarts
+  }
+
+  function jump(n) {
+    idx = n;
+    segs.forEach(function (f, i) { f.style.width = i < n ? '100%' : '0'; f.parentElement.classList.toggle('done', i < n); });
+    activate(n);
+    poster.classList.add('hidden');
+    if (playing) { sceneStart = performance.now(); }
+    else { clock.textContent = fmt(elapsedBefore(n)) + ' / ' + fmt(total); }
+  }
+
+  document.getElementById('play0').addEventListener('click', play);
+  ppBtn.addEventListener('click', function () {
+    if (idx >= scenes.length) { idx = 0; jump(0); play(); return; }
+    playing ? pause() : play();
+  });
+  document.getElementById('restart').addEventListener('click', function () {
+    pause(); idx = 0; jump(0); play();
+  });
+  voiceBtn.addEventListener('click', function () {
+    voiceOn = !voiceOn;
+    voiceBtn.setAttribute('aria-pressed', String(voiceOn));
+    if (!voiceOn && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+    else if (voiceOn && playing) speak(vos[idx]);
+  });
+
+  // initial poster time
+  clock.textContent = '0:00 / ' + fmt(total);
+})();
+</script>

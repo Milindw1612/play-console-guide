@@ -1,0 +1,652 @@
+<title>Everything After the Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap">
+
+<style>
+  :root {
+    /* light — cool neutral biased toward the infrastructure blue */
+    --ground: #f3f4f7;
+    --surface: #ffffff;
+    --surface-sunk: #eef0f4;
+    --ink: #171a21;
+    --ink-soft: #565d6b;
+    --ink-faint: #8b909d;
+    --rule: #e0e2e9;
+    --rule-strong: #c9ccd6;
+    --accent: #2f5bff;
+    --accent-deep: #1a37b8;
+    --accent-wash: #e9edff;
+    --ship: #10794f;
+    --ship-wash: #e2f2ea;
+    --flag: #b23c10;
+    --flag-wash: #fbeadf;
+    --shadow: 24px 24px 60px rgba(23, 26, 33, 0.06);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --ground: #0e1014;
+      --surface: #16191f;
+      --surface-sunk: #1e222a;
+      --ink: #e7e9ee;
+      --ink-soft: #a7adba;
+      --ink-faint: #6f7684;
+      --rule: #282d37;
+      --rule-strong: #3a404d;
+      --accent: #6f8dff;
+      --accent-deep: #9db1ff;
+      --accent-wash: #1c2340;
+      --ship: #46b483;
+      --ship-wash: #14281f;
+      --flag: #e07a4c;
+      --flag-wash: #2c1a12;
+      --shadow: 24px 24px 60px rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0e1014;
+    --surface: #16191f;
+    --surface-sunk: #1e222a;
+    --ink: #e7e9ee;
+    --ink-soft: #a7adba;
+    --ink-faint: #6f7684;
+    --rule: #282d37;
+    --rule-strong: #3a404d;
+    --accent: #6f8dff;
+    --accent-deep: #9db1ff;
+    --accent-wash: #1c2340;
+    --ship: #46b483;
+    --ship-wash: #14281f;
+    --flag: #e07a4c;
+    --flag-wash: #2c1a12;
+    --shadow: 24px 24px 60px rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.62;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: clamp(1.4rem, 4vw, 4rem) clamp(1.1rem, 4vw, 3rem) 5rem;
+  }
+
+  .doc {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.75rem, 6vw, 4.25rem);
+  }
+
+  /* ---- typography ---- */
+  h1, h2, h3 {
+    font-family: "Bricolage Grotesque", "IBM Plex Sans", sans-serif;
+    font-weight: 700;
+    text-wrap: balance;
+    margin: 0;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
+  }
+  h1 { font-size: clamp(2.3rem, 6vw, 3.5rem); font-weight: 800; }
+  h2 { font-size: clamp(1.5rem, 3.4vw, 2rem); }
+  h3 { font-size: 1.12rem; font-weight: 600; letter-spacing: -0.005em; }
+
+  p { margin: 0; }
+  strong { font-weight: 600; color: var(--ink); }
+  a { color: var(--accent-deep); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.74rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 1.6rem;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+
+  section { display: flex; flex-direction: column; gap: 1.1rem; }
+  section > p + p { margin-top: 0.2rem; }
+
+  .section-head { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 0.3rem; }
+
+  /* ---- hero ---- */
+  .hero { gap: 1.5rem; }
+  .hero .kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .lede {
+    font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    font-weight: 400;
+    max-width: 40ch;
+  }
+  .lede b { color: var(--ink); font-weight: 600; }
+
+  /* ---- pipeline strip ---- */
+  .pipe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: stretch;
+    padding: 0.9rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+  .pipe .step {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 1 1 auto;
+    justify-content: center;
+    white-space: nowrap;
+  }
+  .pipe .step.done { color: var(--ink-faint); background: var(--surface-sunk); text-decoration: line-through; text-decoration-color: var(--rule-strong); }
+  .pipe .step.hard { color: var(--accent-deep); background: var(--accent-wash); font-weight: 500; }
+  .pipe .arrow { align-self: center; color: var(--ink-faint); font-size: 0.8rem; }
+  .pipe-note {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    margin-top: 0.7rem;
+    line-height: 1.5;
+  }
+
+  /* ---- callouts ---- */
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 1.15rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .callout .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .callout--flag { border-left-color: var(--flag); background: var(--flag-wash); }
+  .callout--flag .tag { color: var(--flag); }
+  .callout--ship { border-left-color: var(--ship); background: var(--ship-wash); }
+  .callout--ship .tag { color: var(--ship); }
+  .callout p { font-size: 0.97rem; color: var(--ink-soft); }
+  .callout strong { color: var(--ink); }
+
+  /* ---- two-stage cards ---- */
+  .stages { display: grid; gap: 1rem; }
+  @media (min-width: 620px) { .stages { grid-template-columns: 1fr 1fr; } }
+  .stage-card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .stage-card .n {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .stage-card.is-mvp { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .stage-card h3 { color: var(--ink); }
+  .stage-card ul { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .stage-card li { font-size: 0.93rem; color: var(--ink-soft); }
+  .stage-card .badge {
+    align-self: flex-start;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    background: var(--accent-wash);
+    color: var(--accent-deep);
+  }
+
+  /* ---- breakout containers ---- */
+  .breakout {
+    width: min(100%, 1000px);
+    margin-inline: calc((720px - min(100vw - 2.2rem, 1000px)) / 2);
+    max-width: none;
+  }
+  @media (max-width: 1010px) { .breakout { width: 100%; margin-inline: 0; } }
+
+  .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; }
+
+  /* ---- flow diagram ---- */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 1.4rem clamp(0.8rem, 3vw, 1.6rem);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    min-width: 300px;
+  }
+  .fnode {
+    position: relative;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 9px;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    z-index: 1;
+  }
+  .fnode + .fnode { margin-top: 2rem; }
+  .fnode + .fnode::before {
+    content: "";
+    position: absolute;
+    top: -2rem;
+    left: 50%;
+    width: 2px;
+    height: 2rem;
+    background: var(--rule-strong);
+  }
+  .fnode + .fnode::after {
+    content: "";
+    position: absolute;
+    top: -0.55rem;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--rule-strong);
+  }
+  .fnode .ft {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .fnode .fd { font-size: 0.9rem; color: var(--ink-soft); }
+  .fnode.decision { border-style: dashed; border-color: var(--ink-faint); background: var(--surface-sunk); }
+  .fnode.decision .ft { color: var(--ink-soft); }
+  .fnode.milestone { border-color: var(--ship); background: var(--ship-wash); }
+  .fnode.milestone .ft { color: var(--ship); }
+  .floop {
+    align-self: center;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--flag);
+    background: var(--flag-wash);
+    border: 1px dashed var(--flag);
+    border-radius: 999px;
+    padding: 0.2rem 0.7rem;
+    margin-top: 0.7rem;
+    z-index: 1;
+  }
+
+  /* ---- data table ---- */
+  table { border-collapse: collapse; width: 100%; background: var(--surface); font-size: 0.9rem; min-width: 540px; }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-bottom: 0.6rem;
+  }
+  th, td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  thead th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background: var(--surface-sunk);
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  tbody th { font-weight: 600; font-family: "IBM Plex Sans", sans-serif; color: var(--ink); width: 34%; }
+  td { color: var(--ink-soft); }
+  tbody tr:last-child th, tbody tr:last-child td { border-bottom: none; }
+
+  /* ---- roadmap ---- */
+  .phases { display: flex; flex-direction: column; gap: 0.7rem; }
+  .phase {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4rem 1.1rem;
+    padding: 1rem 1.1rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+  }
+  .phase .pn {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--accent);
+    grid-row: span 2;
+  }
+  .phase .ph { font-family: "Bricolage Grotesque", sans-serif; font-weight: 600; font-size: 1rem; }
+  .phase .pw { font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+  .phase .pb { grid-column: 2; font-size: 0.92rem; color: var(--ink-soft); }
+  .phase.p0 { border-left: 3px solid var(--flag); }
+  .phase.p1 { border-left: 3px solid var(--accent); }
+
+  /* ---- checklist ---- */
+  .checks { display: flex; flex-direction: column; gap: 0.8rem; counter-reset: c; }
+  .check { display: grid; grid-template-columns: auto 1fr; gap: 0.9rem; align-items: start; }
+  .check::before {
+    counter-increment: c;
+    content: counter(c);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-deep);
+    background: var(--accent-wash);
+    width: 1.7rem; height: 1.7rem;
+    border-radius: 6px;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .check p { font-size: 0.95rem; color: var(--ink-soft); }
+  .check p b { color: var(--ink); }
+
+  /* ---- constraints list ---- */
+  .rules { display: flex; flex-direction: column; gap: 1rem; }
+  .rule-item { display: flex; flex-direction: column; gap: 0.35rem; padding-left: 1rem; border-left: 2px solid var(--rule-strong); }
+  .rule-item h3 { font-size: 1rem; }
+  .rule-item p { font-size: 0.93rem; color: var(--ink-soft); }
+
+  .foot {
+    margin-top: 1rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--rule);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    line-height: 1.7;
+  }
+
+  ::selection { background: var(--accent); color: #fff; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+</style>
+
+<div class="wrap">
+  <main class="doc">
+
+    <header class="hero">
+      <span class="kicker">Product &amp; go-to-market thesis · working name “LaunchPad”</span>
+      <h1>Everything After the Build</h1>
+      <p class="lede">AI made <b>building an app</b> easy. It did nothing for the part where an app becomes <b>a business</b>. That gap is the company.</p>
+      <div class="pipe" role="img" aria-label="Pipeline: Build is solved; Publish, Monetize, Bill, Operate and Grow are the hard part.">
+        <span class="step done">Build</span>
+        <span class="arrow">→</span>
+        <span class="step hard">Publish</span>
+        <span class="arrow">→</span>
+        <span class="step hard">Monetize</span>
+        <span class="arrow">→</span>
+        <span class="step hard">Bill</span>
+        <span class="arrow">→</span>
+        <span class="step hard">Operate</span>
+        <span class="arrow">→</span>
+        <span class="step hard">Grow</span>
+      </div>
+      <p class="pipe-note">// AI collapsed the first box. The other five are still weeks of unfamiliar, high-friction work — and where almost every solo builder stalls.</p>
+    </header>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">The thesis</span>
+        <h2>The problem was never “write the code”</h2>
+      </div>
+      <p>A developer can now get a working app out of an AI tool in a weekend. Then they hit a completely different wall — one AI hasn’t touched:</p>
+      <p><strong>Publishing</strong> means App Store Connect and Play Console: app records, builds, metadata, screenshots, pricing, tax and banking agreements, content ratings, review, staged rollout, and handling rejection. The AI wrote the code. It doesn’t become the developer account, prepare everything correctly, submit it, and get the app live.</p>
+      <p><strong>Monetization</strong> is a design problem in disguise: free vs. paid, subscription vs. one-time, trial length, price by country, paywall design, what stays free, upsells, win-back. Apple’s own subscription system has a dozen lifecycle states before you’ve made a rupee.</p>
+      <p><strong>Billing</strong> is an operations problem: receipt validation, entitlements, renewals, billing retries, refunds, cancellations, dunning, invoices, tax, multi-currency, web-and-mobile sync. This is the entire reason RevenueCat exists — and even RevenueCat is a set of tools you still have to assemble and understand.</p>
+      <p>So the future AI is creating is asymmetric: <strong>millions of people who can build an app, and very few who can turn one into a business.</strong> We sell into that asymmetry.</p>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">Positioning</span>
+        <h2>Sell the outcome, not another SDK</h2>
+      </div>
+      <p>The market is full of excellent point solutions — RevenueCat for billing infrastructure, App Store Connect for commerce, growth agencies for the rest. Every one of them hands the developer a part and leaves the assembly as an exercise.</p>
+      <div class="callout">
+        <span class="tag">The pitch</span>
+        <p>Not <em>“here’s an SDK for subscriptions.”</em> Instead: <strong>“Give us your app. We get it published, monetized, and making money.”</strong> The developer’s job stays <em>build and improve the product</em>. Our job is <em>turn the product into a business.</em></p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">The product</span>
+        <h2>Two stages, shipped in order</h2>
+      </div>
+      <div class="stages">
+        <div class="stage-card is-mvp">
+          <span class="n">Stage 1 — the MVP</span>
+          <h3>App → Live Business</h3>
+          <span class="badge">Sellable on its own</span>
+          <p style="font-size:0.9rem;color:var(--ink-soft);margin:0;">In: a finished app + identity + a few preferences. Out: a live, monetized app on both stores with billing running and a revenue dashboard.</p>
+          <ul>
+            <li>Publish to App Store &amp; Google Play</li>
+            <li>Store listing, screenshots, compliance pack</li>
+            <li>Subscription / one-time products, free trial, paywall</li>
+            <li>Receipt validation, entitlements, refunds, customer portal</li>
+            <li>Revenue dashboard: MRR, trials, conversion, churn</li>
+          </ul>
+        </div>
+        <div class="stage-card">
+          <span class="n">Stage 2 — the moat</span>
+          <h3>Live Business → Growing Business</h3>
+          <span class="badge">Infra → growth partner</span>
+          <p style="font-size:0.9rem;color:var(--ink-soft);margin:0;">Once revenue is flowing, become the growth team the developer doesn’t have.</p>
+          <ul>
+            <li>ASO — keywords, listing optimization</li>
+            <li>Pricing optimization &amp; paywall A/B experiments</li>
+            <li>Localization</li>
+            <li>Creative generation + UA campaigns (Google, Meta)</li>
+            <li>Retention / win-back automation</li>
+            <li>AI growth recommendations from category benchmarks</li>
+          </ul>
+        </div>
+      </div>
+      <p style="font-size:0.9rem;color:var(--ink-faint);">A platform-owned discovery marketplace — a storefront of apps built here, with free-trial signup — is a possible later distribution channel, not part of the core bet.</p>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">Publish → Bill → Grow</span>
+        <h2>The pipeline, end to end</h2>
+      </div>
+      <div class="breakout scroll-x">
+        <div class="flow">
+          <div class="fnode"><span class="ft">Intake</span><span class="fd">Developer hands over a binary or repo + identity, app name, category, pricing model, target countries, monetization preference.</span></div>
+          <div class="fnode"><span class="ft">Onboarding</span><span class="fd">Business entity · D-U-N-S number · Google Play + Apple Developer accounts · bank &amp; tax agreements · grant platform delegated API access · authorize revenue-share payment mandate.</span></div>
+          <div class="fnode"><span class="ft">Build pipeline</span><span class="fd">Ingest the app, configure, sign. EAS Build / Codemagic with a managed signing-key vault.</span></div>
+          <div class="fnode decision"><span class="ft">Test &amp; auto-fix</span><span class="fd">Static analysis, crash &amp; startup tests, device-farm run, store-policy pre-check. Auto-remediate the common failures; queue logic bugs for AI-assisted repair.</span></div>
+          <span class="floop">↺ on failure — fix &amp; re-run</span>
+          <div class="fnode"><span class="ft">Compliance pack</span><span class="fd">Privacy policy, Data Safety form, App Privacy labels, content / age rating — generated and maintained per app.</span></div>
+          <div class="fnode"><span class="ft">Monetize config</span><span class="fd">Subscription / one-time products, free trial, intro offers, paywall, country pricing — wired through RevenueCat.</span></div>
+          <div class="fnode"><span class="ft">Listing generator</span><span class="fd">Title, description, keyword set, screenshots, preview video.</span></div>
+          <div class="fnode"><span class="ft">Submit</span><span class="fd">Play Developer API + App Store Connect API — into the <em>developer’s own</em> store accounts.</span></div>
+          <div class="fnode decision"><span class="ft">Store review</span><span class="fd">Approved → live. Rejected → rejection handler diagnoses, fixes, resubmits.</span></div>
+          <span class="floop">↺ on rejection — diagnose &amp; resubmit</span>
+          <div class="fnode milestone"><span class="ft">◆ Live</span><span class="fd">Stage 1 complete: published and monetized on both stores.</span></div>
+          <div class="fnode"><span class="ft">Billing engine</span><span class="fd">Receipt validation, entitlements, subscription lifecycle, refunds, customer portal, web payments.</span></div>
+          <div class="fnode"><span class="ft">Revenue dashboard</span><span class="fd">MRR, trials, conversion, churn — the developer’s single source of truth.</span></div>
+          <div class="fnode"><span class="ft">Reconciliation</span><span class="fd">Read store financial reports → invoice and collect the platform’s revenue share.</span></div>
+          <div class="fnode"><span class="ft">Growth engine → loops back to the dashboard</span><span class="fd">ASO, pricing &amp; paywall experiments, localization, creative + UA campaigns, retention, AI recommendations.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">Business model</span>
+        <h2>Free to launch, paid on results</h2>
+      </div>
+      <p>An indie developer with zero revenue will not pay a monthly SaaS fee before they know the app works. That objection kills adoption. So we don’t charge one.</p>
+      <div class="callout callout--ship">
+        <span class="tag">Alignment</span>
+        <p>Free / low-cost to launch. The platform takes <strong>a percentage of revenue</strong> — roughly <strong>developer 85% / platform 15%</strong>, tiered by how much we operate (Stage 1 only vs. full growth partner). An optional flat fee later for high-revenue apps that prefer it. We earn only when the developer earns.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">The one hard problem</span>
+        <h2>The billing crux</h2>
+      </div>
+      <p>Store payouts go <strong>straight to the developer’s bank account</strong>, tied to the developer’s tax identity. We can’t skim our 15% at the source. How we legally and reliably collect a revenue share is the single biggest risk in the model — and it gets validated before anything is built.</p>
+      <div class="callout callout--flag">
+        <span class="tag">Likely hybrid — to be confirmed with a CA + lawyer</span>
+        <p><strong>Store-sourced revenue:</strong> developer authorizes a payment mandate (UPI AutoPay / card / debit). We read reconciled revenue from the App Store Connect &amp; Play financial reports, invoice the agreed %, and auto-charge — with clear ToS and service-pause on default.</p>
+        <p><strong>Web-sourced revenue:</strong> we host the web checkout as merchant of record, take our cut at source, remit the rest. Cleanest path where it applies.</p>
+        <p><strong>Open questions:</strong> agent-invoicing vs. merchant-of-record structure; India GST, TDS, and FEMA / RBI treatment of inbound remittance. If there’s no clean answer, the model needs rework first.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">Constraints</span>
+        <h2>Three walls that shape the architecture</h2>
+      </div>
+      <div class="rules">
+        <div class="rule-item">
+          <h3>1 · Apps publish under the developer’s own accounts</h3>
+          <p>Apple Guideline 4.2.6 and Google Play’s spam / repetitive-content policies forbid one umbrella account mass-shipping apps. We hold delegated API access (Play service-account user; App Store Connect API key) and automate the setup so the friction is hidden. Because each app is a genuine, distinct product, 4.2.6 risk is low — this is managed Fastlane + CI, not a template farm.</p>
+        </div>
+        <div class="rule-item">
+          <h3>2 · Store billing is mandatory for digital goods</h3>
+          <p>Trials, subscriptions and digital unlocks must use Google Play Billing / Apple IAP — 15% under $1M/yr via the small-business programs, 30% above, subs dropping to 15% after 12 months. Only physical goods and real-world services may use an outside processor.</p>
+        </div>
+        <div class="rule-item">
+          <h3>3 · The account holder carries all liability</h3>
+          <p>Privacy policy, India DPDP / GDPR data-safety disclosures, content rating, refunds, DMCA — all sit with whoever’s account publishes. The compliance pack is generated and maintained per app, on the platform’s side.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">Prerequisites</span>
+        <h2>What onboarding has to collect and drive</h2>
+      </div>
+      <div class="breakout scroll-x">
+        <table>
+          <caption>Google Play vs. Apple App Store — account &amp; publishing requirements</caption>
+          <thead>
+            <tr><th scope="col">Requirement</th><th scope="col">Google Play</th><th scope="col">Apple App Store</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Account fee</th><td>$25 one-time</td><td>$99 / year</td></tr>
+            <tr><th scope="row">Organization proof</th><td>Legal name + address, D-U-N-S number, verification</td><td>Legal entity, D-U-N-S number, public website</td></tr>
+            <tr><th scope="row">Identity verification</th><td>Mandatory — gov ID, address, phone, email</td><td>Mandatory</td></tr>
+            <tr><th scope="row">New-personal-account gate</th><td>Closed test (~12 testers, 14 days) before production</td><td>Standard review; TestFlight optional</td></tr>
+            <tr><th scope="row">Account verification lead time</th><td>Days to a few weeks</td><td>Days to ~2 weeks</td></tr>
+            <tr><th scope="row">Review time per submission</th><td>Hours to ~3 days</td><td>~24–48 hours</td></tr>
+            <tr><th scope="row">Mandatory billing (digital goods)</th><td>Google Play Billing</td><td>Apple In-App Purchase</td></tr>
+            <tr><th scope="row">Commission</th><td>15% (&lt;$1M, Small Business Program) / 30%; subs 15% after yr 1</td><td>15% (Small Business Program) / 30%; subs 15% after yr 1</td></tr>
+            <tr><th scope="row">Required before launch</th><td>Privacy policy URL, Data Safety form, IARC rating, target API level, Play App Signing</td><td>Privacy policy URL, App Privacy labels, App Review notes, export-compliance answer, age rating</td></tr>
+            <tr><th scope="row">Automation API</th><td>Google Play Developer Publishing API + service account</td><td>App Store Connect API + API key</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">Roadmap</span>
+        <h2>Fourteen months, five phases</h2>
+      </div>
+      <div class="phases">
+        <div class="phase p0">
+          <span class="pn">0</span>
+          <div><span class="ph">Legal &amp; billing foundation</span> <span class="pw">· weeks 0–4</span></div>
+          <p class="pb">Entity; the platform’s own Play + Apple org accounts + D-U-N-S; developer ToS + revenue-share agreement with a lawyer; <strong>a validated answer to the billing crux</strong>; India DPDP / GDPR posture.</p>
+        </div>
+        <div class="phase p1">
+          <span class="pn">1</span>
+          <div><span class="ph">Stage 1 MVP — manual publish</span> <span class="pw">· month 1–3</span></div>
+          <p class="pb">Onboarding wizard; build pipeline; publish 3 pilot apps by hand into real developers’ accounts; RevenueCat monetization; revenue dashboard; document every rejection.</p>
+        </div>
+        <div class="phase">
+          <span class="pn">2</span>
+          <div><span class="ph">Automated publish + QA</span> <span class="pw">· month 3–6</span></div>
+          <p class="pb">Publisher service on both store APIs; signing vault; test-and-auto-fix v1; listing generator.</p>
+        </div>
+        <div class="phase">
+          <span class="pn">3</span>
+          <div><span class="ph">Billing engine + reconciliation</span> <span class="pw">· month 6–9</span></div>
+          <p class="pb">Lifecycle, refunds, customer portal, web checkout; financial-report ingest, invoice, auto-charge the mandate.</p>
+        </div>
+        <div class="phase">
+          <span class="pn">4</span>
+          <div><span class="ph">Stage 2 growth engine</span> <span class="pw">· month 9–14</span></div>
+          <p class="pb">ASO, pricing + paywall experiments, localization, creative + UA campaigns, retention, AI growth recommendations; self-serve onboarding.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">Before heavy build</span>
+        <h2>What to validate first</h2>
+      </div>
+      <div class="checks">
+        <div class="check"><p><b>The billing crux.</b> With a CA + lawyer, confirm how the platform collects a revenue share on store-sourced income, and the India GST / TDS / FEMA treatment. No clean answer → rework the model before anything else.</p></div>
+        <div class="check"><p><b>Policy validation.</b> Open real Google Play + Apple developer accounts; read the current Developer Program Policies and Guideline 4.2.6; confirm the delegated-access permission model on both consoles.</p></div>
+        <div class="check"><p><b>Manual pilot.</b> Take 3 friendly developers with real AI-built apps end to end by hand — accounts, build, test, compliance, submit, monetize, dashboard. Measure time, cost, and every rejection reason. The most important step.</p></div>
+        <div class="check"><p><b>Monetization loop.</b> Ship one pilot app with free trial → subscription via RevenueCat; confirm trial, conversion, store commission, payout, and revenue-share collection all work end to end.</p></div>
+        <div class="check"><p><b>Demand test.</b> A landing page with the “everything after the build” pitch and revenue-share pricing; measure signups from indie-dev communities before building Stage 2.</p></div>
+      </div>
+    </section>
+
+    <p class="foot">
+      Working name “LaunchPad” · stack leaning Expo / React Native · RevenueCat · Fastlane · Play Developer API · App Store Connect API · Next.js + Postgres + a durable workflow engine.<br>
+      Competitive read: RevenueCat, App Store Connect, no-code builders and growth agencies are all point tools the developer must assemble — the wedge is selling the assembled outcome with revenue-share pricing.
+    </p>
+
+  </main>
+</div>
