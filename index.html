@@ -301,6 +301,8 @@
   .nbtn { font: inherit; font-size: 12px; border: 1px solid var(--line); background: var(--surface-2); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
   .nbtn:hover { border-color: var(--green); color: var(--green-ink); }
   .nbtn:disabled { opacity: .45; cursor: default; }
+  .nbtn-wide { flex: 1 1 100%; font-weight: 600; padding: 7px 10px; border-color: var(--green); color: var(--green-ink); }
+  .nbtn-wide.is-paused { border-color: var(--line); color: var(--ink-2); background: var(--surface); }
   .nsel { font-size: 10px; color: var(--ink-3); display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: .04em; }
   .nsel select { font: inherit; font-size: 11px; border: 1px solid var(--line); border-radius: 5px; padding: 3px 4px; max-width: 128px; }
   .ntog { font-size: 11px; color: var(--ink-2); display: flex; align-items: center; gap: 5px; cursor: pointer; }
@@ -389,6 +391,7 @@
 
     <div class="narrate" id="narrate">
       <div class="narrate-controls">
+        <button class="nbtn nbtn-wide" id="nPauseAll" type="button">&#9208; Pause narration</button>
         <button class="nbtn" id="nPlay" type="button">&#9654; Play</button>
         <button class="nbtn" id="nStop" type="button" disabled>&#9632;</button>
         <label class="nsel">Pace
@@ -399,7 +402,6 @@
           </select>
         </label>
         <label class="nsel">Voice <select id="nVoice"></select></label>
-        <label class="ntog"><input type="checkbox" id="nAuto" checked> Auto-play each screen</label>
       </div>
       <div class="caption" id="caption"></div>
     </div>
@@ -2255,11 +2257,24 @@
   var voices = [], chosenVoice = null, rate = 0.8;
   var speakQ = [], speakIdx = 0, speaking = false, speakingAnswer = false;
   var narrateAuto = true;
+  try { if (localStorage.getItem('pcguide_narration') === 'off') narrateAuto = false; } catch (e) {}
 
   var caption = document.getElementById('caption');
   var nPlay = document.getElementById('nPlay'), nStop = document.getElementById('nStop');
-  var nRate = document.getElementById('nRate'), nVoice = document.getElementById('nVoice'), nAuto = document.getElementById('nAuto');
+  var nRate = document.getElementById('nRate'), nVoice = document.getElementById('nVoice');
+  var nPauseAll = document.getElementById('nPauseAll');
   var gStatus = document.getElementById('gStatus');
+
+  function setNarration(on) {
+    narrateAuto = !!on;
+    if (!narrateAuto) stopSpeak();
+    if (nPauseAll) {
+      nPauseAll.innerHTML = narrateAuto ? '⏸ Pause narration' : '▶ Resume narration';
+      nPauseAll.classList.toggle('is-paused', !narrateAuto);
+    }
+    try { localStorage.setItem('pcguide_narration', narrateAuto ? 'on' : 'off'); } catch (e) {}
+    if (narrateAuto && synth && currentSentences.length) speak(currentSentences, 0, false);
+  }
 
   function splitSentences(t) {
     return (String(t).match(/[^.!?]+[.!?]*/g) || [String(t)])
@@ -2372,7 +2387,11 @@
     if (v) chosenVoice = v;
     if (speaking) speak(speakQ, speakIdx, speakingAnswer);
   });
-  nAuto.addEventListener('change', function () { narrateAuto = nAuto.checked; });
+  if (nPauseAll) {
+    nPauseAll.innerHTML = narrateAuto ? '⏸ Pause narration' : '▶ Resume narration';
+    nPauseAll.classList.toggle('is-paused', !narrateAuto);
+    nPauseAll.addEventListener('click', function () { setNarration(!narrateAuto); });
+  }
   // Chrome cuts long speech runs; nudge it while we are mid-narration.
   setInterval(function () { if (synth && speaking) { try { synth.resume(); } catch (e) {} } }, 9000);
   window.addEventListener('beforeunload', function () { if (synth) synth.cancel(); });
@@ -2573,7 +2592,7 @@
       var jump = bestMatches(q, 1)[0];
       if (jump && jump.item.idx !== i && jump.score >= 4) addJumpLink(a, jump.item.idx);
     }
-    if (synth && answer) speak(splitSentences(answer), 0, true);
+    if (narrateAuto && synth && answer) speak(splitSentences(answer), 0, true);
   }
 
   askForm.addEventListener('submit', function (e) {
